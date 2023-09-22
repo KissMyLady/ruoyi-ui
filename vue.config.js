@@ -36,7 +36,7 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       // 关于 [/dev-api, '*'] 的api请求都转发到目标url下
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8080/api`,
+        target: process.env.target_url ? process.env.target_url : `http://localhost:8080/api`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: '',
