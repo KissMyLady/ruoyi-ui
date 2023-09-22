@@ -10,6 +10,10 @@ const CompressionPlugin = require('compression-webpack-plugin')
 const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
+const target_url = process.env.target_url ? process.env.target_url : `http://localhost:8080/api`;
+
+console.log("当前使用target_url: ", target_url);
+console.log("当前使用环境: ", process.env.ENV);
 
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
@@ -36,7 +40,8 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       // 关于 [/dev-api, '*'] 的api请求都转发到目标url下
       [process.env.VUE_APP_BASE_API]: {
-        target: process.env.target_url ? process.env.target_url : `http://localhost:8080/api`,
+        target: process.env.VUE_APP_target_url ? process.env.VUE_APP_target_url : `http://127.0.0.1:8080/api`,
+        //是否允许跨域
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: '',
