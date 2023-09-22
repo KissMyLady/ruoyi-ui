@@ -36,6 +36,7 @@ const user = {
       const code = userInfo.code
       const uuid = userInfo.uuid
       return new Promise((resolve, reject) => {
+        //登录api调用, 返回用户信息
         login(username, password, code, uuid).then(res => {
           setToken(res.token)
           commit('SET_TOKEN', res.token)
@@ -48,10 +49,23 @@ const user = {
 
     // 获取用户信息
     GetInfo({ commit, state }) {
-      return new Promise((resolve, reject) => {
+      /*
+      * avatar: "http://127.0.0.1:8080/api/profile/avatar/2023/09/22/blob_20230922102625A001.png"
+      * name: "admin"
+      * permissions: Array(1)
+      * roles: Array(1)
+      * token: "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI ...."
+      * */
+      let promist_v1 = new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
-          const avatar = (user.avatar == "" || user.avatar == null) ? require("@/assets/images/profile.jpg") : process.env.VUE_APP_BASE_API + user.avatar;
+          var avatar_v1
+          if (user.avatar === '' || user.avatar == null) {
+            avatar_v1 = require('@/assets/images/profile.jpg')
+          } else {
+            avatar_v1 = user.avatar
+          }
+          const avatar = avatar_v1
           if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)
@@ -65,6 +79,7 @@ const user = {
           reject(error)
         })
       })
+      return promist_v1
     },
 
     // 退出系统
