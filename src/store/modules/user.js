@@ -63,7 +63,8 @@ const user = {
           if (user.avatar === '' || user.avatar == null) {
             avatar_v1 = require('@/assets/images/profile.jpg')
           } else {
-            avatar_v1 = user.avatar
+            //由于是反向代理, 必须加上前缀
+            avatar_v1 = process.env.VUE_APP_BASE_API + user.avatar
           }
           const avatar = avatar_v1
           if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
