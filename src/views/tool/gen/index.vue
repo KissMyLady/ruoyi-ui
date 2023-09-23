@@ -106,13 +106,13 @@
           align="center"
           prop="tableName"
           :show-overflow-tooltip="true"
-          width="120"/>
+          width="160"/>
       <el-table-column
           label="表描述"
           align="center"
           prop="tableComment"
           :show-overflow-tooltip="true"
-          width="120"/>
+          width="220"/>
       <el-table-column
           label="实体"
           align="center"
