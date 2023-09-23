@@ -140,12 +140,12 @@
       <el-table-column label="角色名称" align="center" prop="roleName" width="auto"/>
       <el-table-column label="当前聊天角色" align="center" prop="currentRoleName" width="auto"/>
       <el-table-column label="当前聊天语言模型" align="center" prop="llm" width="auto"/>
-      <!--      <el-table-column label="输入内容" align="center" prop="prompt" width="200"/>-->
-      <!--      <el-table-column label="输出内容" align="center" prop="response" width="200"/>-->
+      <el-table-column label="输入内容" align="center" prop="prompt" width="200"/>
+      <el-table-column label="输出内容" align="center" prop="response" width="200"/>
       <el-table-column label="计算耗时" align="center" prop="consumeTime" width="auto"/>
       <!--      <el-table-column label="当前聊天的历史内容" align="center" prop="history" width="auto"/>-->
       <!--      <el-table-column label="操作提交的数据" align="center" prop="reqParams" width="auto"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="isDelete" width="auto"/>-->
+      <el-table-column label="删除标记" align="center" prop="isDelete" width="auto"/>
       <el-table-column label="设备" align="center" prop="userDeviceType" width="auto"/>
       <el-table-column label="ip地址" align="center" prop="userIp" width="auto"/>
       <el-table-column label="聊天用户地址" align="center" prop="userAddress" width="auto"/>
@@ -232,8 +232,8 @@
                     autosize
                     type="textarea" placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item label="历史记录" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入历史记录"/>
+        <el-form-item label="删除标记" prop="isDelete">
+          <el-input v-model="form.isDelete" placeholder="0或者1"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
