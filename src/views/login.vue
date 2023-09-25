@@ -99,10 +99,23 @@ export default {
     }
   },
   created() {
-    this.getCode()
-    this.getCookie()
+    this.initPwd();
+    this.getCode();
+    this.getCookie();
   },
   methods: {
+    initPwd(){
+      //判断生产环境与开发环境 development
+      const devState = process.env.VUE_APP_ENV
+      console.log("USE ENV: ", devState);
+      if (devState === 'development'){
+        this.loginForm.username = 'admin';
+        this.loginForm.password = 'admin123';
+      }else {
+        this.loginForm.username = '';
+        this.loginForm.password = '';
+      }
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
