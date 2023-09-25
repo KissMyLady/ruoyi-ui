@@ -143,7 +143,7 @@
 
     <!-- 添加或修改语言模型,api,claude连接池对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="备注信息" prop="info">
           <el-input v-model="form.info" placeholder="请输入备注信息"/>
         </el-form-item>

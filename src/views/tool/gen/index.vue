@@ -241,7 +241,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         tableName: undefined,
-        tableComment: undefined
+        tableComment: undefined,
+        orderByColumn: 'create_time',
+        isAsc: "desc",  //desc, acs
       },
       // 预览参数
       preview: {
