@@ -212,7 +212,9 @@ export default {
         sessionKey: null,
         conversationUuid: null,
         createUser: null,
-        isDelete: null
+        isDelete: null,
+        orderByColumn: 'create_time',
+        isAsc: "desc",  //desc, acs
       },
       // 表单参数
       form: {},
