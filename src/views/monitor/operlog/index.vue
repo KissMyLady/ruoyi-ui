@@ -1,36 +1,41 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="68px"
+    >
       <el-form-item label="系统模块" prop="title">
-        <el-input
-            v-model="queryParams.title"
-            placeholder="请输入系统模块"
-            clearable
-            style="width: 240px;"
-            @keyup.enter.native="handleQuery"
+        <el-input v-model="queryParams.title"
+                  placeholder="请输入系统模块"
+                  clearable
+                  @change="handleQuery"
+                  style="width: 240px;"
+                  @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="操作人员" prop="operName">
-        <el-input
-            v-model="queryParams.operName"
-            placeholder="请输入操作人员"
-            clearable
-            style="width: 240px;"
-            @keyup.enter.native="handleQuery"
+        <el-input v-model="queryParams.operName"
+                  placeholder="请输入操作人员"
+                  @change="handleQuery"
+                  clearable
+                  style="width: 240px;"
+                  @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="类型" prop="businessType">
-        <el-select
-            v-model="queryParams.businessType"
-            placeholder="操作类型"
-            clearable
-            style="width: 240px"
+        <el-select v-model="queryParams.businessType"
+                   placeholder="操作类型"
+                   @change="handleQuery"
+                   clearable
+                   style="width: 240px"
         >
-          <el-option
-              v-for="dict in dict.type.sys_oper_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+          <el-option v-for="dict in dict.type.sys_oper_type"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -38,6 +43,7 @@
         <el-select
             v-model="queryParams.status"
             placeholder="操作状态"
+            @change="handleQuery"
             clearable
             style="width: 240px"
         >
@@ -112,7 +118,8 @@
               :data="list"
               @selection-change="handleSelectionChange"
               :default-sort="defaultSort"
-              @sort-change="handleSortChange">
+              @sort-change="handleSortChange"
+    >
       <el-table-column type="selection" width="50" align="center"/>
       <el-table-column label="日志编号" align="center" prop="operId"/>
       <el-table-column label="系统模块" align="center" prop="title" :show-overflow-tooltip="true"/>
@@ -137,7 +144,8 @@
                        prop="operTime"
                        width="160"
                        sortable="custom"
-                       :sort-orders="['descending', 'ascending']">
+                       :sort-orders="['descending', 'ascending']"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.operTime) }}</span>
         </template>
@@ -148,7 +156,8 @@
                        width="110"
                        :show-overflow-tooltip="true"
                        sortable="custom"
-                       :sort-orders="['descending', 'ascending']">
+                       :sort-orders="['descending', 'ascending']"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.costTime }}毫秒</span>
         </template>
@@ -156,10 +165,10 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini"
-              type="text"
-              icon="el-icon-view"
-              @click="handleView(scope.row,scope.index)"
-              v-hasPermi="['monitor:operlog:query']"
+                     type="text"
+                     icon="el-icon-view"
+                     @click="handleView(scope.row,scope.index)"
+                     v-hasPermi="['monitor:operlog:query']"
           >详细
           </el-button>
         </template>
@@ -170,7 +179,8 @@
                 :total="total"
                 :page.sync="queryParams.pageNum"
                 :limit.sync="queryParams.pageSize"
-                @pagination="getList"/>
+                @pagination="getList"
+    />
 
     <!-- 操作日志详细 -->
     <el-dialog title="操作日志详细" :visible.sync="open" width="700px" append-to-body>

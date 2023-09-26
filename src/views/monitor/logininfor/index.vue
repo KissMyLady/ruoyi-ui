@@ -7,6 +7,7 @@
             placeholder="请输入登录地址"
             clearable
             style="width: 240px;"
+            @change="handleQuery"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,6 +17,7 @@
             placeholder="请输入用户名称"
             clearable
             style="width: 240px;"
+            @change="handleQuery"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -24,6 +26,7 @@
             v-model="queryParams.status"
             placeholder="登录状态"
             clearable
+            @change="handleQuery"
             style="width: 240px"
         >
           <el-option
@@ -37,6 +40,7 @@
       <el-form-item label="登录时间">
         <el-date-picker
             v-model="dateRange"
+            @change="handleQuery"
             style="width: 240px"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="daterange"

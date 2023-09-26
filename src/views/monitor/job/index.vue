@@ -6,6 +6,7 @@
           v-model="queryParams.jobName"
           placeholder="请输入任务名称"
           clearable
+          @change="handleQuery"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
