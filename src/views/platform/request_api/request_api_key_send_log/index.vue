@@ -177,25 +177,25 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="auto"/>
+      <el-table-column label="主键" align="center" prop="id" width="100"/>
       <el-table-column align="center" width="auto" label="记录标题" prop="logTitle"/>
-      <el-table-column align="center" width="auto" label="操作IP" prop="reqIp"/>
-      <el-table-column align="center" width="auto" label="IP地址" prop="reqAddress"/>
+      <el-table-column align="center" width="110" label="操作IP" prop="reqIp"/>
+      <el-table-column align="center" width="160" label="IP地址" prop="reqAddress"/>
 <!--      <el-table-column align="center" width="auto" label="请求头" prop="reqAgent"/>-->
 <!--      <el-table-column align="center" width="auto" label="浏览器" prop="reqBrowser"/>-->
 <!--      <el-table-column align="center" width="auto" label="操作系统" prop="reqSystem"/>-->
 <!--      <el-table-column align="center" width="auto" label="请求URI" prop="reqUrl"/>-->
-      <el-table-column align="center" width="auto" label="操作方式" prop="reqMethod"/>
+      <el-table-column align="center" width="100" label="操作方式" prop="reqMethod"/>
       <el-table-column align="center" width="auto" label="请求的key" prop="reqKey"/>
 <!--      <el-table-column align="center" width="auto" label="操作提交的数据" prop="reqParams"/>-->
-      <el-table-column align="center" width="auto" label="是否成功" prop="isSuccess"/>
+      <el-table-column align="center" width="100" label="是否成功" prop="isSuccess"/>
 <!--      <el-table-column align="center" width="auto" label="影响行数" prop="effectRows"/>-->
 <!--      <el-table-column align="center" width="auto" label="执行时间" prop="timeOut"/>-->
-<!--      <el-table-column align="center" width="auto" label="异常信息" prop="exception"/>-->
+      <el-table-column align="center" width="auto" label="返回信息" prop="exception"/>
 <!--      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>-->
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">

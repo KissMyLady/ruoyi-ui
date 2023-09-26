@@ -116,7 +116,7 @@
               @sort-change="handleSortChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="访问编号" align="center" prop="infoId"/>
+      <el-table-column label="访问编号" align="center" prop="infoId" width="110"/>
       <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom"
                        :sort-orders="['descending', 'ascending']"
       />
