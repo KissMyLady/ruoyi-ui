@@ -146,19 +146,21 @@
                   :data="userList"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
-          <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/>
+          <el-table-column label="用户编号" width="100" align="center" key="userId" prop="userId" v-if="columns[0].visible"/>
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible"
-                           :show-overflow-tooltip="true"
-          />
+                           :show-overflow-tooltip="true"/>
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible"
-                           :show-overflow-tooltip="true"
-          />
+                           :show-overflow-tooltip="true"/>
+          <el-table-column label="分配角色" align="center" key="md5" prop="md5">
+            <template slot-scope="scope">
+              <p style="margin: 0;padding: 0" v-for="item in splitRoleList(scope.row.md5)">{{ item}}</p>
+            </template>
+          </el-table-column>
+
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible"
-                           :show-overflow-tooltip="true"
-          />
+                           :show-overflow-tooltip="true"/>
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
-                           v-if="columns[4].visible" width="120"
-          />
+                           v-if="columns[4].visible" width="120"/>
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
@@ -710,7 +712,15 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()
-    }
+    },
+
+    //根据逗号分离字符串
+    splitRoleList(roleStr){
+      let roles = roleStr + '';
+      let res = roles.split(',')
+      console.log("分割后的角色res: ", res);
+      return res;
+    },
   }
 }
 </script>
