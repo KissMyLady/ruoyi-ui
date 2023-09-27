@@ -15,7 +15,7 @@
               <tbody>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">核心数</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.cpu">{{ server.cpu.cpuNum }}</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.cpu"><el-tag>{{ server.cpu.cpuNum }}</el-tag></div></td>
                 </tr>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">用户使用率</div></td>
@@ -65,8 +65,24 @@
                 </tr>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">使用率</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem" :class="{'text-danger': server.mem.usage > 80}">{{ server.mem.usage }}%</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm" :class="{'text-danger': server.jvm.usage > 80}">{{ server.jvm.usage }}%</div></td>
+                  <td class="el-table__cell is-leaf">
+                    <div class="cell" v-if="server.mem" :class="{'text-danger': server.mem.usage > 80}">
+                      <el-progress :percentage="server.mem.usage"
+                                   :stroke-width="14"
+                                   :color="customColors"
+                                   :show-text=false></el-progress>
+                      {{ server.mem.usage }}%
+                    </div>
+                  </td>
+                  <td class="el-table__cell is-leaf">
+                    <div class="cell" v-if="server.jvm" :class="{'text-danger': server.jvm.usage > 80}">
+                      <el-progress :percentage="server.jvm.usage"
+                                   :stroke-width="14"
+                                   :color="customColors"
+                                   :show-text=false></el-progress>
+                      {{ server.jvm.usage }}%
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -164,7 +180,14 @@
                   <td class="el-table__cell is-leaf"><div class="cell">{{ sysFile.total }}</div></td>
                   <td class="el-table__cell is-leaf"><div class="cell">{{ sysFile.free }}</div></td>
                   <td class="el-table__cell is-leaf"><div class="cell">{{ sysFile.used }}</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" :class="{'text-danger': sysFile.usage > 80}">{{ sysFile.usage }}%</div></td>
+                  <td class="el-table__cell is-leaf">
+                    <div class="cell" :class="{'text-danger': sysFile.usage > 80}">
+                      <el-progress :percentage="sysFile.usage"
+                                   :color="customColors"
+                                   :show-text=false></el-progress>
+                      {{ sysFile.usage }}%
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -183,7 +206,15 @@ export default {
   data() {
     return {
       // 服务器信息
-      server: []
+      server: [],
+      customColors: [
+        {color: '#f56c6c', percentage: 20},
+        {color: '#e6a23c', percentage: 40},
+        {color: '#5cb87a', percentage: 60},
+        {color: '#1989fa', percentage: 80},
+        {color: '#6f7ad3', percentage: 100}
+      ],
+      timer: "",
     };
   },
   created() {
@@ -201,7 +232,7 @@ export default {
     // 打开加载层
     openLoading() {
       this.$modal.loading("正在加载服务监控数据，请稍候！");
-    }
-  }
+    },
+  },
 };
 </script>
