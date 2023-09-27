@@ -134,7 +134,10 @@
                        :sort-orders="['descending', 'ascending']" width="180"
       >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.loginTime) }}</span>
+<!--          <span>{{ parseTime(scope.row.loginTime) }}</span>-->
+          <el-tooltip class="item" effect="dark" :content="parseTime(scope.row.loginTime)" placement="top">
+           <span>{{ formatTime(scope.row.loginTime) }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -151,6 +154,8 @@
 
 <script>
 import { list, delLogininfor, cleanLogininfor, unlockLogininfor } from '@/api/monitor/logininfor'
+import { formatTime } from '@/utils'
+import { parseTime } from '@/utils/ruoyi'
 
 export default {
   name: 'Logininfor',
@@ -191,6 +196,8 @@ export default {
     this.getList()
   },
   methods: {
+    formatTime,
+    parseTime,
     /** 查询登录日志列表 */
     getList() {
       this.loading = true

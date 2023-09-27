@@ -112,7 +112,12 @@
       <el-table-column label="sessionKey" align="center" prop="sessionKey"/>
       <el-table-column label="conversation_uuid" align="center" prop="conversationUuid"/>
       <el-table-column label="创建人" align="center" prop="createUser"/>
-      <el-table-column label="删除标记" align="center" prop="isDelete" width="90"/>
+      <el-table-column label="删除" align="center" prop="isDelete" width="60">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1" type="danger">是</el-tag>
+          <el-tag v-else>否</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">

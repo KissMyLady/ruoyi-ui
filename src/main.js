@@ -19,6 +19,7 @@ import './permission' // permission control
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+import { formatTime } from '@/utils';
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
@@ -37,6 +38,7 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+import JsonViewer from 'vue-json-viewer';
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -48,6 +50,7 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
+Vue.prototype.formatTime = formatTime
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
@@ -61,6 +64,8 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+Vue.use(JsonViewer);
+
 DictData.install()
 
 /**

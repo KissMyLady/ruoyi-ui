@@ -129,8 +129,12 @@
         </template>
       </el-table-column>
       <el-table-column label="操作人员" align="center" prop="operName" width="110" :show-overflow-tooltip="true"
-                       sortable="custom" :sort-orders="['descending', 'ascending']"
-      />
+                       sortable="custom" :sort-orders="['descending', 'ascending']">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.operName == 'admin'">{{ scope.row.operName }}</el-tag>
+          <el-tag v-else type="warning">{{ scope.row.operName }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作地址" align="center" prop="operIp" width="130" :show-overflow-tooltip="true"/>
       <el-table-column label="操作地点" align="center" prop="operLocation" :show-overflow-tooltip="true"/>
       <el-table-column label="操作系统" align="center" prop="reqSystem" :show-overflow-tooltip="true"/>
@@ -147,8 +151,11 @@
                        :sort-orders="['descending', 'ascending']"
       >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.operTime) }}</span>
+          <el-tooltip class="item" effect="dark" :content="parseTime(scope.row.operTime)" placement="top">
+            <span>{{ formatTime(scope.row.operTime) }}</span>
+          </el-tooltip>
         </template>
+
       </el-table-column>
       <el-table-column label="消耗时间"
                        align="center"
@@ -239,15 +246,28 @@
         <el-button @click="open = false">关 闭</el-button>
       </div>
     </el-dialog>
+
+
+    <!--展示内容弹出框-->
+    <logs-show-dialog ref="showSendContentDialog"
+                      @showSendContentDialog="showSendContentDialog"></logs-show-dialog>
+
   </div>
 </template>
 
 <script>
 import { list, delOperlog, cleanOperlog } from '@/api/monitor/operlog'
+import logsShowDialog from "./dialog/logsShowDialog"
+import { formatTime } from '@/utils'
+import { parseTime } from '@/utils/ruoyi'
 
 export default {
   name: 'Operlog',
   dicts: ['sys_oper_type', 'sys_common_status'],
+  components: {
+    logsShowDialog: logsShowDialog,
+  },
+
   data() {
     return {
       // 遮罩层
@@ -285,6 +305,8 @@ export default {
     this.getList()
   },
   methods: {
+    formatTime,
+    parseTime,
     /** 查询登录日志 */
     getList() {
       this.loading = true
@@ -324,8 +346,9 @@ export default {
     },
     /** 详细按钮操作 */
     handleView(row) {
-      this.open = true
+      //this.open = true
       this.form = row
+      this.showLogs(row);
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -353,7 +376,16 @@ export default {
       this.download('monitor/operlog/export', {
         ...this.queryParams
       }, `operlog_${new Date().getTime()}.xlsx`)
-    }
+    },
+    showSendContentDialog() {
+    },
+    showSendContent(data) {
+      this.$refs['showSendContentDialog'].showDialog(data);
+    },
+    showLogs(data){
+      console.log("传递dialog的data: ", data);
+      this.$refs['showSendContentDialog'].showDialog(data);
+    },
   }
 }
 </script>

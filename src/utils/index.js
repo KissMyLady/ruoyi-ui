@@ -5,12 +5,12 @@ import { parseTime } from './ruoyi'
  */
 export function formatDate(cellValue) {
   if (cellValue == null || cellValue == "") return "";
-  var date = new Date(cellValue) 
+  var date = new Date(cellValue)
   var year = date.getFullYear()
   var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-  var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate() 
-  var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours() 
-  var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes() 
+  var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+  var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+  var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
   var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
   return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds
 }
@@ -21,15 +21,22 @@ export function formatDate(cellValue) {
  * @returns {string}
  */
 export function formatTime(time, option) {
+  //console.log("入参time: ", time);
   if (('' + time).length === 10) {
     time = parseInt(time) * 1000
-  } else {
-    time = +time
+  } else if ((''+time).length === 13){
+    time = new Date(time)
+    // console.log("时间戳转换: ", time);
   }
+  else {
+    time = ''+time
+  }
+  //console.log("time: ", time);
   const d = new Date(time)
   const now = Date.now()
 
   const diff = (now - d) / 1000
+  //console.log("diff: ", diff);
 
   if (diff < 30) {
     return '刚刚'
@@ -45,6 +52,7 @@ export function formatTime(time, option) {
     return parseTime(time, option)
   } else {
     return (
+      // d.getFullYear() +'年'+
       d.getMonth() +
       1 +
       '月' +
@@ -330,7 +338,7 @@ export function makeMap(str, expectsLowerCase) {
     ? val => map[val.toLowerCase()]
     : val => map[val]
 }
- 
+
 export const exportDefault = 'export default '
 
 export const beautifierConf = {
@@ -387,4 +395,4 @@ export function camelCase(str) {
 export function isNumberStr(str) {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }
- 
+

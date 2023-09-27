@@ -41,7 +41,8 @@
       <el-table-column label="操作系统" align="center" prop="os"/>
       <el-table-column label="登录时间" align="center" prop="loginTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.loginTime) }}</span>
+<!--          <span>{{ parseTime(scope.row.loginTime) }}</span>-->
+          <span>{{ formatTime(scope.row.loginTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -64,7 +65,8 @@
 
 <script>
 import { list, forceLogout } from '@/api/monitor/online'
-
+import { formatTime } from '@/utils'
+import { parseTime } from '@/utils/ruoyi'
 export default {
   name: 'Online',
   data() {
@@ -88,6 +90,9 @@ export default {
     this.getList()
   },
   methods: {
+    formatTime,
+    parseTime,
+
     /** 查询登录日志列表 */
     getList() {
       this.loading = true

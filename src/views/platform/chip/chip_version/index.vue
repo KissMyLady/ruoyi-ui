@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="68px">
       <el-form-item label="版本名称" prop="versionName">
         <el-input
             v-model="queryParams.versionName"
@@ -11,13 +16,11 @@
         />
       </el-form-item>
       <el-form-item label="版本号" prop="version">
-        <el-input
-            v-model="queryParams.version"
-            placeholder="请输入版本号"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.version"
+                  placeholder="请输入版本号"
+                  clearable
+                  @change="handleQuery"
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="url地址" prop="url">
         <el-input
@@ -134,8 +137,12 @@
         <el-form-item label="版本名称" prop="versionName">
           <el-input v-model="form.versionName" placeholder="请输入版本名称"/>
         </el-form-item>
-        <el-form-item label="版本号" prop="version">
-          <el-input v-model="form.version" placeholder="请输入版本号"/>
+        <el-form-item label="版本号"
+                      prop="version"
+                      :rules="[
+                      { required: true, message: '版本号不能为空'},
+                      { type: 'number', message: '版本号必须为数字'}]">
+          <el-input v-model.number="form.version" placeholder="请输入版本号"/>
         </el-form-item>
         <el-form-item label="url地址" prop="url">
           <el-input v-model="form.url" placeholder="请输入url地址"/>

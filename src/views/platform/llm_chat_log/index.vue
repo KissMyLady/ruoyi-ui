@@ -139,19 +139,40 @@
       <el-table-column label="聊天用户" align="center" prop="user" width="auto"/>
       <el-table-column label="角色名称" align="center" prop="roleName" width="100"/>
       <el-table-column label="当前聊天角色" align="center" prop="currentRoleName" width="auto"/>
-      <el-table-column label="当前聊天语言模型" align="center" prop="llm" width="auto"/>
+      <el-table-column label="当前聊天语言模型" align="center" prop="llm" width="auto">
+        <template slot-scope="scope">
+          <span>{{ scope.row.llm }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="输入内容" align="center" prop="prompt" width="150"/>
       <el-table-column label="输出内容" align="center" prop="response" width="300"/>
       <el-table-column label="计算耗时" align="center" prop="consumeTime" width="90"/>
       <!-- <el-table-column label="当前聊天的历史内容" align="center" prop="history" width="auto"/>-->
       <!-- <el-table-column label="操作提交的数据" align="center" prop="reqParams" width="auto"/>-->
       <!-- <el-table-column label="设备" align="center" prop="userDeviceType" width="auto"/>-->
-      <el-table-column label="ip地址" align="center" prop="userIp" width="auto"/>
-      <el-table-column label="聊天用户地址" align="center" prop="userAddress" width="auto"/>
+      <el-table-column label="ip地址" align="center" prop="userIp" width="130">
+        <template slot-scope="scope">
+          <p>{{ scope.row.userAddress }}</p>
+          <p>{{ scope.row.userIp }}</p>
+        </template>
+      </el-table-column>
+<!--      <el-table-column label="聊天用户地址" align="center" prop="userAddress" width="auto"/>-->
       <!-- <el-table-column label="请求头" align="center" prop="userAgent" width="auto"/>-->
       <!-- <el-table-column label="浏览器" align="center" prop="userBrowser" width="auto"/>-->
       <el-table-column label="操作系统" align="center" prop="userSystem" width="auto"/>
-      <el-table-column label="删除" align="center" prop="isDelete" width="50"/>
+
+      <el-table-column label="删除" align="center" prop="isDelete" width="60">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1" type="danger">是</el-tag>
+          <el-tag v-else>否</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="创建时间" align="center" prop="createTime" width="140">
+        <template slot-scope="scope">
+          <span>{{ formatTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini"
@@ -252,6 +273,8 @@ import {
   addLlm_chat_log,
   updateLlm_chat_log
 } from '@/api/platform/llm/llm_chat_log'
+import { formatTime } from '@/utils';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
   name: 'Llm_chat_log',
@@ -308,6 +331,8 @@ export default {
     this.getList()
   },
   methods: {
+    parseTime,
+    formatTime,
     /** 查询语言模型聊天记录列表 */
     getList() {
       this.loading = true

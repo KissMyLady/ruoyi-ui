@@ -171,7 +171,9 @@
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
             <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
+                <span>{{ formatTime(scope.row.createTime) }}</span>
+              </el-tooltip>
             </template>
           </el-table-column>
           <el-table-column
@@ -385,6 +387,7 @@ import {
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { formatTime } from '@/utils';
 
 export default {
   name: 'User',
@@ -506,6 +509,8 @@ export default {
     })
   },
   methods: {
+    formatTime,
+
     /** 查询用户列表 */
     getList() {
       this.loading = true
