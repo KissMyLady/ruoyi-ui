@@ -33,12 +33,12 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker v-model="dateRange"
-            style="width: 240px"
-            value-format="yyyy-MM-dd"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+                        style="width: 240px"
+                        value-format="yyyy-MM-dd"
+                        type="daterange"
+                        range-separator="-"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -101,12 +101,34 @@
               border
               stripe
               :data="roleList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="角色编号" align="center" prop="roleId" width="120"/>
-      <el-table-column label="角色名称" align="center" prop="roleName" :show-overflow-tooltip="true" width="auto"/>
+      <el-table-column label="角色名称" align="center" prop="roleName" :show-overflow-tooltip="true" width="auto">
+        <template slot-scope="scope">
+          <span style="font-size: 16px;font-weight: bold">{{ scope.row.roleName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="权限字符" align="center" prop="roleKey" :show-overflow-tooltip="true" width="auto"/>
-      <el-table-column label="显示顺序" align="center" prop="roleSort" width="100"/>
+      <el-table-column label="显示排序" align="center" prop="roleSort" width="100"/>
+      <el-table-column label="已分配用户" align="center" prop="md5" width="200">
+        <template slot-scope="scope">
+          <p style="margin: 0;padding: 0;">{{ scope.row.md5 }}</p>
+          <p style="margin: 0;padding: 0;">{{ scope.row.key }}</p>
+        </template>
+      </el-table-column>
+      <el-table-column label="权限内容" align="center" prop="ajaxResult" width="200">
+        <template slot-scope="scope">
+          <el-tree :data="scope.row.ajaxResult.menus"
+                   node-key="id"
+                   show-checkbox
+                   :default-checked-keys="scope.row.ajaxResult.checkedKeys"
+                   :props="defaultProps"
+                   @node-click="handleNodeClick"
+          ></el-tree>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -124,26 +146,28 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:role:edit']"
+          <el-button size="small"
+                     plain
+                     type="primary"
+                     icon="el-icon-edit"
+                     @click="handleUpdate(scope.row)"
+                     v-hasPermi="['system:role:edit']"
           >修改
           </el-button>
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:role:remove']"
+          <el-button size="small"
+                     plain
+                     icon="el-icon-delete"
+                     type="danger"
+                     @click="handleDelete(scope.row)"
+                     v-hasPermi="['system:role:remove']"
           >删除
           </el-button>
           <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
                        v-hasPermi="['system:role:edit']"
           >
-            <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+            <el-button size="small"
+                       plain
+                       icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="handleDataScope" icon="el-icon-circle-check"
                                 v-hasPermi="['system:role:edit']"
@@ -247,16 +271,15 @@
           </el-checkbox>
           <el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动
           </el-checkbox>
-          <el-tree
-              class="tree-border"
-              :data="deptOptions"
-              show-checkbox
-              default-expand-all
-              ref="dept"
-              node-key="id"
-              :check-strictly="!form.deptCheckStrictly"
-              empty-text="加载中，请稍候"
-              :props="defaultProps"
+          <el-tree class="tree-border"
+                   :data="deptOptions"
+                   show-checkbox
+                   default-expand-all
+                   ref="dept"
+                   node-key="id"
+                   :check-strictly="!form.deptCheckStrictly"
+                   empty-text="加载中，请稍候"
+                   :props="defaultProps"
           ></el-tree>
         </el-form-item>
       </el-form>
@@ -280,6 +303,7 @@ import {
   deptTreeSelect
 } from '@/api/system/role'
 import { treeselect as menuTreeselect, roleMenuTreeselect } from '@/api/system/menu'
+
 export default {
   name: 'Role',
   dicts: ['sys_normal_disable'],
@@ -625,6 +649,10 @@ export default {
       this.download('system/role/export', {
         ...this.queryParams
       }, `role_${new Date().getTime()}.xlsx`)
+    },
+    //树形结构操作
+    handleNodeClick(data) {
+      console.log(data)
     }
   }
 }
