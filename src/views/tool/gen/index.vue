@@ -103,48 +103,46 @@
         </template>
       </el-table-column>
       <el-table-column label="表名称"
-          align="center"
-          prop="tableName"
-          :show-overflow-tooltip="true"
-          width="200"/>
+                       align="center"
+                       prop="tableName"
+                       :show-overflow-tooltip="true"
+                       width="200"
+      />
       <el-table-column
           label="表描述"
           align="center"
           prop="tableComment"
           :show-overflow-tooltip="true"
-          width="220"/>
+          width="220"
+      />
       <el-table-column
           label="实体"
           align="center"
           prop="className"
           :show-overflow-tooltip="true"
-          width="200"/>
+          width="200"
+      />
       <el-table-column label="创建时间" align="center" prop="createTime" width="160"/>
       <el-table-column label="更新时间" align="center" prop="updateTime" width="160"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="400">
+
         <template slot-scope="scope">
-          <el-button
-              type="text"
-              size="small"
-              icon="el-icon-view"
-              @click="handlePreview(scope.row)"
-              v-hasPermi="['tool:gen:preview']"
+          <el-button size="small"
+                     icon="el-icon-view"
+                     @click="handlePreview(scope.row)"
+                     v-hasPermi="['tool:gen:preview']"
           >预览
           </el-button>
-          <el-button
-              type="text"
-              size="small"
-              icon="el-icon-edit"
-              @click="handleEditTable(scope.row)"
-              v-hasPermi="['tool:gen:edit']"
+          <el-button size="small"
+                     icon="el-icon-edit"
+                     @click="handleEditTable(scope.row)"
+                     v-hasPermi="['tool:gen:edit']"
           >编辑
           </el-button>
-          <el-button
-              type="text"
-              size="small"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['tool:gen:remove']"
+          <el-button size="small"
+                     icon="el-icon-delete"
+                     @click="handleDelete(scope.row)"
+                     v-hasPermi="['tool:gen:remove']"
           >删除
           </el-button>
           <el-button
@@ -155,12 +153,10 @@
               v-hasPermi="['tool:gen:edit']"
           >同步
           </el-button>
-          <el-button
-              type="text"
-              size="small"
-              icon="el-icon-download"
-              @click="handleGenTable(scope.row)"
-              v-hasPermi="['tool:gen:code']"
+          <el-button size="small"
+                     icon="el-icon-download"
+                     @click="handleGenTable(scope.row)"
+                     v-hasPermi="['tool:gen:code']"
           >生成代码
           </el-button>
         </template>
@@ -168,17 +164,19 @@
     </el-table>
 
     <pagination v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
+    />
 
     <!-- 预览界面 -->
     <el-dialog :title="preview.title"
                :visible.sync="preview.open"
                width="80%" top="5vh"
                append-to-body
-               class="scrollbar">
+               class="scrollbar"
+    >
       <el-tabs v-model="preview.activeName">
         <el-tab-pane
             v-for="(value, key) in preview.data"
@@ -243,7 +241,7 @@ export default {
         tableName: undefined,
         tableComment: undefined,
         orderByColumn: 'create_time',
-        isAsc: "desc",  //desc, acs
+        isAsc: 'desc'  //desc, acs
       },
       // 预览参数
       preview: {
