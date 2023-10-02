@@ -1,28 +1,10 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
       <el-form-item label="文集名称" prop="name">
         <el-input
             v-model="queryParams.name"
             placeholder="请输入文集名称"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="文集权限" prop="role">
-        <el-input
-            v-model="queryParams.role"
-            placeholder="请输入文集权限"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="水印状态" prop="isWatermark">
-        <el-input
-            v-model="queryParams.isWatermark"
-            placeholder="请输入水印状态"
             clearable
             @change="handleQuery"
             @keyup.enter.native="handleQuery"
@@ -37,7 +19,17 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
+      <el-form-item label="更新时间" prop="modifyTime">
+        <el-date-picker clearable
+                        @change="handleQuery"
+                        v-model="queryParams.modifyTime"
+                        type="date"
+                        format="yyyy-MM-dd"
+                        value-format="yyyy-MM-dd"
+                        placeholder=" 请选择更新时间"
+        >
+        </el-date-picker>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -52,7 +44,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['doc_project:doc_project:add']"
+            v-hasPermi="['app_doc_project:app_doc_project:add']"
         >新增
         </el-button>
       </el-col>
@@ -64,7 +56,7 @@
             size="mini"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['doc_project:doc_project:edit']"
+            v-hasPermi="['app_doc_project:app_doc_project:edit']"
         >修改
         </el-button>
       </el-col>
@@ -76,7 +68,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['doc_project:doc_project:remove']"
+            v-hasPermi="['app_doc_project:app_doc_project:remove']"
         >删除
         </el-button>
       </el-col>
@@ -87,7 +79,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['doc_project:doc_project:export']"
+            v-hasPermi="['app_doc_project:app_doc_project:export']"
         >导出
         </el-button>
       </el-col>
@@ -97,25 +89,37 @@
     <el-table v-loading="loading"
               border
               stripe
-              :data="doc_projectList"
+              :data="app_doc_projectList"
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
+      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>
       <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
+      <el-table-column align="center" width="auto" label="角色权限" prop="role"/>
+      <el-table-column align="center" width="auto" label="角色权限值" prop="roleValue"/>
 <!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
-      <el-table-column align="center" width="auto" label="创建人" prop="createUserId"/>
-      <el-table-column align="center" width="auto" label="文集权限" prop="role"/>
-<!--      <el-table-column align="center" width="auto" label="文集权限值" prop="roleValue"/>-->
-      <el-table-column align="center" width="auto" label="文集图标" prop="icon"/>
-<!--      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>-->
+<!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
+      <el-table-column label="水印" align="center" prop="isWatermark">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.is_delete" :value="scope.row.isWatermark"/>
+        </template>
+      </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="水印类型" prop="watermarkType"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
-<!--      <el-table-column align="center" width="auto" label="是否置顶" prop="isTop"/>-->
+<!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
+<!--      <el-table-column label="是否置顶" align="center" prop="isTop">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete"/>
-      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>
-      <el-table-column label="修改时间" align="center" prop="modifyTime" width="180">
+      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+        </template>
+      </el-table-column>
+<!--      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>-->
+      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">
             <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>
@@ -129,7 +133,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['doc_project:doc_project:edit']"
+              v-hasPermi="['app_doc_project:app_doc_project:edit']"
           >修改
           </el-button>
           <el-button
@@ -137,7 +141,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['doc_project:doc_project:remove']"
+              v-hasPermi="['app_doc_project:app_doc_project:remove']"
           >删除
           </el-button>
         </template>
@@ -152,41 +156,32 @@
         @pagination="getList"
     />
 
-    <!-- 添加或修改doc_project对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
+    <!-- 添加或修改文集对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="创建用户id" prop="createUserId">
+          <el-input v-model="form.createUserId" placeholder="请输入创建用户id"/>
+        </el-form-item>
+        <el-form-item label="角色权限" prop="role">
+          <el-input v-model="form.role" placeholder="请输入角色权限"/>
+        </el-form-item>
+        <el-form-item label="角色权限值" prop="roleValue">
+          <el-input v-model="form.roleValue" autosize type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
         <el-form-item label="文集名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入文集名称"/>
         </el-form-item>
         <el-form-item label="介绍" prop="intro">
           <el-input v-model="form.intro" autosize type="textarea" placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item label="修改时间" prop="modifyTime">
-          <el-date-picker clearable
-                          v-model="form.modifyTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择修改时间"
-          >
-          </el-date-picker>
+        <el-form-item label="图标" prop="icon">
+          <el-input v-model="form.icon" placeholder="请输入图标"/>
         </el-form-item>
-        <el-form-item label="创建人" prop="createUserId">
-          <el-input v-model="form.createUserId" placeholder="请输入创建人"/>
+        <el-form-item label="水印" prop="isWatermark">
+          <el-input v-model="form.isWatermark" placeholder="请输入水印"/>
         </el-form-item>
-        <el-form-item label="文集权限" prop="role">
-          <el-input v-model="form.role" placeholder="请输入文集权限"/>
-        </el-form-item>
-        <el-form-item label="文集权限值" prop="roleValue">
-          <el-input v-model="form.roleValue" autosize type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="文集图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入文集图标"/>
-        </el-form-item>
-        <el-form-item label="水印状态" prop="isWatermark">
-          <el-input v-model="form.isWatermark" placeholder="请输入水印状态"/>
-        </el-form-item>
-        <el-form-item label="水印内容" prop="watermarkValue">
-          <el-input v-model="form.watermarkValue" placeholder="请输入水印内容"/>
+        <el-form-item label="水印值" prop="watermarkValue">
+          <el-input v-model="form.watermarkValue" placeholder="请输入水印值"/>
         </el-form-item>
         <el-form-item label="是否置顶" prop="isTop">
           <el-input v-model="form.isTop" placeholder="请输入是否置顶"/>
@@ -200,6 +195,16 @@
         <el-form-item label="排序方式(sql字段)" prop="sortField">
           <el-input v-model="form.sortField" placeholder="请输入排序方式(sql字段)"/>
         </el-form-item>
+        <el-form-item label="更新时间" prop="modifyTime">
+          <el-date-picker clearable
+                          v-model="form.modifyTime"
+                          type="datetime"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          placeholder="请选择更新时间"
+          >
+          </el-date-picker>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -211,15 +216,16 @@
 
 <script>
 import {
-  listDoc_project,
-  getDoc_project,
-  delDoc_project,
-  addDoc_project,
-  updateDoc_project
-} from '@/api/platform/mydoc/doc_project/doc_project'
+  listApp_doc_project,
+  getApp_doc_project,
+  delApp_doc_project,
+  addApp_doc_project,
+  updateApp_doc_project
+} from '@/api/platform/mydoc/app_doc_project/app_doc_project'
 
 export default {
-  name: 'Doc_project',
+  dicts: ['is_delete'],
+  name: 'App_doc_project',
   data() {
     return {
       // 遮罩层
@@ -234,8 +240,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // doc_project表格数据
-      doc_projectList: [],
+      // 文集表格数据
+      app_doc_projectList: [],
       // 弹出层标题
       title: '',
       // 是否显示弹出层
@@ -246,12 +252,11 @@ export default {
         isAsc: 'desc',  //desc, acs
         pageNum: 1,
         pageSize: 10,
-        name: null,
-        intro: null,
-        modifyTime: null,
         createUserId: null,
         role: null,
         roleValue: null,
+        name: null,
+        intro: null,
         icon: null,
         isWatermark: null,
         watermarkType: null,
@@ -259,38 +264,15 @@ export default {
         isTop: null,
         visitor: null,
         isDelete: null,
-        sortField: null
+        sortField: null,
+        modifyTime: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        name: [
-          { required: true, message: '文集名称不能为空', trigger: 'blur' }
-        ],
-        intro: [
-          { required: true, message: '介绍不能为空', trigger: 'blur' }
-        ],
-        createTime: [
-          { required: true, message: '$comment不能为空', trigger: 'blur' }
-        ],
-        modifyTime: [
-          { required: true, message: '$comment不能为空', trigger: 'blur' }
-        ],
         createUserId: [
-          { required: true, message: '创建人不能为空', trigger: 'blur' }
-        ],
-        role: [
-          { required: true, message: '文集权限不能为空', trigger: 'blur' }
-        ],
-        isWatermark: [
-          { required: true, message: '水印状态不能为空', trigger: 'blur' }
-        ],
-        watermarkType: [
-          { required: true, message: '水印类型不能为空', trigger: 'change' }
-        ],
-        isTop: [
-          { required: true, message: '是否置顶不能为空', trigger: 'blur' }
+          { required: true, message: '创建用户id不能为空', trigger: 'blur' }
         ]
       }
     }
@@ -299,11 +281,11 @@ export default {
     this.getList()
   },
   methods: {
-    /** 查询doc_project列表 */
+    /** 查询文集列表 */
     getList() {
       this.loading = true
-      listDoc_project(this.queryParams).then(response => {
-        this.doc_projectList = response.rows
+      listApp_doc_project(this.queryParams).then(response => {
+        this.app_doc_projectList = response.rows
         this.total = response.total
         this.loading = false
       })
@@ -317,13 +299,11 @@ export default {
     reset() {
       this.form = {
         id: null,
-        name: null,
-        intro: null,
-        createTime: null,
-        modifyTime: null,
         createUserId: null,
         role: null,
         roleValue: null,
+        name: null,
+        intro: null,
         icon: null,
         isWatermark: null,
         watermarkType: null,
@@ -331,7 +311,9 @@ export default {
         isTop: null,
         visitor: null,
         isDelete: null,
-        sortField: null
+        sortField: null,
+        createTime: null,
+        modifyTime: null
       }
       this.resetForm('form')
     },
@@ -355,16 +337,16 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = '添加doc_project'
+      this.title = '添加文集'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
       const id = row.id || this.ids
-      getDoc_project(id).then(response => {
+      getApp_doc_project(id).then(response => {
         this.form = response.data
         this.open = true
-        this.title = '修改doc_project'
+        this.title = '修改文集'
       })
     },
     /** 提交按钮 */
@@ -372,13 +354,13 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateDoc_project(this.form).then(response => {
+            updateApp_doc_project(this.form).then(response => {
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
             })
           } else {
-            addDoc_project(this.form).then(response => {
+            addApp_doc_project(this.form).then(response => {
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -390,8 +372,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除doc_project编号为"' + ids + '"的数据项？').then(function() {
-        return delDoc_project(ids)
+      this.$modal.confirm('是否确认删除文集编号为"' + ids + '"的数据项？').then(function() {
+        return delApp_doc_project(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess('删除成功')
@@ -400,9 +382,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('doc_project/doc_project/export', {
+      this.download('app_doc_project/app_doc_project/export', {
         ...this.queryParams
-      }, `doc_project_${new Date().getTime()}.xlsx`)
+      }, `app_doc_project_${new Date().getTime()}.xlsx`)
     }
   }
 }
