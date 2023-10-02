@@ -5,13 +5,15 @@
              size="small"
              :inline="true"
              v-show="showSearch"
-             label-width="88px">
+             label-width="88px"
+    >
       <el-form-item label="标题" prop="name">
         <el-input v-model="queryParams.name"
                   placeholder="请输入标题"
                   clearable
                   @change="handleQuery"
-                  @keyup.enter.native="handleQuery"/>
+                  @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="所属文集id" prop="topDoc">
         <el-input v-model="queryParams.topDoc"
@@ -25,11 +27,13 @@
         <el-select v-model="queryParams.status"
                    @change="handleQuery"
                    placeholder="请选择状态码.0表示草稿状态,1表示发布状态,2表示删除状态"
-                   clearable>
+                   clearable
+        >
           <el-option v-for="dict in dict.type.doc_status"
                      :key="dict.value"
                      :label="dict.label"
-                     :value="dict.value"/>
+                     :value="dict.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="更新时间" prop="modifyTime">
@@ -38,7 +42,8 @@
                         type="date"
                         @change="handleQuery"
                         value-format="yyyy-MM-dd"
-                        placeholder="将筛选文档的修改日期">
+                        placeholder="将筛选文档的修改日期"
+        >
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -138,6 +143,11 @@
           <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">
             <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column label="数据权限" align="center" prop="deptName">
+        <template slot-scope="scope">
+          <span>{{scope.row.deptName}}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -248,6 +258,9 @@ import {
   updateApp_doc_doc
 } from '@/api/platform/mydoc/app_doc_doc/app_doc_doc'
 
+import { listApp_doc_list2 } from '@/api/platform/mydoc/app_doc_doc/app_doc'
+import { Message } from 'element-ui'
+
 export default {
   dicts: ['is_delete', 'doc_status', 'doc_editor_mode'],
   name: 'App_doc_doc',
@@ -311,10 +324,15 @@ export default {
     /** 查询app_doc_doc列表 */
     getList() {
       this.loading = true
-      listApp_doc_doc(this.queryParams).then(response => {
+      //listApp_doc_doc(this.queryParams).then(response => {
+      listApp_doc_list2(this.queryParams).then(response => {
         this.app_doc_docList = response.rows
         this.total = response.total
         this.loading = false
+      }).catch((err) => {
+        this.loading = false
+        //Message({ message: ""+err, type: 'error' })
+        console.log("请求错误: ", err);
       })
     },
     // 取消按钮

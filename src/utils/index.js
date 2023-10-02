@@ -25,13 +25,13 @@ export function formatTime(time, option) {
   if (('' + time).length === 10) {
     time = parseInt(time) * 1000
   } else if ((''+time).length === 13){
-    time = new Date(time)
     // console.log("时间戳转换: ", time);
+    time = new Date(time)
   }
   else {
     time = ''+time
   }
-  //console.log("time: ", time);
+  console.log("time: ", time);
   const d = new Date(time)
   const now = Date.now()
 
