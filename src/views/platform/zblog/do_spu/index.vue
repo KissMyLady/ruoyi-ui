@@ -85,6 +85,8 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
+      <el-table-column align="center" width="auto" label="类别的SPU名称" prop="simpleName"/>
+      <el-table-column align="center" width="auto" label="简单介绍" prop="simpleText"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
@@ -95,9 +97,7 @@
       <el-table-column align="center" width="auto" label="删除标记" prop="isDelete"/>
       <el-table-column align="center" width="auto" label="超级管理员" prop="isSuperuser"/>
       <el-table-column align="center" width="auto" label="登录" prop="isLoginView"/>
-      <el-table-column align="center" width="auto" label="类别的SPU名称" prop="simpleName"/>
-      <el-table-column align="center" width="auto" label="简单介绍" prop="simpleText"/>
-      <el-table-column align="center" width="auto" label="类别详情" prop="detail"/>
+<!--      <el-table-column align="center" width="auto" label="类别详情" prop="detail"/>-->
       <el-table-column align="center" width="auto" label="文章log图片" prop="imgUpload"/>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">

@@ -45,6 +45,11 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
+
+<!--      <el-form-item>-->
+<!--        <el-button v-model="deptExpand"-->
+<!--                   @click="handleCheckedTreeExpand_v2($event)">展开/折叠</el-button>-->
+<!--      </el-form-item>-->
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -103,22 +108,22 @@
               :data="roleList"
               @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="角色编号" align="center" prop="roleId" width="120"/>
-      <el-table-column label="角色名称" align="center" prop="roleName" :show-overflow-tooltip="true" width="auto">
+      <el-table-column type="selection" width="45" align="center"/>
+      <el-table-column label="角色ID" align="center" prop="roleId" width="100"/>
+      <el-table-column label="角色名称" align="center" prop="roleName" :show-overflow-tooltip="true" width="160">
         <template slot-scope="scope">
-          <span style="font-size: 16px;font-weight: bold">{{ scope.row.roleName }}</span>
+          <span style="font-weight: bold">{{ scope.row.roleName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="权限字符" align="center" prop="roleKey" :show-overflow-tooltip="true" width="auto"/>
-      <el-table-column label="显示排序" align="center" prop="roleSort" width="100"/>
-      <el-table-column label="已分配用户" align="center" prop="md5" width="200">
+<!--      <el-table-column label="权限字符" align="center" prop="roleKey" :show-overflow-tooltip="true" width="auto"/>-->
+<!--      <el-table-column label="显示排序" align="center" prop="roleSort" width="100"/>-->
+      <el-table-column label="已分配用户" align="center" prop="md5" width="auto">
         <template slot-scope="scope">
-          <p style="margin: 0;padding: 0;">{{ scope.row.md5 }}</p>
+<!--          <p style="margin: 0;padding: 0;">{{ scope.row.md5 }}</p>-->
           <p style="margin: 0;padding: 0;">{{ scope.row.key }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="权限内容" align="center" prop="ajaxResult" width="200">
+      <el-table-column label="* 资源权限(主要)" align="center" prop="ajaxResult" width="200">
         <template slot-scope="scope">
           <el-tree :data="scope.row.ajaxResult.menus"
                    node-key="id"
@@ -139,16 +144,33 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+
+      <el-table-column label="数据权限" align="center" width="200">
         <template slot-scope="scope">
-          <span>{{ formatTime(scope.row.createTime) }}</span>
+          <el-tree :data="scope.row.ajaxResult.depts"
+                   :check-strictly="true"
+                   node-key="id"
+                   show-checkbox
+                   :default-expand-all="deptExpand"
+                   :default-checked-keys="scope.row.ajaxResult.dept_checkedKeys"
+                   :props="defaultProps"
+                   @node-click="handleNodeClick"
+          ></el-tree>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+
+      <el-table-column label="创建时间" align="center" prop="createTime" width="auto">
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="auto">
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
           <el-button size="small"
                      plain
-                     type="primary"
+                     type="text"
                      icon="el-icon-edit"
                      @click="handleUpdate(scope.row)"
                      v-hasPermi="['system:role:edit']"
@@ -156,8 +178,8 @@
           </el-button>
           <el-button size="small"
                      plain
+                     type="text"
                      icon="el-icon-delete"
-                     type="danger"
                      @click="handleDelete(scope.row)"
                      v-hasPermi="['system:role:remove']"
           >删除
@@ -166,6 +188,7 @@
                        v-hasPermi="['system:role:edit']"
           >
             <el-button size="small"
+                       type="text"
                        plain
                        icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -269,15 +292,16 @@
           <el-checkbox v-model="deptExpand" @change="handleCheckedTreeExpand($event, 'dept')">展开/折叠</el-checkbox>
           <el-checkbox v-model="deptNodeAll" @change="handleCheckedTreeNodeAll($event, 'dept')">全选/全不选
           </el-checkbox>
-          <el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动
-          </el-checkbox>
+<!--          <el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动-->
+<!--          </el-checkbox>-->
+          <!-- :check-strictly="!form.deptCheckStrictly"-->
           <el-tree class="tree-border"
                    :data="deptOptions"
                    show-checkbox
                    default-expand-all
                    ref="dept"
                    node-key="id"
-                   :check-strictly="!form.deptCheckStrictly"
+                   :check-strictly="true"
                    empty-text="加载中，请稍候"
                    :props="defaultProps"
           ></el-tree>
@@ -530,6 +554,11 @@ export default {
         }
       }
     },
+    handleCheckedTreeExpand_v2(value) {
+      console.log("展开按钮点击", this.$refs);
+      console.log("value", value);
+      this.deptExpand = false;
+    },
     // 树权限（全选/全不选）
     handleCheckedTreeNodeAll(value, type) {
       if (type == 'menu') {
@@ -652,7 +681,7 @@ export default {
     },
     //树形结构操作
     handleNodeClick(data) {
-      console.log(data)
+      // console.log("数据权限: ", data)
     }
   }
 }

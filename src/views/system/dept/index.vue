@@ -56,7 +56,11 @@
               :default-expand-all="isExpandAll"
               :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
+      <el-table-column prop="deptName" label="部门名称" width="260">
+        <template slot-scope="scope">
+          <span>{{ scope.row.deptId }} {{ scope.row.deptName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template slot-scope="scope">
@@ -233,8 +237,10 @@ export default {
     getList() {
       this.loading = true
       listDept(this.queryParams).then(response => {
-        this.deptList = this.handleTree(response.data, 'deptId')
-        this.loading = false
+        let treeData = this.handleTree(response.data, 'deptId');
+        // console.log("打印treeData: ", treeData);
+        this.deptList = treeData;
+        this.loading = false;
       })
     },
     /** 转换部门数据结构 */
