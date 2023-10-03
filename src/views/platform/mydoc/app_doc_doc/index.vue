@@ -54,49 +54,57 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['app_doc_doc:app_doc_doc:add']"
+        <el-button type="primary"
+                   plain
+                   icon="el-icon-plus"
+                   size="mini"
+                   @click="handleAdd"
+                   v-hasPermi="['app_doc_doc:app_doc_doc:add']"
         >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['app_doc_doc:app_doc_doc:edit']"
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   :disabled="single"
+                   @click="handleUpdate"
+                   v-hasPermi="['app_doc_doc:app_doc_doc:edit']"
         >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['app_doc_doc:app_doc_doc:remove']"
+        <el-button type="danger"
+                   plain
+                   icon="el-icon-delete"
+                   size="mini"
+                   :disabled="multiple"
+                   @click="handleDelete"
+                   v-hasPermi="['app_doc_doc:app_doc_doc:remove']"
         >删除
         </el-button>
       </el-col>
+
       <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['app_doc_doc:app_doc_doc:export']"
+        <el-button type="warning"
+                   plain
+                   icon="el-icon-download"
+                   size="mini"
+                   @click="handleExport"
+                   v-hasPermi="['app_doc_doc:app_doc_doc:export']"
         >导出
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   :disabled="multiple"
+                   @click="handelEditAuthDept"
+                   v-hasPermi="['app_doc_doc:app_doc_doc:edit']"
+        >修改数据权限
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -147,7 +155,7 @@
       </el-table-column>
       <el-table-column label="数据权限" align="center" prop="deptName">
         <template slot-scope="scope">
-          <span>{{scope.row.deptName}}</span>
+          <span>{{ scope.row.deptName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -246,6 +254,9 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <edit-row-auth ref="editRowAuth" @editRowAuth="editRowAuth"/>
   </div>
 </template>
 
@@ -261,9 +272,14 @@ import {
 import { listApp_doc_list2 } from '@/api/platform/mydoc/app_doc_doc/app_doc'
 import { Message } from 'element-ui'
 
+import edit_row_auth from '@/views/platform/mydoc/app_doc_doc/dialog/edit_row_auth.vue'
+
 export default {
   dicts: ['is_delete', 'doc_status', 'doc_editor_mode'],
   name: 'App_doc_doc',
+  components: {
+    editRowAuth: edit_row_auth
+  },
   data() {
     return {
       // 遮罩层
@@ -332,7 +348,7 @@ export default {
       }).catch((err) => {
         this.loading = false
         //Message({ message: ""+err, type: 'error' })
-        console.log("请求错误: ", err);
+        console.log('请求错误: ', err)
       })
     },
     // 取消按钮
@@ -422,6 +438,7 @@ export default {
         this.getList()
         this.$modal.msgSuccess('删除成功')
       }).catch(() => {
+
       })
     },
     /** 导出按钮操作 */
@@ -429,6 +446,25 @@ export default {
       this.download('app_doc_doc/app_doc_doc/export', {
         ...this.queryParams
       }, `app_doc_doc_${new Date().getTime()}.xlsx`)
+    },
+    //批量修改权限
+    handelEditAuthDept(row) {
+      const ids = row.id || this.ids
+      //展示弹出框
+      //弹出Dialog进行展示
+      console.log('传递参数打印: ', ids)
+      this.$refs['editRowAuth'].showDialog(ids)
+
+    },
+    //子组件调用
+    editRowAuth(row) {
+      console.log('editRowAuth执行', row)
+
+      var that = this;
+      setTimeout(function() {
+        that.resetQuery()
+      }, 1500)
+
     }
   }
 }

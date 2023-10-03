@@ -31,7 +31,7 @@ export function formatTime(time, option) {
   else {
     time = ''+time
   }
-  console.log("time: ", time);
+  //console.log("time: ", time);
   const d = new Date(time)
   const now = Date.now()
 
