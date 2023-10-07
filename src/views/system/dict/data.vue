@@ -92,9 +92,12 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading"
+              border
+              :data="dataList"
+              @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="字典编码" align="center" prop="dictCode"/>
+      <el-table-column label="字典编码" align="center" prop="dictCode" width="120"/>
       <el-table-column label="字典标签" align="center" prop="dictLabel">
         <template slot-scope="scope">
           <span
@@ -107,12 +110,12 @@
         </template>
       </el-table-column>
       <el-table-column label="字典键值" align="center" prop="dictValue"/>
-      <el-table-column label="字典排序" align="center" prop="dictSort"/>
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="状态" align="center" prop="status" width="120">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
+      <el-table-column label="字典排序" align="center" prop="dictSort" width="120"/>
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
