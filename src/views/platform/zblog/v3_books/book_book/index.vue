@@ -1,28 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
-      <el-form-item label="UUID" prop="uuid">
-        <el-input
-            v-model="queryParams.uuid"
-            placeholder="请输入UUID"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+    <el-form :model="queryParams" 
+             ref="queryForm" 
+             size="small" 
+             :inline="true" 
+             v-show="showSearch" 
+             label-width="88px">
+
       <el-form-item label="书籍名称" prop="bookName">
         <el-input
             v-model="queryParams.bookName"
             placeholder="请输入书籍名称"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="书籍封面图" prop="bookCover">
-        <el-input
-            v-model="queryParams.bookCover"
-            placeholder="请输入书籍封面图"
             clearable
             @change="handleQuery"
             @keyup.enter.native="handleQuery"
@@ -37,135 +25,32 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="出版社" prop="bPublisher">
-        <el-input
-            v-model="queryParams.bPublisher"
-            placeholder="请输入出版社"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="出版时间" prop="bPublicData">
-        <el-date-picker clearable
-                        v-model="queryParams.bPublicData"
-                        type="date"
-                        @change="handleQuery"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择出版时间"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="翻译人" prop="bTranslate">
-        <el-input
-            v-model="queryParams.bTranslate"
-            placeholder="请输入翻译人"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开始阅读时间" prop="bReadStartTime">
-        <el-date-picker clearable
-                        v-model="queryParams.bReadStartTime"
-                        type="date"
-                        @change="handleQuery"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择开始阅读时间"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="阅读完毕时间" prop="bReadEndTime">
-        <el-date-picker clearable
-                        v-model="queryParams.bReadEndTime"
-                        type="date"
-                        @change="handleQuery"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择阅读完毕时间"
-        >
-        </el-date-picker>
-      </el-form-item>
       <el-form-item label="是否读完" prop="bIsOver">
-        <el-input
-            v-model="queryParams.bIsOver"
-            placeholder="请输入是否读完"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.bIsOver"
+                   @change="handleQuery"
+                   placeholder="是否读完" 
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="编辑器模式.1md,2富文本" prop="editorMode">
-        <el-input
-            v-model="queryParams.editorMode"
-            placeholder="请输入编辑器模式.1md,2富文本"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="浏览次数" prop="visitor">
-        <el-input
-            v-model="queryParams.visitor"
-            placeholder="请输入浏览次数"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见" prop="role">
-        <el-input
-            v-model="queryParams.role"
-            placeholder="请输入权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="子类的排序字段" prop="sortField">
-        <el-input
-            v-model="queryParams.sortField"
-            placeholder="请输入子类的排序字段"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="排序" prop="sort">
-        <el-input
-            v-model="queryParams.sort"
-            placeholder="请输入排序"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="当前分类是否允许评论" prop="isComment">
-        <el-input
-            v-model="queryParams.isComment"
-            placeholder="请输入当前分类是否允许评论"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="置顶" prop="isTop">
-        <el-input
-            v-model="queryParams.isTop"
-            placeholder="请输入置顶"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!-- <el-form-item label="逻辑删除" prop="isDelete">
+        <el-select v-model="queryParams.isDelete"
+                   @change="handleQuery"
+                   placeholder="筛选删除" 
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -230,11 +115,11 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="UUID" prop="uuid"/>
+      <!-- <el-table-column align="center" width="auto" label="UUID" prop="uuid"/> -->
+      <!-- <el-table-column align="center" width="auto" label="书籍封面图" prop="bookCover"/> -->
       <el-table-column align="center" width="auto" label="书籍名称" prop="bookName"/>
-      <el-table-column align="center" width="auto" label="书籍封面图" prop="bookCover"/>
-      <el-table-column align="center" width="auto" label="作者" prop="bAuthor"/>
-      <el-table-column align="center" width="auto" label="出版社" prop="bPublisher"/>
+      <el-table-column align="center" width="110" label="作者" prop="bAuthor"/>
+      <!-- <el-table-column align="center" width="auto" label="出版社" prop="bPublisher"/> -->
       <el-table-column label="出版时间" align="center" prop="bPublicData" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.bPublicData" placement="top">
@@ -242,53 +127,46 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="翻译人" prop="bTranslate"/>
-      <el-table-column label="开始阅读时间" align="center" prop="bReadStartTime" width="180">
+      <!-- <el-table-column align="center" width="auto" label="翻译人" prop="bTranslate"/> -->
+      <!-- <el-table-column label="开始阅读时间" align="center" prop="bReadStartTime" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.bReadStartTime" placement="top">
             <span>{{ formatTime(scope.row.bReadStartTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
         </template>
-      </el-table-column>
-      <el-table-column label="阅读完毕时间" align="center" prop="bReadEndTime" width="180">
+      </el-table-column> -->
+      <!-- <el-table-column label="阅读完毕时间" align="center" prop="bReadEndTime" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.bReadEndTime" placement="top">
             <span>{{ formatTime(scope.row.bReadEndTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
         </template>
-      </el-table-column>
-      <el-table-column label="是否读完" align="center" prop="bIsOver">
+      </el-table-column> -->
+      <el-table-column label="是否读完" align="center" prop="bIsOver" width="85">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.bIsOver"/>
         </template>
       </el-table-column>
-      <el-table-column label="编辑器模式.1md,2富文本" align="center" prop="editorMode">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="介绍内容_含html格式" prop="content"/>
-      <el-table-column align="center" width="auto" label="介绍内容_预览_纯文本" prop="preContent"/>
-      <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column label="权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见" align="center" prop="role">
+      <el-table-column align="center" width="85" label="浏览次数" prop="visitor"/>
+      <el-table-column label="权限" width="85" align="center" prop="role">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.role" :value="scope.row.role"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>
-      <el-table-column align="center" width="auto" label="子类的排序字段" prop="sortField"/>
-      <el-table-column align="center" width="auto" label="排序" prop="sort"/>
-      <el-table-column label="当前分类是否允许评论" align="center" prop="isComment">
+      <!-- <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/> -->
+      <!-- <el-table-column align="center" width="auto" label="子类的排序字段" prop="sortField"/> -->
+      <!-- <el-table-column align="center" width="auto" label="排序" prop="sort"/> -->
+      <!-- <el-table-column label="当前分类是否允许评论" align="center" prop="isComment">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isComment"/>
         </template>
-      </el-table-column>
-      <el-table-column label="置顶" align="center" prop="isTop">
+      </el-table-column> -->
+      <!-- <el-table-column label="置顶" align="center" prop="isTop">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>
         </template>
-      </el-table-column>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+      </el-table-column> -->
+      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>

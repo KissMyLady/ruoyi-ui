@@ -7,15 +7,6 @@
              v-show="showSearch"
              label-width="88px"
     >
-      <!--      <el-form-item label="创建用户id" prop="createUserId">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.createUserId"-->
-      <!--            placeholder="请输入创建用户id"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="文集名称" prop="name">
         <el-input
             v-model="queryParams.name"
@@ -25,16 +16,6 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
-      <!--      <el-form-item label="封面图" prop="coverImg">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.coverImg"-->
-      <!--            placeholder="请输入封面图"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="权限值" prop="role">
         <el-input v-model="queryParams.role"
                   placeholder="0公开，1私密,2指定用户可见,3访问码可见"
@@ -42,41 +23,6 @@
                   @change="handleQuery"
                   @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="水印" prop="isWatermark">
-        <el-input v-model="queryParams.isWatermark"
-                  placeholder="请输入水印"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <!--      <el-form-item label="是否置顶" prop="isTop">-->
-      <!--        <el-input v-model="queryParams.isTop"-->
-      <!--                  placeholder="请输入是否置顶"-->
-      <!--                  clearable-->
-      <!--                  @change="handleQuery"-->
-      <!--                  @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-
-      <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input v-model="queryParams.isDelete"
-                  placeholder="请输入逻辑删除"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="更新时间" prop="modifyTime">
-        <el-date-picker clearable
-                        v-model="queryParams.modifyTime"
-                        type="date"
-                        @change="handleQuery"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择更新时间"
-        >
-        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

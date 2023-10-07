@@ -1,28 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
-      <el-form-item label="用户ID" prop="userId">
-        <el-input
-            v-model="queryParams.userId"
-            placeholder="请输入用户ID"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+    <el-form :model="queryParams" 
+             ref="queryForm" 
+             size="small" 
+             :inline="true"
+             v-show="showSearch" 
+             label-width="88px">
+
       <el-form-item label="名称,描述" prop="title">
         <el-input
             v-model="queryParams.title"
             placeholder="请输入名称,描述"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="文件路径" prop="filePath">
-        <el-input
-            v-model="queryParams.filePath"
-            placeholder="请输入文件路径"
             clearable
             @change="handleQuery"
             @keyup.enter.native="handleQuery"
@@ -37,15 +25,7 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="文件大小" prop="fileSize">
-        <el-input
-            v-model="queryParams.fileSize"
-            placeholder="请输入文件大小"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
       <el-form-item label="文件后缀" prop="fileSuffix">
         <el-input
             v-model="queryParams.fileSuffix"
@@ -55,23 +35,18 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="md5校验值" prop="md5">
-        <el-input
-            v-model="queryParams.md5"
-            placeholder="请输入md5校验值"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDelete"
+                   @change="handleQuery"
+                   placeholder="筛选删除" 
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -137,14 +112,14 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>
+      <!-- <el-table-column align="center" width="auto" label="用户ID" prop="userId"/> -->
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>
-      <el-table-column align="center" width="auto" label="文件名" prop="fileName"/>
-      <el-table-column align="center" width="auto" label="文件大小" prop="fileSize"/>
-      <el-table-column align="center" width="auto" label="文件后缀" prop="fileSuffix"/>
-      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+      <!-- <el-table-column align="center" width="auto" label="文件名" prop="fileName"/> -->
+      <el-table-column align="center" width="85" label="文件大小" prop="fileSize"/>
+      <el-table-column align="center" width="85" label="文件后缀" prop="fileSuffix"/>
+      <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
+      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>

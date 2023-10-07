@@ -15,78 +15,19 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="编辑器模式.1md,2富文本" prop="editorMode">
-        <el-input
-            v-model="queryParams.editorMode"
-            placeholder="请输入编辑器模式.1md,2富文本"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="浏览次数" prop="visitor">
-        <el-input
-            v-model="queryParams.visitor"
-            placeholder="请输入浏览次数"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见" prop="role">
-        <el-input
-            v-model="queryParams.role"
-            placeholder="请输入权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="排序" prop="sort">
-        <el-input
-            v-model="queryParams.sort"
-            placeholder="请输入排序"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="子类的排序字段" prop="childSortField">
-        <el-input
-            v-model="queryParams.childSortField"
-            placeholder="请输入子类的排序字段"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="置顶" prop="isTop">
-        <el-input
-            v-model="queryParams.isTop"
-            placeholder="请输入置顶"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="当前分类是否允许评论" prop="isComment">
-        <el-input
-            v-model="queryParams.isComment"
-            placeholder="请输入当前分类是否允许评论"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!-- <el-form-item label="逻辑删除" prop="isDelete">
+        <el-select v-model="queryParams.isDelete"
+                   @change="handleQuery"
+                   placeholder="筛选删除" 
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -151,39 +92,39 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="分类名称" prop="name"/>
       <el-table-column label="封面图" align="center" prop="coverImage" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.coverImage" :width="50" :height="50"/>
         </template>
       </el-table-column>
-      <el-table-column label="编辑器模式.1md,2富文本" align="center" prop="editorMode">
+      <el-table-column align="center" width="auto" label="分类名称" prop="name"/>
+      <!-- <el-table-column label="编辑器模式.1md,2富文本" align="center" prop="editorMode">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>
         </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="文档内容_含html格式" prop="content"/>
-      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>
-      <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column label="权限值0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见" align="center" prop="role">
+      </el-table-column> -->
+      <!-- <el-table-column align="center" width="auto" label="文档内容_含html格式" prop="content"/> -->
+      <!-- <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/> -->
+      <el-table-column align="center" label="浏览次数" prop="visitor" width="85"/>
+      <el-table-column label="权限" align="center" prop="role" width="85">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.role" :value="scope.row.role"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>
-      <el-table-column align="center" width="auto" label="排序" prop="sort"/>
-      <el-table-column align="center" width="auto" label="子类的排序字段" prop="childSortField"/>
-      <el-table-column label="置顶" align="center" prop="isTop">
+      <!-- <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/> -->
+      <!-- <el-table-column align="center" width="auto" label="排序" prop="sort"/> -->
+      <!-- <el-table-column align="center" width="auto" label="子类的排序字段" prop="childSortField"/> -->
+      <!-- <el-table-column label="置顶" align="center" prop="isTop">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>
         </template>
-      </el-table-column>
-      <el-table-column label="当前分类是否允许评论" align="center" prop="isComment">
+      </el-table-column> -->
+      <el-table-column label="允许评论" align="center" prop="isComment" width="85">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isComment"/>
         </template>
       </el-table-column>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+      <el-table-column label="逻辑删除" align="center" prop="isDelete" width="85">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>
@@ -219,7 +160,7 @@
     />
 
     <!-- 添加或修改看理想-类别对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="分类名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入分类名称"/>

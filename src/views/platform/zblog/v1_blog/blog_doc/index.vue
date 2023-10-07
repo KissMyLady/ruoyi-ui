@@ -6,16 +6,7 @@
              :inline="true"
              v-show="showSearch"
              label-width="88px">
-      <!--      <el-form-item label="创建用户id" prop="createUserId">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.createUserId"-->
-      <!--            placeholder="请输入创建用户id"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <el-form-item label="所属文集id" prop="projectId">
+      <el-form-item label="所属文集" prop="projectId">
         <el-input v-model="queryParams.projectId"
                   placeholder="请输入所属文集id"
                   clearable
@@ -31,7 +22,7 @@
                   @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态码" prop="status">
+      <!-- <el-form-item label="状态码" prop="status">
         <el-select v-model="queryParams.status"
                    @change="handleQuery"
                    placeholder="0草稿,1发布,2删除" clearable
@@ -42,15 +33,19 @@
                      :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+      </el-form-item> -->
+      <el-form-item label="删除筛选" prop="isDelete">
+        <el-select v-model="queryParams.isDelete"
+                   @change="handleQuery"
+                   placeholder="筛选删除" 
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="更新时间" prop="modifyTime">
         <el-date-picker clearable
