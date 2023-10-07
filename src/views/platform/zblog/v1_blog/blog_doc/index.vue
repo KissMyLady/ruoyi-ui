@@ -23,26 +23,9 @@
                   @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="父级文档" prop="parentDoc">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.parentDoc"-->
-      <!--            placeholder="请输入父级文档"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="标题" prop="name">
         <el-input v-model="queryParams.name"
                   placeholder="请输入标题"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="编辑器模式.1md,2富文本" prop="editorMode">
-        <el-input v-model="queryParams.editorMode"
-                  placeholder="请输入编辑器模式.1md,2富文本"
                   clearable
                   @change="handleQuery"
                   @keyup.enter.native="handleQuery"
@@ -59,43 +42,6 @@
                      :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="数据行权限" prop="dataRowAuth">
-        <el-input v-model="queryParams.dataRowAuth"
-                  placeholder="请输入数据行权限"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="水印状态" prop="isWatermark">
-        <el-input v-model="queryParams.isWatermark"
-                  placeholder="请输入水印状态"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="水印类型" prop="watermarkType">
-        <el-select v-model="queryParams.watermarkType"
-                   @change="handleQuery"
-                   placeholder="请选择水印类型" clearable
-        >
-          <el-option v-for="dict in dict.type.watermark_type"
-                     :key="dict.value"
-                     :label="dict.label"
-                     :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="水印内容" prop="watermarkValue">
-        <el-input
-            v-model="queryParams.watermarkValue"
-            placeholder="请输入水印内容"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
       </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
         <el-input
@@ -179,47 +125,47 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>
-      <el-table-column align="center" width="auto" label="所属文集id" prop="projectId"/>
-      <el-table-column align="center" width="auto" label="父级文档" prop="parentDoc"/>
+<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
+      <el-table-column align="center" width="auto" label="所属文集" prop="projectId"/>
+<!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentDoc"/>-->
       <el-table-column align="center" width="auto" label="标题" prop="name"/>
-      <el-table-column label="编辑器" align="center" prop="editorMode">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>
-      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>
-      <el-table-column align="center" width="auto" label="排序" prop="sort"/>
-      <el-table-column label="状态码" align="center" prop="status">
+<!--      <el-table-column label="编辑器" align="center" prop="editorMode">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
+<!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
+<!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
+      <el-table-column label="状态码" align="center" prop="status" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.doc_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="打开下级" prop="openChildren"/>
-      <el-table-column align="center" width="auto" label="显示下级" prop="showChildren"/>
+<!--      <el-table-column align="center" width="auto" label="打开下级" prop="openChildren"/>-->
+<!--      <el-table-column align="center" width="auto" label="显示下级" prop="showChildren"/>-->
       <el-table-column label="数据行权限" align="center" prop="dataRowAuth">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.role" :value="scope.row.dataRowAuth"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>
-      <el-table-column label="水印类型" align="center" prop="watermarkType">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>
-      <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+<!--      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>-->
+<!--      <el-table-column label="水印类型" align="center" prop="watermarkType">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
+      <el-table-column align="center" width="120" label="浏览次数" prop="visitor"/>
+      <el-table-column label="逻辑删除" width="120" align="center" prop="isDelete">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">
-            <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>
+          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
+            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -254,7 +200,7 @@
     />
 
     <!-- 添加或修改文章对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="createUserId">
           <el-input v-model="form.createUserId" placeholder="请输入创建用户id"/>
@@ -275,7 +221,9 @@
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="文档内容_预览_纯文本">
-          <editor v-model="form.preContent" :min-height="192"/>
+          <el-input v-model="form.preContent"
+                    type="textarea"
+                    placeholder="文档内容_预览_纯文本"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input v-model="form.sort" placeholder="请输入排序"/>
@@ -352,7 +300,7 @@ import {
 export default {
   //dicts: ['is_delete'],
   name: 'Blog_doc',
-  dicts: ['watermark_type', 'doc_status'],
+  dicts: ['watermark_type', 'doc_status', 'is_delete', 'doc_editor_mode', 'role'],
   data() {
     return {
       // 遮罩层

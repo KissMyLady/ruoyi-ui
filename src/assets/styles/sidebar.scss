@@ -61,7 +61,8 @@
     }
 
     .svg-icon {
-      margin-right: 16px;
+      //菜单图标距
+      margin-right: 4px;
     }
 
     .el-menu {
@@ -194,7 +195,7 @@
 .el-menu--vertical {
   &>.el-menu {
     .svg-icon {
-      margin-right: 16px;
+      //margin-right: 16px;
     }
   }
 

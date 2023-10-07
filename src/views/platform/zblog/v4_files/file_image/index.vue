@@ -5,23 +5,77 @@
              size="small"
              :inline="true"
              v-show="showSearch"
-             label-width="88px"
-    >
-      <!--      <el-form-item label="创建用户" prop="userId">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.userId"-->
-      <!--            placeholder="请输入创建用户"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
+             label-width="88px">
+      <el-form-item label="创建用户id" prop="userId">
+        <el-input
+            v-model="queryParams.userId"
+            placeholder="请输入创建用户id"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="图片分组" prop="groupId">
+        <el-input
+            v-model="queryParams.groupId"
+            placeholder="请输入图片分组"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="名称,描述" prop="title">
+        <el-input
+            v-model="queryParams.title"
+            placeholder="请输入名称,描述"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="图片名称" prop="fileName">
+        <el-input
+            v-model="queryParams.fileName"
+            placeholder="请输入图片名称"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="图片路径" prop="filePath">
+        <el-input
+            v-model="queryParams.filePath"
+            placeholder="请输入图片路径"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="md5校验值" prop="md5">
+        <el-input
+            v-model="queryParams.md5"
+            placeholder="请输入md5校验值"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="图片后缀" prop="fileSuffix">
+        <el-input
+            v-model="queryParams.fileSuffix"
+            placeholder="请输入图片后缀"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input v-model="queryParams.isDelete"
-                  placeholder="请输入逻辑删除"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
+        <el-input
+            v-model="queryParams.isDelete"
+            placeholder="请输入逻辑删除"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -38,7 +92,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['blog_history:blog_history:add']"
+            v-hasPermi="['file_image:file_image:add']"
         >新增
         </el-button>
       </el-col>
@@ -50,7 +104,7 @@
             size="mini"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['blog_history:blog_history:edit']"
+            v-hasPermi="['file_image:file_image:edit']"
         >修改
         </el-button>
       </el-col>
@@ -62,7 +116,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['blog_history:blog_history:remove']"
+            v-hasPermi="['file_image:file_image:remove']"
         >删除
         </el-button>
       </el-col>
@@ -73,7 +127,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['blog_history:blog_history:export']"
+            v-hasPermi="['file_image:file_image:export']"
         >导出
         </el-button>
       </el-col>
@@ -83,23 +137,21 @@
     <el-table v-loading="loading"
               border
               stripe
-              :data="blog_historyList"
-              @selection-change="handleSelectionChange">
+              :data="file_imageList"
+              @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="120" label="文档id" prop="blogDocId"/>
-<!--      <el-table-column align="center" width="auto" label="历史内容" prop="preContent"/>-->
-      <el-table-column align="center" width="120" label="创建用户" prop="userId"/>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete" width="120">
+      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>
+      <el-table-column align="center" width="auto" label="图片分组" prop="groupId"/>
+      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="auto" label="图片名称" prop="fileName"/>
+      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>
+      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>
+      <el-table-column align="center" width="auto" label="图片后缀" prop="fileSuffix"/>
+      <el-table-column label="逻辑删除" align="center" prop="isDelete">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
-            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -109,7 +161,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['blog_history:blog_history:edit']"
+              v-hasPermi="['file_image:file_image:edit']"
           >修改
           </el-button>
           <el-button
@@ -117,7 +169,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['blog_history:blog_history:remove']"
+              v-hasPermi="['file_image:file_image:remove']"
           >删除
           </el-button>
         </template>
@@ -132,17 +184,29 @@
         @pagination="getList"
     />
 
-    <!-- 添加或修改文档历史记录对话框 -->
+    <!-- 添加或修改素材图片对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="文档id" prop="blogDocId">
-          <el-input v-model="form.blogDocId" placeholder="请输入文档id"/>
+        <el-form-item label="创建用户id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
         </el-form-item>
-        <el-form-item label="文档历史编辑内容">
-          <editor v-model="form.preContent" :min-height="192"/>
+        <el-form-item label="图片分组" prop="groupId">
+          <el-input v-model="form.groupId" placeholder="请输入图片分组"/>
         </el-form-item>
-        <el-form-item label="创建用户" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入创建用户"/>
+        <el-form-item label="名称,描述" prop="title">
+          <el-input v-model="form.title" placeholder="请输入名称,描述"/>
+        </el-form-item>
+        <el-form-item label="图片名称" prop="fileName">
+          <el-input v-model="form.fileName" placeholder="请输入图片名称"/>
+        </el-form-item>
+        <el-form-item label="图片路径" prop="filePath">
+          <el-input v-model="form.filePath" placeholder="请输入图片路径"/>
+        </el-form-item>
+        <el-form-item label="md5校验值" prop="md5">
+          <el-input v-model="form.md5" placeholder="请输入md5校验值"/>
+        </el-form-item>
+        <el-form-item label="图片后缀" prop="fileSuffix">
+          <el-input v-model="form.fileSuffix" placeholder="请输入图片后缀"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
@@ -158,16 +222,16 @@
 
 <script>
 import {
-  listBlog_history,
-  getBlog_history,
-  delBlog_history,
-  addBlog_history,
-  updateBlog_history
-} from '@/api/platform/zblog/v1_blog/blog_history'
+  listFile_image,
+  getFile_image,
+  delFile_image,
+  addFile_image,
+  updateFile_image
+} from '@/api/platform/zblog/v4_files/file_image'
 
 export default {
   dicts: ['is_delete'],
-  name: 'Blog_history',
+  name: 'File_image',
   data() {
     return {
       // 遮罩层
@@ -182,8 +246,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 文档历史记录表格数据
-      blog_historyList: [],
+      // 素材图片表格数据
+      file_imageList: [],
       // 弹出层标题
       title: '',
       // 是否显示弹出层
@@ -194,30 +258,30 @@ export default {
         isAsc: 'desc',  //desc, acs
         pageNum: 1,
         pageSize: 10,
-        blogDocId: null,
-        preContent: null,
         userId: null,
+        groupId: null,
+        title: null,
+        fileName: null,
+        filePath: null,
+        md5: null,
+        fileSuffix: null,
         isDelete: null
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        blogDocId: [
-          { required: true, message: '文档id不能为空', trigger: 'blur' }
-        ]
-      }
+      rules: {}
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    /** 查询文档历史记录列表 */
+    /** 查询素材图片列表 */
     getList() {
       this.loading = true
-      listBlog_history(this.queryParams).then(response => {
-        this.blog_historyList = response.rows
+      listFile_image(this.queryParams).then(response => {
+        this.file_imageList = response.rows
         this.total = response.total
         this.loading = false
       }).catch((err) => {
@@ -235,9 +299,13 @@ export default {
     reset() {
       this.form = {
         id: null,
-        blogDocId: null,
-        preContent: null,
         userId: null,
+        groupId: null,
+        title: null,
+        fileName: null,
+        filePath: null,
+        md5: null,
+        fileSuffix: null,
         isDelete: null,
         createTime: null,
         updateTime: null
@@ -264,16 +332,16 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = '添加文档历史记录'
+      this.title = '添加素材图片'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
       const id = row.id || this.ids
-      getBlog_history(id).then(response => {
+      getFile_image(id).then(response => {
         this.form = response.data
         this.open = true
-        this.title = '修改文档历史记录'
+        this.title = '修改素材图片'
       })
     },
     /** 提交按钮 */
@@ -281,13 +349,13 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateBlog_history(this.form).then(response => {
+            updateFile_image(this.form).then(response => {
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
             })
           } else {
-            addBlog_history(this.form).then(response => {
+            addFile_image(this.form).then(response => {
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -299,8 +367,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除文档历史记录编号为"' + ids + '"的数据项？').then(function() {
-        return delBlog_history(ids)
+      this.$modal.confirm('是否确认删除素材图片编号为"' + ids + '"的数据项？').then(function() {
+        return delFile_image(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess('删除成功')
@@ -309,9 +377,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('blog_history/blog_history/export', {
+      this.download('file_image/file_image/export', {
         ...this.queryParams
-      }, `blog_history_${new Date().getTime()}.xlsx`)
+      }, `file_image_${new Date().getTime()}.xlsx`)
     }
   }
 }

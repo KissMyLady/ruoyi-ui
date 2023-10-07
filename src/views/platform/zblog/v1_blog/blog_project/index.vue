@@ -142,33 +142,33 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>
+      <el-table-column align="center" width="120" label="封面图" prop="coverImg"/>
+<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
       <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
-      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>
-      <el-table-column align="center" width="auto" label="图标" prop="icon"/>
-      <el-table-column align="center" width="auto" label="封面图" prop="coverImg"/>
-      <el-table-column label="权限值" align="center" prop="role">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.role" :value="scope.row.role"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>
-      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>
-      <el-table-column label="水印类型" align="center" prop="watermarkType">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>
-      <el-table-column label="是否置顶" align="center" prop="isTop">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
+<!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
+<!--      <el-table-column label="权限值" align="center" prop="role">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.role" :value="scope.row.role"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>-->
+<!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
+<!--      <el-table-column label="水印类型" align="center" prop="watermarkType">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
+<!--      <el-table-column label="是否置顶" align="center" prop="isTop">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column align="center" width="auto" label="排序" prop="sort"/>
-      <el-table-column align="center" width="auto" label="子类排序方式(sql字段)" prop="sortField"/>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete">
+<!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
+<!--      <el-table-column align="center" width="auto" label="子类排序方式(sql字段)" prop="sortField"/>-->
+      <el-table-column label="逻辑删除" align="center" prop="isDelete" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>
@@ -180,13 +180,13 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">
-        <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">
-            <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">-->
+<!--            <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>-->
+<!--          </el-tooltip>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -302,7 +302,7 @@ import {
 export default {
   //dicts: ['is_delete'],
   name: 'Blog_project',
-  dicts: ['watermark_type'],
+  dicts: ['watermark_type', 'is_delete'],
   data() {
     return {
       // 遮罩层

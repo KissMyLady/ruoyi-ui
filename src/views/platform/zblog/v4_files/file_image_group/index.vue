@@ -1,26 +1,33 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
-      <el-form-item label="删除标记" prop="isDelete">
+      <el-form-item label="创建用户id" prop="userId">
+        <el-input
+            v-model="queryParams.userId"
+            placeholder="请输入创建用户id"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="图片组名" prop="groupName">
+        <el-input
+            v-model="queryParams.groupName"
+            placeholder="请输入图片组名"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="逻辑删除" prop="isDelete">
         <el-input
             v-model="queryParams.isDelete"
-            placeholder="请输入删除标记"
+            placeholder="请输入逻辑删除"
             clearable
             @change="handleQuery"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
-      <el-form-item label="类别名称" prop="simpleName">
-        <el-input
-            v-model="queryParams.simpleName"
-            placeholder="请输入类别的SPU名称"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -35,7 +42,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['do_spu:do_spu:add']"
+            v-hasPermi="['file_image_group:file_image_group:add']"
         >新增
         </el-button>
       </el-col>
@@ -47,7 +54,7 @@
             size="mini"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['do_spu:do_spu:edit']"
+            v-hasPermi="['file_image_group:file_image_group:edit']"
         >修改
         </el-button>
       </el-col>
@@ -59,7 +66,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['do_spu:do_spu:remove']"
+            v-hasPermi="['file_image_group:file_image_group:remove']"
         >删除
         </el-button>
       </el-col>
@@ -70,7 +77,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['do_spu:do_spu:export']"
+            v-hasPermi="['file_image_group:file_image_group:export']"
         >导出
         </el-button>
       </el-col>
@@ -80,25 +87,18 @@
     <el-table v-loading="loading"
               border
               stripe
-              :data="do_spuList"
+              :data="file_image_groupList"
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="类别的SPU名称" prop="simpleName"/>
-      <el-table-column align="center" width="auto" label="简单介绍" prop="simpleText"/>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>
+      <el-table-column align="center" width="auto" label="图片组名" prop="groupName"/>
+      <el-table-column label="逻辑删除" align="center" prop="isDelete">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
-            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-          </el-tooltip>
+          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="删除标记" prop="isDelete"/>
-      <el-table-column align="center" width="auto" label="超级管理员" prop="isSuperuser"/>
-      <el-table-column align="center" width="auto" label="登录" prop="isLoginView"/>
-<!--      <el-table-column align="center" width="auto" label="类别详情" prop="detail"/>-->
-      <el-table-column align="center" width="auto" label="文章log图片" prop="imgUpload"/>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -106,7 +106,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['do_spu:do_spu:edit']"
+              v-hasPermi="['file_image_group:file_image_group:edit']"
           >修改
           </el-button>
           <el-button
@@ -114,7 +114,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['do_spu:do_spu:remove']"
+              v-hasPermi="['file_image_group:file_image_group:remove']"
           >删除
           </el-button>
         </template>
@@ -129,29 +129,17 @@
         @pagination="getList"
     />
 
-    <!-- 添加或修改do_spu对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <!-- 添加或修改file_image_group对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="删除标记" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入删除标记"/>
+        <el-form-item label="创建用户id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
         </el-form-item>
-        <el-form-item label="超级管理员" prop="isSuperuser">
-          <el-input v-model="form.isSuperuser" placeholder="请输入超级管理员"/>
+        <el-form-item label="图片组名" prop="groupName">
+          <el-input v-model="form.groupName" placeholder="请输入图片组名"/>
         </el-form-item>
-        <el-form-item label="登录" prop="isLoginView">
-          <el-input v-model="form.isLoginView" placeholder="请输入登录"/>
-        </el-form-item>
-        <el-form-item label="类别的SPU名称" prop="simpleName">
-          <el-input v-model="form.simpleName" placeholder="请输入类别的SPU名称"/>
-        </el-form-item>
-        <el-form-item label="简单介绍" prop="simpleText">
-          <el-input v-model="form.simpleText" placeholder="请输入简单介绍"/>
-        </el-form-item>
-        <el-form-item label="类别详情" prop="detail">
-          <el-input v-model="form.detail" autosize type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="文章log图片" prop="imgUpload">
-          <el-input v-model="form.imgUpload" placeholder="请输入文章log图片"/>
+        <el-form-item label="逻辑删除" prop="isDelete">
+          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -163,10 +151,17 @@
 </template>
 
 <script>
-import { listDo_spu, getDo_spu, delDo_spu, addDo_spu, updateDo_spu } from '@/api/platform/zblog/do_spu/do_spu'
+import {
+  listFile_image_group,
+  getFile_image_group,
+  delFile_image_group,
+  addFile_image_group,
+  updateFile_image_group
+} from '@/api/platform/zblog/v4_files/file_image_group'
 
 export default {
-  name: 'Do_spu',
+  dicts: ['is_delete'],
+  name: 'File_image_group',
   data() {
     return {
       // 遮罩层
@@ -181,8 +176,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // do_spu表格数据
-      do_spuList: [],
+      // file_image_group表格数据
+      file_image_groupList: [],
       // 弹出层标题
       title: '',
       // 是否显示弹出层
@@ -193,50 +188,31 @@ export default {
         isAsc: 'desc',  //desc, acs
         pageNum: 1,
         pageSize: 10,
-        isDelete: null,
-        isSuperuser: null,
-        isLoginView: null,
-        simpleName: null,
-        simpleText: null,
-        detail: null,
-        imgUpload: null
+        userId: null,
+        groupName: null,
+        isDelete: null
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
-        ],
-        updateTime: [
-          { required: true, message: '更新时间不能为空', trigger: 'blur' }
-        ],
-        isDelete: [
-          { required: true, message: '删除标记不能为空', trigger: 'blur' }
-        ],
-        isSuperuser: [
-          { required: true, message: '超级管理员不能为空', trigger: 'blur' }
-        ],
-        isLoginView: [
-          { required: true, message: '登录不能为空', trigger: 'blur' }
-        ],
-        simpleName: [
-          { required: true, message: '类别的SPU名称不能为空', trigger: 'blur' }
-        ]
-      }
+      rules: {}
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    /** 查询do_spu列表 */
+    /** 查询file_image_group列表 */
     getList() {
       this.loading = true
-      listDo_spu(this.queryParams).then(response => {
-        this.do_spuList = response.rows
+      listFile_image_group(this.queryParams).then(response => {
+        this.file_image_groupList = response.rows
         this.total = response.total
         this.loading = false
+      }).catch((err) => {
+        this.loading = false
+        //Message({ message: ""+err, type: 'error' })
+        console.log('请求错误: ', err)
       })
     },
     // 取消按钮
@@ -248,15 +224,11 @@ export default {
     reset() {
       this.form = {
         id: null,
-        createTime: null,
-        updateTime: null,
+        userId: null,
+        groupName: null,
         isDelete: null,
-        isSuperuser: null,
-        isLoginView: null,
-        simpleName: null,
-        simpleText: null,
-        detail: null,
-        imgUpload: null
+        createTime: null,
+        updateTime: null
       }
       this.resetForm('form')
     },
@@ -280,16 +252,16 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = '添加do_spu'
+      this.title = '添加file_image_group'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
       const id = row.id || this.ids
-      getDo_spu(id).then(response => {
+      getFile_image_group(id).then(response => {
         this.form = response.data
         this.open = true
-        this.title = '修改do_spu'
+        this.title = '修改file_image_group'
       })
     },
     /** 提交按钮 */
@@ -297,13 +269,13 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateDo_spu(this.form).then(response => {
+            updateFile_image_group(this.form).then(response => {
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
             })
           } else {
-            addDo_spu(this.form).then(response => {
+            addFile_image_group(this.form).then(response => {
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -315,8 +287,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除do_spu编号为"' + ids + '"的数据项？').then(function() {
-        return delDo_spu(ids)
+      this.$modal.confirm('是否确认删除file_image_group编号为"' + ids + '"的数据项？').then(function() {
+        return delFile_image_group(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess('删除成功')
@@ -325,9 +297,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('do_spu/do_spu/export', {
+      this.download('file_image_group/file_image_group/export', {
         ...this.queryParams
-      }, `do_spu_${new Date().getTime()}.xlsx`)
+      }, `file_image_group_${new Date().getTime()}.xlsx`)
     }
   }
 }
