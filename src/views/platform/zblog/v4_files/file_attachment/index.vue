@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" 
-             ref="queryForm" 
-             size="small" 
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
              :inline="true"
-             v-show="showSearch" 
-             label-width="88px">
+             v-show="showSearch"
+             label-width="88px"
+    >
 
       <el-form-item label="名称,描述" prop="title">
         <el-input
@@ -38,7 +39,7 @@
       <el-form-item label="逻辑删除" prop="isDelete">
         <el-select v-model="queryParams.isDelete"
                    @change="handleQuery"
-                   placeholder="筛选删除" 
+                   placeholder="筛选删除"
                    clearable
         >
           <el-option v-for="dict in dict.type.is_delete"
@@ -55,6 +56,24 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-upload class="upload-demo"
+                   style="display: inline-block; margin-right: 10px"
+                   :action="upload.url"
+                   :multiple="false"
+                   :headers="upload.headers"
+                   :on-preview="handlePreview"
+                   :on-remove="handleRemove"
+                   :before-upload="beforeUpload"
+                   :on-success="handleFileSuccess"
+                   :file-list="upload.fileList"
+                   list-type="picture">
+          <el-button size="small" plain
+                     style="margin: 0"
+                     type="primary">上传图片到该分类 <i class="el-icon-upload"></i></el-button>
+        </el-upload>
+      </el-col>
+
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -113,15 +132,35 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
       <!-- <el-table-column align="center" width="auto" label="用户ID" prop="userId"/> -->
-      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
-      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>
+      <el-table-column align="left" width="auto" label="名称,描述" prop="title">
+        <template slot-scope="scope">
+          <p style="margin: 0;padding: 0">描述:{{ scope.row.title }}</p>
+          <p style="margin: 0;padding: 0">文件:{{ scope.row.fileName }}</p>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" width="auto" label="文件路径" prop="filePath">
+        <template slot-scope="scope">
+          <el-link @click="jumpToImageMedia(scope.row.filePath)"
+                   type="primary">{{ scope.row.filePath }}</el-link>
+        </template>
+      </el-table-column>
       <!-- <el-table-column align="center" width="auto" label="文件名" prop="fileName"/> -->
       <el-table-column align="center" width="85" label="文件大小" prop="fileSize"/>
       <el-table-column align="center" width="85" label="文件后缀" prop="fileSuffix"/>
       <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
       <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  effect="dark"
+                  type="success">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;"
+                  type="info">否
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -164,7 +203,9 @@
           <el-input v-model="form.title" placeholder="请输入名称,描述"/>
         </el-form-item>
         <el-form-item label="文件路径" prop="filePath">
-          <el-input v-model="form.filePath" placeholder="请输入文件路径"/>
+          <el-input v-model="form.filePath"
+                    disabled
+                    placeholder="请输入文件路径"/>
         </el-form-item>
         <el-form-item label="文件名" prop="fileName">
           <el-input v-model="form.fileName" placeholder="请输入文件名"/>
@@ -198,6 +239,8 @@ import {
   addFile_attachment,
   updateFile_attachment
 } from '@/api/platform/zblog/v4_files/file_attachment'
+import TipMessage from '@/utils/myUtils/TipMessage'
+import { getToken } from "@/utils/auth";
 
 export default {
   dicts: ['is_delete'],
@@ -240,7 +283,26 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      // 用户导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: '',
+        filePath: '',
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: {
+          Authorization: 'Bearer ' + getToken()
+        },
+        fileList: [],//文件列表
+        // 上传的地址
+        url: process.env.VUE_APP_target_url + '/file_attachment/upload/upload'
+      }
     }
   },
   created() {
@@ -350,7 +412,55 @@ export default {
       this.download('file_attachment/file_attachment/export', {
         ...this.queryParams
       }, `file_attachment_${new Date().getTime()}.xlsx`)
-    }
+    },
+    // 文件提交处理
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      // console.log("文件上传成功处理: ", response);
+      // this.upload.isUploading = false
+      // this.form.filePath = response.url
+      // this.msgSuccess(response.msg);
+      TipMessage.isOK("上传成功");
+      this.getList()
+    },
+    beforeUpload(file) {
+      this.upload.isUploading = true
+    },
+    handlePreview(file) {
+      //console.log(': ', file)
+    },
+    //移除
+    handleRemove(file, fileList) {
+    },
+    jumpToImageMedia(filePath){
+      let url = process.env.VUE_APP_target_url + filePath;
+      window.open(url, "_blank")
+    },
+    //删除切换
+    switchDeleteState(rowId, isD){
+      //console.log("删除切换row: ", rowId);
+      let sendData = {
+        "id": rowId,
+        "isDelete": isD
+      }
+      updateFile_attachment(sendData).then((res)=>{
+        if (res.code !== 200){
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        this.getList()
+      }).catch((err)=>{
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    // ====================底部结束============================
   }
 }
 </script>
