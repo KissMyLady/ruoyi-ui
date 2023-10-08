@@ -22,6 +22,9 @@
 
     </el-form>
     <el-table v-loading="loading"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"

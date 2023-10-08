@@ -45,7 +45,7 @@
       <el-form-item label="逻辑删除" prop="isDelete">
         <el-select v-model="queryParams.isDelete"
                    @change="handleQuery"
-                   placeholder="筛选删除" 
+                   placeholder="筛选删除"
                    clearable
         >
           <el-option v-for="dict in dict.type.is_delete"
@@ -112,23 +112,48 @@
     </el-row>
 
     <el-table v-loading="loading"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="file_imageList"
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <!-- <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/> -->
       <el-table-column align="center" width="100" label="图片组" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <!-- <el-table-column align="center" width="auto" label="图片名称" prop="fileName"/> -->
-      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>
+      <el-table-column align="left" width="400" label="图片路径" prop="filePath">
+        <template slot-scope="scope">
+          <el-link @click="jumpToImageMedia(scope.row.filePath)"
+                   type="primary">{{ scope.row.filePath }}</el-link>
+        </template>
+      </el-table-column>
       <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
-      <el-table-column align="center" width="85" label="图片后缀" prop="fileSuffix"/>
+<!--      <el-table-column align="center" width="85" label="图片后缀" prop="fileSuffix"/>-->
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
+            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  effect="dark"
+                  type="success">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;"
+                  type="info">否
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
@@ -177,7 +202,9 @@
           <el-input v-model="form.fileName" placeholder="请输入图片名称"/>
         </el-form-item>
         <el-form-item label="图片路径" prop="filePath">
-          <el-input v-model="form.filePath" placeholder="请输入图片路径"/>
+          <el-input v-model="form.filePath"
+                    disabled
+                    placeholder="请输入图片路径"/>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5" placeholder="请输入md5校验值"/>
@@ -205,6 +232,8 @@ import {
   addFile_image,
   updateFile_image
 } from '@/api/platform/zblog/v4_files/file_image'
+import { updateFile_attachment } from '@/api/platform/zblog/v4_files/file_attachment'
+import TipMessage from '@/utils/myUtils/TipMessage'
 
 export default {
   dicts: ['is_delete'],
@@ -357,7 +386,30 @@ export default {
       this.download('file_image/file_image/export', {
         ...this.queryParams
       }, `file_image_${new Date().getTime()}.xlsx`)
-    }
+    },
+    //删除切换
+    switchDeleteState(rowId, isD){
+      //console.log("删除切换row: ", rowId);
+      let sendData = {
+        "id": rowId,
+        "isDelete": isD
+      }
+      updateFile_image(sendData).then((res)=>{
+        if (res.code !== 200){
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        TipMessage.isOK(res.msg);
+        this.getList()
+      }).catch((err)=>{
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    jumpToImageMedia(filePath){
+      let url = process.env.VUE_APP_target_url + filePath;
+      window.open(url, "_blank")
+    },
+    // ===========================================
   }
 }
 </script>

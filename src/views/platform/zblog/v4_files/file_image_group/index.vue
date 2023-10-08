@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" 
-             ref="queryForm" 
-             size="small" 
-             :inline="true" 
-             v-show="showSearch" 
-             label-width="88px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="88px"
+    >
       <el-form-item label="图片组名" prop="groupName">
         <el-input
             v-model="queryParams.groupName"
@@ -19,7 +20,7 @@
         <el-select v-model="queryParams.isDelete"
                    style="width:90px"
                    @change="handleQuery"
-                   placeholder="选择" 
+                   placeholder="选择"
                    clearable
         >
           <el-option v-for="dict in dict.type.is_delete"
@@ -86,6 +87,9 @@
     </el-row>
 
     <el-table v-loading="loading"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="file_image_groupList"
@@ -93,7 +97,8 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="200" label="创建用户id" prop="userId"/>
+      <el-table-column align="center" width="100" label="创建用户" prop="userId"/>
+      <el-table-column align="center" width="100" label="图片组Id" prop="groupId"/>
       <el-table-column align="center" width="300" label="图片组名" prop="groupName"/>
       <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
@@ -102,6 +107,25 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-col :span="1.5">
+            <el-upload class="upload-demo"
+                       style="display: inline-block; margin-right: 10px"
+                       :action="upload.url"
+                       :multiple="false"
+                       :headers="upLoadHeaders(scope.row.groupId)"
+                       :on-preview="handlePreview"
+                       :on-remove="handleRemove"
+                       :before-upload="beforeUpload"
+                       :on-success="handleFileSuccess"
+                       :file-list="upload.fileList"
+                       list-type="picture"
+            >
+              <el-button size="small" plain
+                         style="margin: 0"
+                         type="primary"
+              >上传图片到该分类 <i class="el-icon-upload"></i></el-button>
+            </el-upload>
+          </el-col>
           <el-button
               size="mini"
               type="text"
@@ -136,6 +160,10 @@
         <el-form-item label="创建用户id" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
         </el-form-item>
+        <el-form-item label="图片组ID" prop="groupId">
+          <el-input v-model="form.groupId"
+                    placeholder="请输入图片组ID"/>
+        </el-form-item>
         <el-form-item label="图片组名" prop="groupName">
           <el-input v-model="form.groupName" placeholder="请输入图片组名"/>
         </el-form-item>
@@ -159,6 +187,8 @@ import {
   addFile_image_group,
   updateFile_image_group
 } from '@/api/platform/zblog/v4_files/file_image_group'
+import TipMessage from '@/utils/myUtils/TipMessage'
+import { getToken } from '@/utils/auth'
 
 export default {
   dicts: ['is_delete'],
@@ -196,7 +226,26 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      // 用户导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: '',
+        filePath: '',
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: {
+          Authorization: 'Bearer ' + getToken()
+        },
+        fileList: [],//文件列表
+        // 上传的地址
+        url: process.env.VUE_APP_target_url + '/file_image/upload/upload'
+      }
     }
   },
   created() {
@@ -271,7 +320,7 @@ export default {
         if (valid) {
           if (this.form.id != null) {
             updateFile_image_group(this.form).then(response => {
-              this.$modal.msgSuccess('修改成功')
+              this.$modal.msgSuccess(response.msg)
               this.open = false
               this.getList()
             })
@@ -301,7 +350,42 @@ export default {
       this.download('file_image_group/file_image_group/export', {
         ...this.queryParams
       }, `file_image_group_${new Date().getTime()}.xlsx`)
-    }
+    },
+
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      console.log('文件上传成功处理: ', response)
+      // this.upload.isUploading = false
+      // this.form.filePath = response.url
+      // this.msgSuccess(response.msg);
+      TipMessage.isOK('上传成功')
+      this.getList()
+    },
+    beforeUpload(file) {
+      this.upload.isUploading = true
+    },
+    handlePreview(file) {
+      //console.log(': ', file)
+    },
+    //移除
+    handleRemove(file, fileList) {
+    },
+    jumpToImageMedia(filePath) {
+      let url = process.env.VUE_APP_target_url + filePath
+      window.open(url, '_blank')
+    },
+    upLoadHeaders(group_id){
+      let token = getToken();
+      return {
+        "Authorization": 'Bearer ' + getToken(),
+        "group_id": group_id
+      }
+    },
+    // ===========================底部结束====================================
   }
 }
 </script>

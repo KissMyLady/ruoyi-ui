@@ -112,6 +112,9 @@
     </el-row>
 
     <el-table ref="tables"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               v-loading="loading"

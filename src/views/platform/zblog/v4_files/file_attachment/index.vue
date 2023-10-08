@@ -124,6 +124,9 @@
     </el-row>
 
     <el-table v-loading="loading"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="file_attachmentList"
@@ -134,21 +137,27 @@
       <!-- <el-table-column align="center" width="auto" label="用户ID" prop="userId"/> -->
       <el-table-column align="left" width="auto" label="名称,描述" prop="title">
         <template slot-scope="scope">
-          <p style="margin: 0;padding: 0">描述:{{ scope.row.title }}</p>
-          <p style="margin: 0;padding: 0">文件:{{ scope.row.fileName }}</p>
+          <span style="margin: 0;padding: 0">{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" width="auto" label="文件路径" prop="filePath">
+      <el-table-column align="left" width="400" label="文件路径" prop="filePath">
         <template slot-scope="scope">
           <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                   type="primary">{{ scope.row.filePath }}</el-link>
+                   type="primary">{{ LimitStringShow(scope.row.filePath, 50) }}</el-link>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" width="auto" label="文件名" prop="fileName"/> -->
-      <el-table-column align="center" width="85" label="文件大小" prop="fileSize"/>
-      <el-table-column align="center" width="85" label="文件后缀" prop="fileSuffix"/>
+      <el-table-column align="center" width="75" label="文件大小" prop="fileSize"/>
+      <el-table-column align="center" width="75" label="文件后缀" prop="fileSuffix"/>
       <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
-      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
+      <el-table-column label="创建时间" width="120" align="center" prop="createTime">
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
+            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column label="逻辑删除" width="75" align="center" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
@@ -163,7 +172,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -270,7 +279,7 @@ export default {
         orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         userId: null,
         title: null,
         filePath: null,
@@ -455,10 +464,19 @@ export default {
           TipMessage.Warning(res.msg);
           return null;
         }
+        TipMessage.isOK(res.msg);
         this.getList()
       }).catch((err)=>{
         //TipMessage.Error("错误"+ err);
       })
+    },
+    //限制字符串
+    LimitStringShow(dataStr, limitLen=50){
+      if(typeof dataStr === 'string' && dataStr.length >= limitLen){
+        let sLen = dataStr.length
+        return '...' + dataStr.substr(sLen - limitLen, sLen);
+      }
+      return dataStr;
     },
     // ====================底部结束============================
   }

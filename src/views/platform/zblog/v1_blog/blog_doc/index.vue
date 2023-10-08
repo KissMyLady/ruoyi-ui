@@ -37,7 +37,7 @@
       <el-form-item label="删除筛选" prop="isDelete">
         <el-select v-model="queryParams.isDelete"
                    @change="handleQuery"
-                   placeholder="筛选删除" 
+                   placeholder="筛选删除"
                    clearable
         >
           <el-option v-for="dict in dict.type.is_delete"
@@ -113,6 +113,9 @@
     </el-row>
 
     <el-table v-loading="loading"
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="blog_docList"
