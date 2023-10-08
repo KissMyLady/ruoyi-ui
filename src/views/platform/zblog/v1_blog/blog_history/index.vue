@@ -142,7 +142,10 @@
           <el-input v-model="form.blogDocId" placeholder="请输入文档id"/>
         </el-form-item>
         <el-form-item label="文档历史编辑内容">
-          <editor v-model="form.preContent" :min-height="192"/>
+          <el-input v-model="form.preContent"
+                    type="textarea"
+                    :autosize="{ minRows: 8, maxRows: 16}"
+                    placeholder="文档内容_预览_纯文本"/>
         </el-form-item>
         <el-form-item label="创建用户" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入创建用户"/>

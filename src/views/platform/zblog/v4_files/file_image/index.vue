@@ -121,27 +121,30 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <el-table-column label="主键" align="center" prop="id" width="80"/>
       <!-- <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/> -->
       <el-table-column align="center" width="100" label="图片组" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <!-- <el-table-column align="center" width="auto" label="图片名称" prop="fileName"/> -->
-      <el-table-column align="left" width="400" label="图片路径" prop="filePath">
+      <el-table-column align="left" width="300" label="图片路径" prop="filePath">
         <template slot-scope="scope">
-          <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                   type="primary">{{ scope.row.filePath }}</el-link>
+          <el-tooltip class="item" effect="dark" 
+                      :content="scope.row.filePath" placement="right">
+            <el-link @click="jumpToImageMedia(scope.row.filePath)"
+                   type="primary">{{ scope.row.fileName }}</el-link>
+          </el-tooltip>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
 <!--      <el-table-column align="center" width="85" label="图片后缀" prop="fileSuffix"/>-->
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="110">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
             <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
+      <el-table-column label="逻辑删除" width="75" align="center" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
@@ -156,7 +159,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"

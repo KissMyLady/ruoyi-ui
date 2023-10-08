@@ -140,17 +140,20 @@
           <span style="margin: 0;padding: 0">{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" width="400" label="文件路径" prop="filePath">
+      <el-table-column align="left" width="auto" label="文件路径" prop="filePath">
         <template slot-scope="scope">
-          <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                   type="primary">{{ LimitStringShow(scope.row.filePath, 50) }}</el-link>
+          <el-tooltip class="item" effect="dark" 
+                      :content="scope.row.filePath" placement="right">
+            <el-link @click="jumpToImageMedia(scope.row.filePath)"
+                   type="primary">{{ LimitStringShow(scope.row.fileName, 50) }}</el-link>
+          </el-tooltip>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" width="auto" label="文件名" prop="fileName"/> -->
       <el-table-column align="center" width="75" label="文件大小" prop="fileSize"/>
-      <el-table-column align="center" width="75" label="文件后缀" prop="fileSuffix"/>
+      <!-- <el-table-column align="center" width="75" label="文件后缀" prop="fileSuffix"/> -->
       <!-- <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/> -->
-      <el-table-column label="创建时间" width="120" align="center" prop="createTime">
+      <el-table-column label="创建时间" width="110" align="center" prop="createTime">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
             <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -172,7 +175,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"

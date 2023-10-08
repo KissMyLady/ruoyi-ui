@@ -126,7 +126,7 @@
 <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
       <el-table-column align="center" width="auto" label="所属文集" prop="projectId"/>
 <!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentDoc"/>-->
-      <el-table-column align="center" width="auto" label="标题" prop="name"/>
+      <el-table-column align="center" width="300" label="标题" prop="name"/>
 <!--      <el-table-column label="编辑器" align="center" prop="editorMode">-->
 <!--        <template slot-scope="scope">-->
 <!--          <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>-->
@@ -142,7 +142,7 @@
       </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="打开下级" prop="openChildren"/>-->
 <!--      <el-table-column align="center" width="auto" label="显示下级" prop="showChildren"/>-->
-      <el-table-column label="数据行权限" align="center" prop="dataRowAuth">
+      <el-table-column label="数据权限" width="75" align="center" prop="dataRowAuth">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.role" :value="scope.row.dataRowAuth"/>
         </template>
@@ -154,20 +154,20 @@
 <!--        </template>-->
 <!--      </el-table-column>-->
 <!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
-      <el-table-column align="center" width="120" label="浏览次数" prop="visitor"/>
-      <el-table-column label="逻辑删除" width="120" align="center" prop="isDelete">
+      <el-table-column align="center" width="75" label="浏览次数" prop="visitor"/>
+      <el-table-column label="逻辑删除" width="75" align="center" prop="isDelete">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="120">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
             <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -221,6 +221,7 @@
         <el-form-item label="文档内容_预览_纯文本">
           <el-input v-model="form.preContent"
                     type="textarea"
+                    :autosize="{ minRows: 8, maxRows: 16}"
                     placeholder="文档内容_预览_纯文本"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
