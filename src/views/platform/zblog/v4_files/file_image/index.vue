@@ -412,8 +412,8 @@ export default {
             TipMessage.Warning(res.msg);
             return null;
           }
-          this.getList()
           TipMessage.isOK(res.msg);
+          this.getList()
         }).catch((err)=>{
           //TipMessage.Error("错误"+ err);
         })
