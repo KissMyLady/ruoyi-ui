@@ -142,7 +142,7 @@
       </el-table-column>
       <el-table-column align="left" width="auto" label="文件路径" prop="filePath">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" 
+          <el-tooltip class="item" effect="dark"
                       :content="scope.row.filePath" placement="right">
             <el-link @click="jumpToImageMedia(scope.row.filePath)"
                    type="primary">{{ LimitStringShow(scope.row.fileName, 50) }}</el-link>
@@ -165,13 +165,11 @@
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
                   style="cursor:pointer;"
-                  effect="dark"
-                  type="success">是
+                  type="danger">是
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
-                  style="cursor:pointer;"
-                  type="info">否
+                  style="cursor:pointer;">否
           </el-tag>
         </template>
       </el-table-column>

@@ -96,20 +96,33 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="100" label="创建用户" prop="userId"/>
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <el-table-column align="center" width="100" label="创建用户" prop="userId">
+        <template slot-scope="scope">
+          <span>{{ scope.row.userId }} {{ scope.row.userName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" width="100" label="图片组Id" prop="groupId"/>
       <el-table-column align="center" width="300" label="图片组名" prop="groupName"/>
+      <el-table-column align="center" width="100" label="图片数量" prop="sumCount"/>
       <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;">否
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-col :span="1.5">
             <el-upload class="upload-demo"
-                       style="display: inline-block; margin-right: 10px"
+                       style="display: inline-block;"
                        :action="upload.url"
                        :multiple="false"
                        :headers="upLoadHeaders(scope.row.groupId)"
@@ -118,40 +131,37 @@
                        :before-upload="beforeUpload"
                        :on-success="handleFileSuccess"
                        :file-list="upload.fileList"
-                       list-type="picture"
-            >
-              <el-button size="small" plain
+                       list-type="picture">
+              <el-button icon="el-icon-upload"
                          style="margin: 0"
                          type="primary"
-              >上传图片到该分类 <i class="el-icon-upload"></i></el-button>
+              >上传图片到该分类
+              </el-button>
             </el-upload>
           </el-col>
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['file_image_group:file_image_group:edit']"
-          >修改
-          </el-button>
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['file_image_group:file_image_group:remove']"
-          >删除
-          </el-button>
+          <el-col :span="1.5" style="margin-top: 6px;">
+            <el-button size="small"
+                       icon="el-icon-edit"
+                       @click="handleUpdate(scope.row)"
+                       v-hasPermi="['file_image_group:file_image_group:edit']"
+            >修改
+            </el-button>
+            <el-button size="small"
+                       icon="el-icon-delete"
+                       @click="handleDelete(scope.row)"
+                       v-hasPermi="['file_image_group:file_image_group:remove']"
+            >删除
+            </el-button>
+          </el-col>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
     />
 
     <!-- 添加或修改file_image_group对话框 -->
@@ -160,8 +170,13 @@
         <el-form-item label="创建用户id" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
         </el-form-item>
-        <el-form-item label="图片组ID" prop="groupId">
-          <el-input v-model="form.groupId"
+        <el-form-item label="图片组ID"
+                      :rules="[
+                          { required: true, message: '分组id不能为空'},
+                          { type: 'number', message: 'id必须为数字'}]"
+                      prop="groupId">
+          <el-input v-model.number="form.groupId"
+                    :disabled="notAllowEditGroupId"
                     placeholder="请输入图片组ID"/>
         </el-form-item>
         <el-form-item label="图片组名" prop="groupName">
@@ -188,7 +203,7 @@ import {
   updateFile_image_group
 } from '@/api/platform/zblog/v4_files/file_image_group'
 import TipMessage from '@/utils/myUtils/TipMessage'
-import { getToken } from '@/utils/auth'
+import {getToken} from '@/utils/auth'
 
 export default {
   dicts: ['is_delete'],
@@ -227,6 +242,7 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      notAllowEditGroupId: true,
       // 用户导入参数
       upload: {
         // 是否显示弹出层（用户导入）
@@ -303,9 +319,11 @@ export default {
       this.reset()
       this.open = true
       this.title = '添加file_image_group'
+      this.notAllowEditGroupId = false;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      this.notAllowEditGroupId = true;
       this.reset()
       const id = row.id || this.ids
       getFile_image_group(id).then(response => {
@@ -337,7 +355,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除file_image_group编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除file_image_group编号为"' + ids + '"的数据项？').then(function () {
         return delFile_image_group(ids)
       }).then(() => {
         this.getList()
@@ -378,12 +396,33 @@ export default {
       let url = process.env.VUE_APP_target_url + filePath
       window.open(url, '_blank')
     },
-    upLoadHeaders(group_id){
+    upLoadHeaders(group_id) {
       let token = getToken();
       return {
         "Authorization": 'Bearer ' + getToken(),
         "group_id": group_id
       }
+    },
+    switchDeleteState(rowId, isD){
+      //console.log("删除切换row: ", rowId);
+      let sendData = {
+        "id": rowId,
+        "isDelete": isD
+      }
+      updateFile_image_group(sendData).then((res)=>{
+        if (res.code !== 200){
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        if(isD == 1){
+          TipMessage.Warning("删除成功");
+        }else {
+          TipMessage.isOK("取消删除成功");
+        }
+        this.getList()
+      }).catch((err)=>{
+        //TipMessage.Error("错误"+ err);
+      })
     },
     // ===========================底部结束====================================
   }

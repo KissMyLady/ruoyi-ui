@@ -91,35 +91,72 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="80"/>
-      <el-table-column align="center" width="auto" label="封面图" prop="coverImg"/>
-<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
-      <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
-<!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
-     <!-- <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
-      <el-table-column label="权限值" width="75" align="center" prop="role">
+      <el-table-column align="center" width="150" label="封面图" prop="coverImg">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.role" :value="scope.row.role"/>
+          <el-image style="width: 100px; height: 100px"
+                    fit="contain"
+                    lazy
+                    :src="getImageUrl(scope.row.coverImg)"
+                    :preview-src-list="tableImageList">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
         </template>
       </el-table-column>
-<!--      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
-<!--      <el-table-column label="水印类型" align="center" prop="watermarkType">-->
-<!--        <template slot-scope="scope">-->
-<!--          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
-<!--      <el-table-column label="是否置顶" align="center" prop="isTop">-->
-<!--        <template slot-scope="scope">-->
-<!--          <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
+      <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
+      <el-table-column align="center" width="auto" label="介绍" prop="intro">
+        <template slot-scope="scope">
+          <span>{{ LimitStringShow(scope.row.intro, 50) }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
+      <el-table-column label="权限值" width="75" align="center" prop="role">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.role == 9"
+                  @click="switchDataAuthState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger">超管
+          </el-tag>
+          <el-tag v-else-if="scope.row.role == 0"
+                  @click="switchDataAuthState(scope.row.id, 9)"
+                  style="cursor:pointer;">公开
+          </el-tag>
+          <el-tag v-else
+                  type="info"
+                  @click="switchDataAuthState(scope.row.id, 9)"
+                  style="cursor:pointer;">{{ scope.row.role }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column align="center" width="auto" label="权限值" prop="roleValue"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
+      <!--      <el-table-column label="水印类型" align="center" prop="watermarkType">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <dict-tag :options="dict.type.watermark_type" :value="scope.row.watermarkType"/>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
+      <!--      <el-table-column label="是否置顶" align="center" prop="isTop">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <dict-tag :options="dict.type.is_delete" :value="scope.row.isTop"/>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column align="center" width="75" label="浏览次数" prop="visitor"/>
-<!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
-<!--      <el-table-column align="center" width="auto" label="子类排序方式(sql字段)" prop="sortField"/>-->
+      <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
+      <!--      <el-table-column align="center" width="auto" label="子类排序方式(sql字段)" prop="sortField"/>-->
       <el-table-column label="逻辑删除" align="center" prop="isDelete" width="75">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;">否
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="120">
@@ -129,29 +166,23 @@
           </el-tooltip>
         </template>
       </el-table-column>
-<!--      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">-->
-<!--            <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>-->
-<!--          </el-tooltip>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
+      <!--      <el-table-column label="更新时间" align="center" prop="modifyTime" width="180">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tooltip class="item" effect="dark" :content="scope.row.modifyTime" placement="top">-->
+      <!--            <span>{{ formatTime(scope.row.modifyTime, '{y}-{m}-{d}') }}</span>-->
+      <!--          </el-tooltip>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['blog_project:blog_project:edit']"
+          <el-button icon="el-icon-edit"
+                     @click="handleUpdate(scope.row)"
+                     v-hasPermi="['blog_project:blog_project:edit']"
           >修改
           </el-button>
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['blog_project:blog_project:remove']"
+          <el-button icon="el-icon-delete"
+                     @click="handleDelete(scope.row)"
+                     v-hasPermi="['blog_project:blog_project:remove']"
           >删除
           </el-button>
         </template>
@@ -184,11 +215,17 @@
         <el-form-item label="封面图" prop="coverImg">
           <el-input v-model="form.coverImg" placeholder="请输入封面图"/>
         </el-form-item>
-        <el-form-item label="权限值" prop="role">
-          <el-input v-model="form.role" placeholder="0表示公开，1私密,2指定用户可见,3访问码可见"/>
+        <el-form-item label="权限代号" prop="role"
+                      :rules="[
+                          { required: true, message: '分组id不能为空'},
+                          { type: 'number', message: 'id必须为数字'}]">
+          <el-input v-model.number="form.role"
+                    placeholder="0表示公开，1私密,2指定用户可见,3访问码可见"/>
         </el-form-item>
-        <el-form-item label="权限值" prop="roleValue">
-          <el-input v-model="form.roleValue" autosize type="textarea" placeholder="请输入内容"/>
+        <el-form-item label="权限具体值" prop="roleValue">
+          <el-input v-model="form.roleValue"
+                    :autosize="{ minRows: 2, maxRows: 4}"
+                    type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="水印" prop="isWatermark">
           <el-input v-model="form.isWatermark" placeholder="请输入水印"/>
@@ -247,6 +284,7 @@ import {
   addBlog_project,
   updateBlog_project
 } from '@/api/platform/zblog/v1_blog/blog_project'
+import TipMessage from '@/utils/myUtils/TipMessage'
 
 export default {
   //dicts: ['is_delete'],
@@ -298,7 +336,9 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      //表格图片
+      tableImageList: [],
     }
   },
   created() {
@@ -402,7 +442,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除文章分类编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除文章分类编号为"' + ids + '"的数据项？').then(function () {
         return delBlog_project(ids)
       }).then(() => {
         this.getList()
@@ -415,7 +455,60 @@ export default {
       this.download('blog_project/blog_project/export', {
         ...this.queryParams
       }, `blog_project_${new Date().getTime()}.xlsx`)
-    }
+    },
+    switchDataAuthState(rowId, isD) {
+      let sendData = {
+        "id": rowId,
+        "role": isD
+      }
+      updateBlog_project(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        if (isD == 9) {
+          TipMessage.Warning(rowId + " 切换为超级管理员可见");
+        } else {
+          TipMessage.isOK(rowId + " 切换为公开");
+        }
+        this.getList()
+      }).catch((err) => {
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    switchDeleteState(rowId, isD) {
+      //console.log("删除切换row: ", rowId);
+      let sendData = {
+        "id": rowId,
+        "isDelete": isD
+      }
+      updateBlog_project(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        if (isD == 1) {
+          TipMessage.Warning("删除成功");
+        } else {
+          TipMessage.isOK("取消删除成功");
+        }
+        this.getList()
+      }).catch((err) => {
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    getImageUrl(filePath) {
+      return process.env.VUE_APP_target_url + filePath;
+    },
+    getImageListMethod(row) {
+      var imgList = [];
+      for (let i = 0; i < row.length; i++) {
+        let imaUrl = this.getImageUrl(row[i].filePath)
+        imgList.push(imaUrl)
+      }
+      this.tableImageList = imgList;
+    },
+    //=====================================底部结束========================================
   }
 }
 </script>

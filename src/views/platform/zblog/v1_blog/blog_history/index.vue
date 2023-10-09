@@ -17,12 +17,17 @@
       <!--        />-->
       <!--      </el-form-item>-->
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input v-model="queryParams.isDelete"
-                  placeholder="请输入逻辑删除"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDelete"
+                   style="width: 120px"
+                   @change="handleQuery"
+                   placeholder="筛选删除"
+                   clearable>
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -91,11 +96,19 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
       <el-table-column align="center" width="120" label="文档id" prop="blogDocId"/>
-<!--      <el-table-column align="center" width="auto" label="历史内容" prop="preContent"/>-->
+      <!--      <el-table-column align="center" width="auto" label="历史内容" prop="preContent"/>-->
       <el-table-column align="center" width="120" label="创建用户" prop="userId"/>
       <el-table-column label="逻辑删除" align="center" prop="isDelete" width="120">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isDelete"/>
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;">否
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -170,6 +183,7 @@ import {
   addBlog_history,
   updateBlog_history
 } from '@/api/platform/zblog/v1_blog/blog_history'
+import TipMessage from '@/utils/myUtils/TipMessage'
 
 export default {
   dicts: ['is_delete'],
@@ -210,7 +224,7 @@ export default {
       // 表单校验
       rules: {
         blogDocId: [
-          { required: true, message: '文档id不能为空', trigger: 'blur' }
+          {required: true, message: '文档id不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -305,7 +319,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除文档历史记录编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除文档历史记录编号为"' + ids + '"的数据项？').then(function () {
         return delBlog_history(ids)
       }).then(() => {
         this.getList()
@@ -318,7 +332,31 @@ export default {
       this.download('blog_history/blog_history/export', {
         ...this.queryParams
       }, `blog_history_${new Date().getTime()}.xlsx`)
-    }
+    },
+    //删除切换
+    switchDeleteState(rowId, isD) {
+      //console.log("删除切换row: ", rowId);
+      let sendData = {
+        "id": rowId,
+        "isDelete": isD
+      }
+      updateBlog_history(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        if (isD == 1) {
+          TipMessage.Warning("删除成功");
+        } else {
+          TipMessage.isOK("取消删除成功");
+        }
+        this.getList()
+      }).catch((err) => {
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+
+    //====================================底部结束==============================================
   }
 }
 </script>

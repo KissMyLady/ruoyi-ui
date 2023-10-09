@@ -63,14 +63,11 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
+        <el-button type="primary"
+            icon="el-icon-upload"
             @click="handleAdd"
             v-hasPermi="['file_image:file_image:add']"
-        >新增
+        >上传
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -123,12 +120,26 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="80"/>
       <!-- <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/> -->
-      <el-table-column align="center" width="100" label="图片组" prop="groupId"/>
-      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="120" label="图片展示" prop="groupId">
+        <template slot-scope="scope">
+          <el-image style="width: 100px; height: 100px"
+                    fit="contain"
+                    lazy
+                    :src="getImageUrl(scope.row.filePath)"
+                    :preview-src-list="tableImageList">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="100" label="图片组Id" prop="groupId"/>
+      <el-table-column align="center" width="200" label="组名称" prop="groupName"/>
+      <el-table-column align="center" width="300" label="名称,描述" prop="title"/>
       <!-- <el-table-column align="center" width="auto" label="图片名称" prop="fileName"/> -->
       <el-table-column align="left" width="300" label="图片路径" prop="filePath">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" 
+          <el-tooltip class="item" effect="dark"
                       :content="scope.row.filePath" placement="right">
             <el-link @click="jumpToImageMedia(scope.row.filePath)"
                    type="primary">{{ scope.row.fileName }}</el-link>
@@ -149,13 +160,11 @@
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
                   style="cursor:pointer;"
-                  effect="dark"
-                  type="success">是
+                  type="danger">是
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
-                  style="cursor:pointer;"
-                  type="info">否
+                  style="cursor:pointer;">否
           </el-tag>
         </template>
       </el-table-column>
@@ -213,7 +222,7 @@
           <el-input v-model="form.md5" placeholder="请输入md5校验值"/>
         </el-form-item>
         <el-form-item label="图片后缀" prop="fileSuffix">
-          <el-input v-model="form.fileSuffix" placeholder="请输入图片后缀"/>
+          <el-input v-model="form.fileSuffix" disabled placeholder="请输入图片后缀"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
@@ -224,6 +233,9 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <upload_dialog ref="upload_dialog" @upload_dialog="upload_dialog"/>
+
   </div>
 </template>
 
@@ -237,10 +249,13 @@ import {
 } from '@/api/platform/zblog/v4_files/file_image'
 import { updateFile_attachment } from '@/api/platform/zblog/v4_files/file_attachment'
 import TipMessage from '@/utils/myUtils/TipMessage'
-
+import upload_dialog from '@/components/FileUpload/upload_dialog.vue'
 export default {
   dicts: ['is_delete'],
   name: 'File_image',
+  components: {
+    upload_dialog: upload_dialog
+  },
   data() {
     return {
       // 遮罩层
@@ -266,7 +281,7 @@ export default {
         orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         userId: null,
         groupId: null,
         title: null,
@@ -279,7 +294,9 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      //图片列表
+      tableImageList: [],
     }
   },
   created() {
@@ -293,6 +310,9 @@ export default {
         this.file_imageList = response.rows
         this.total = response.total
         this.loading = false
+
+        //getImageList
+        this.getImageListMethod(response.rows)
       }).catch((err) => {
         this.loading = false
         //Message({ message: ""+err, type: 'error' })
@@ -339,9 +359,14 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset()
-      this.open = true
-      this.title = '添加素材图片'
+      // this.reset()
+      // this.open = true
+      // this.title = '添加素材图片'
+      this.$refs["upload_dialog"].showDialog("ok");
+    },
+    //子组件关闭后调用
+    upload_dialog(){
+      this.getList();
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -377,11 +402,17 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids
       this.$modal.confirm('是否确认删除素材图片编号为"' + ids + '"的数据项？').then(function() {
-        return delFile_image(ids)
-      }).then(() => {
-        this.getList()
-        this.$modal.msgSuccess('删除成功')
-      }).catch(() => {
+        delFile_image(ids).then((res)=>{
+          if (res.code !== 200){
+            TipMessage.Warning(res.msg);
+            return null;
+          }
+          this.getList()
+          TipMessage.isOK(res.msg);
+        }).catch((err)=>{
+          //TipMessage.Error("错误"+ err);
+        })
+        //return delFile_image(ids)
       })
     },
     /** 导出按钮操作 */
@@ -411,6 +442,19 @@ export default {
     jumpToImageMedia(filePath){
       let url = process.env.VUE_APP_target_url + filePath;
       window.open(url, "_blank")
+    },
+    getImageUrl(filePath){
+      return process.env.VUE_APP_target_url + filePath;
+    },
+    getImageListMethod(row){
+      //console.log("row: ", row);
+      var imgList = [];
+      for (let i=0; i<row.length; i++){
+        let imaUrl = this.getImageUrl(row[i].filePath)
+        //console.log("imaUrl: ", imaUrl);
+        imgList.push(imaUrl)
+      }
+      this.tableImageList = imgList;
     },
     // ===========================================
   }
