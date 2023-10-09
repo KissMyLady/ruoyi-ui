@@ -230,7 +230,17 @@ export default {
     }
   },
   created() {
-    this.getList()
+    let is_showSearch = window.localStorage.getItem('showSearch');
+    if (is_showSearch == 'true'){
+      this.showSearch = true;
+    }else{
+      this.showSearch = false;
+    }
+    this.getList();
+    let page_showSearch = window.localStorage.getItem('showSearchBar');
+    if (page_showSearch != null ){
+      this.showSearch = showSearchBar
+    }
   },
   methods: {
     /** 查询文档历史记录列表 */

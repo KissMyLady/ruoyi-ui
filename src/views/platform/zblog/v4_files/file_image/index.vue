@@ -305,6 +305,12 @@ export default {
     }
   },
   created() {
+    let is_showSearch = window.localStorage.getItem('showSearch');
+    if (is_showSearch == 'true'){
+      this.showSearch = true;
+    }else{
+      this.showSearch = false;
+    }
     this.getList()
   },
   methods: {

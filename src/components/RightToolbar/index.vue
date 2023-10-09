@@ -71,6 +71,10 @@ export default {
   methods: {
     // 搜索
     toggleSearch() {
+      let vD = !this.showSearch;
+      console.log("显示还是隐藏？： ", vD);
+      window.localStorage.setItem('showSearch', !this.showSearch)
+
       this.$emit("update:showSearch", !this.showSearch);
     },
     // 刷新

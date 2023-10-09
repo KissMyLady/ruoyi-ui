@@ -319,8 +319,18 @@ export default {
     this.getList()
   },
   methods: {
+    //隐藏显示搜索栏
+    showOrOpenSearch(){
+      let is_showSearch = window.localStorage.getItem('showSearch');
+      if (is_showSearch == 'true'){
+          this.showSearch = true;
+      }else{
+        this.showSearch = false;
+      }
+    },
     /** 查询file_attachment列表 */
     getList() {
+      this.showOrOpenSearch();
       this.loading = true
       listFile_attachment(this.queryParams).then(response => {
         this.file_attachmentList = response.rows

@@ -270,6 +270,13 @@ export default {
     }
   },
   created() {
+    let is_showSearch = window.localStorage.getItem('showSearch');
+    if (is_showSearch == 'false'){
+        this.showSearch = false;
+    }
+    if (is_showSearch == 'true'){
+        this.showSearch = true;
+    }
     this.getList()
   },
   methods: {
