@@ -96,29 +96,8 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-      <el-table-column align="center" width="100" label="创建用户" prop="userId">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userId }} {{ scope.row.userName }}</span>
-        </template>
-      </el-table-column>
       <el-table-column align="center" width="100" label="图片组Id" prop="groupId"/>
-      <el-table-column align="center" width="300" label="图片组名" prop="groupName"/>
-      <el-table-column align="center" width="100" label="图片数量" prop="sumCount"/>
-      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.isDelete == 1"
-                  @click="switchDeleteState(scope.row.id, 0)"
-                  style="cursor:pointer;"
-                  type="danger">是
-          </el-tag>
-          <el-tag v-else-if="scope.row.isDelete == 0"
-                  @click="switchDeleteState(scope.row.id, 1)"
-                  style="cursor:pointer;">否
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="上传操作" align="center" width="atuo" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-col :span="1.5">
             <el-upload class="upload-demo"
@@ -135,10 +114,36 @@
               <el-button icon="el-icon-upload"
                          style="margin: 0"
                          type="primary"
-              >上传图片到该分类
+              >上传至 {{ scope.row.groupName }}
               </el-button>
             </el-upload>
           </el-col>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <el-table-column align="center" width="100" label="创建用户" prop="userId">
+        <template slot-scope="scope">
+          <span>{{ scope.row.userId }} {{ scope.row.userName }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" width="300" label="图片组名" prop="groupName"/> -->
+      <el-table-column align="center" width="100" label="图片数量" prop="sumCount"/>
+      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;">否
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
           <el-col :span="1.5" style="margin-top: 6px;">
             <el-button size="small"
                        icon="el-icon-edit"

@@ -133,11 +133,16 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="100" label="图片组Id" prop="groupId"/>
-      <el-table-column align="center" width="200" label="组名称" prop="groupName"/>
-      <el-table-column align="center" width="300" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="100" label="图片组Id" prop="groupId">
+        <template slot-scope="scope">
+          <p style="margin:0;padding:0">{{ scope.row.groupId }}</p>
+          <p style="margin:0;padding:0">{{ scope.row.groupName }}</p>
+        </template>
+      </el-table-column>
+      <!--<el-table-column align="center" width="200" label="组名称" prop="groupName"/>-->
+      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <!-- <el-table-column align="center" width="auto" label="图片名称" prop="fileName"/> -->
-      <el-table-column align="left" width="300" label="图片路径" prop="filePath">
+      <el-table-column align="left" width="auto" label="图片路径" prop="filePath">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark"
                       :content="scope.row.filePath" placement="right">
