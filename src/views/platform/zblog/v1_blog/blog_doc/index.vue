@@ -14,7 +14,7 @@
         >
           <el-option v-for="dict in projectList"
                      :key="dict.id"
-                     :label="dict.id +' '+ dict.name"
+                     :label="dict.id +' '+ dict.name +' '+ dict.role"
                      :value="dict.id"
           />
         </el-select>
@@ -102,29 +102,29 @@
         >修改
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['blog_doc:blog_doc:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['blog_doc:blog_doc:export']"
-        >导出
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="danger"-->
+<!--            plain-->
+<!--            icon="el-icon-delete"-->
+<!--            size="mini"-->
+<!--            :disabled="multiple"-->
+<!--            @click="handleDelete"-->
+<!--            v-hasPermi="['blog_doc:blog_doc:remove']"-->
+<!--        >删除-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="warning"-->
+<!--            plain-->
+<!--            icon="el-icon-download"-->
+<!--            size="mini"-->
+<!--            @click="handleExport"-->
+<!--            v-hasPermi="['blog_doc:blog_doc:export']"-->
+<!--        >导出-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -138,24 +138,59 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="createUserId"/>-->
-      <el-table-column align="center" width="auto" label="所属文集" prop="projectId"/>
+      <el-table-column align="center" width="100" label="所属文集" prop="projectId"/>
       <!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentDoc"/>-->
-      <el-table-column align="center" width="auto" label="标题" prop="name"/>
-      <!--      <el-table-column label="编辑器" align="center" prop="editorMode">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <dict-tag :options="dict.type.doc_editor_mode" :value="scope.row.editorMode"/>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
+      <el-table-column label="编辑器" width="70" align="center" prop="editorMode">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.editorMode == 1"
+                  @click="jumpToUrl(scope.row)"
+                  style="cursor:pointer;"
+                  type="success">Md
+          </el-tag>
+          <el-tag v-else-if="scope.row.editorMode == 2"
+                  @click="jumpToUrl(scope.row)"
+                  style="cursor:pointer;">Tiny
+          </el-tag>
+          <el-tag v-else-if="scope.row.editorMode == 9"
+                  @click="jumpToUrl(scope.row)"
+                  type="danger"
+                  style="cursor:pointer;">S
+          </el-tag>
+          <el-tag v-else
+                  @click="jumpToUrl(scope.row)"
+                  style="cursor:pointer;">其他
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="auto" label="标题" prop="name">
+        <template slot-scope="scope">
+          <el-tag style="margin-left: 0;"
+                  @click="showDocContent(scope.row)">
+            <el-link>Show</el-link>
+          </el-tag>
+          <el-input v-model="scope.row.name"
+                    style="margin-left:2px;width: 75%;border: 0;font-size: 16px"
+                    class="edit-input"
+                    size="small"/>
+          <el-button class="cancel-btn"
+                     style="float: right"
+                     size="small"
+                     icon="el-icon-check"
+                     plain
+                     @click="change_article_name_method(scope.row)">
+          </el-button>
+        </template>
+      </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
       <!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
-      <el-table-column label="状态码" align="center" prop="status" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.doc_status" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="状态码" align="center" prop="status" width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.doc_status" :value="scope.row.status"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!--      <el-table-column align="center" width="auto" label="打开下级" prop="openChildren"/>-->
       <!--      <el-table-column align="center" width="auto" label="显示下级" prop="showChildren"/>-->
       <el-table-column label="数据权限" width="75" align="center" prop="dataRowAuth">
@@ -199,17 +234,17 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button icon="el-icon-edit"
                      @click="handleUpdate(scope.row)"
                      v-hasPermi="['blog_doc:blog_doc:edit']">修改
           </el-button>
-          <el-button icon="el-icon-delete"
-                     @click="handleDelete(scope.row)"
-                     v-hasPermi="['blog_doc:blog_doc:remove']"
-          >删除
-          </el-button>
+<!--          <el-button icon="el-icon-delete"-->
+<!--                     @click="handleDelete(scope.row)"-->
+<!--                     v-hasPermi="['blog_doc:blog_doc:remove']"-->
+<!--          >删除-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -309,6 +344,10 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--显示文章 -->
+    <show-doc-dialog ref="show_doc_dialog" @show_doc_dialog="show_doc_dialog"/>
+
   </div>
 </template>
 
@@ -329,10 +368,15 @@ import {
   updateBlog_project
 } from '@/api/platform/zblog/v1_blog/blog_project'
 
+import showDocDialog from '@/views/platform/zblog/v1_blog/blog_doc/dialog/showDocDialog'
+
 export default {
   //dicts: ['is_delete'],
   name: 'Blog_doc',
   dicts: ['watermark_type', 'doc_status', 'is_delete', 'doc_editor_mode', 'role'],
+  components: {
+    showDocDialog: showDocDialog
+  },
   data() {
     return {
       // 遮罩层
@@ -388,9 +432,9 @@ export default {
   },
   created() {
     let is_showSearch = window.localStorage.getItem('showSearch');
-    if (is_showSearch == 'true'){
+    if (is_showSearch == 'true') {
       this.showSearch = true;
-    }else{
+    } else {
       this.showSearch = false;
     }
     this.getList()
@@ -565,6 +609,43 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
+    },
+    show_doc_dialog(){
+      console.log("子组件回调");
+    },
+    showDocContent(rowData) {
+      let transferData = {
+        db_id : rowData.id,
+        preContent : rowData.preContent,
+        content : rowData.content,
+        editorMode : rowData.editorMode,
+      }
+      this.$refs['show_doc_dialog'].showDialog(transferData)
+    },
+    change_article_name_method(data) {
+      let sendData = {
+        'id': data.id,
+        'name': data.name,
+      }
+      updateBlog_doc(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.data.msg)
+          return null
+        }
+        TipMessage.isOK(res.msg)
+      }).catch((err) => {
+      })
+    },
+    jumpToUrl(rowData){
+      let editorCode = rowData.editorMode;
+      var url = '';
+      if (editorCode == 9 || editorCode == '9'){
+        url = process.env.VUE_APP_blog_website_media + rowData.content
+      }else {
+        url = process.env.VUE_APP_jump_to_blog_detail_domain + rowData.id;
+      }
+
+      window.open(url, "_blank")
     },
     //==================================底部结束===================================
   }

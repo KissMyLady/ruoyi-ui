@@ -10,9 +10,7 @@ const CompressionPlugin = require('compression-webpack-plugin')
 const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
-const target_url = process.env.target_url ? process.env.target_url : `http://localhost:8080/api`;
 
-console.log("当前使用target_url: ", target_url);
 console.log("当前使用环境: ", process.env.ENV);
 
 // vue.config.js 配置说明

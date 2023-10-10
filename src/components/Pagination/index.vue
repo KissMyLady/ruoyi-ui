@@ -86,15 +86,15 @@ export default {
         this.currentPage = 1
       }
       this.$emit('pagination', { page: this.currentPage, limit: val })
-      if (this.autoScroll) {
-        scrollTo(0, 800)
-      }
+      // if (this.autoScroll) {
+      //   scrollTo(0, 800)
+      // }
     },
     handleCurrentChange(val) {
       this.$emit('pagination', { page: val, limit: this.pageSize })
-      if (this.autoScroll) {
-        scrollTo(0, 800)
-      }
+      // if (this.autoScroll) {
+      //   scrollTo(0, 800)
+      // }
     }
   }
 }
