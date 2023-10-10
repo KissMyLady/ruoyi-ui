@@ -38,8 +38,6 @@
 </template>
 
 <script>
-//import seeEditor from "@/components/markdown/see_v_md_editor"
-import VMdPreview from '@kangc/v-md-editor/lib/preview'
 import {
   listBlog_doc,
   getBlog_doc,
@@ -52,8 +50,6 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 export default {
   //组件
   components: {
-    //seeEditor: seeEditor,
-    VMdPreview: VMdPreview,
   },
   data() {
     return {
