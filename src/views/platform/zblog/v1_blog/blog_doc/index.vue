@@ -258,7 +258,10 @@
     />
 
     <!-- 添加或修改文章对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+    <el-dialog :title="title"
+               :visible.sync="open"
+               width="60%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="createUserId">
           <el-input v-model="form.createUserId" placeholder="请输入创建用户id"/>
@@ -277,6 +280,7 @@
         </el-form-item>
         <el-form-item label="文档内容">
           <editor v-model="form.content" :min-height="192"/>
+<!--          <tinymce-local ref="getTinymceData"/>-->
         </el-form-item>
         <el-form-item label="文档内容_预览_纯文本">
           <el-input v-model="form.preContent"
@@ -369,13 +373,14 @@ import {
 } from '@/api/platform/zblog/v1_blog/blog_project'
 
 import showDocDialog from '@/views/platform/zblog/v1_blog/blog_doc/dialog/showDocDialog'
-
+//import tinymceLocal from '@/components/tinymce/tinymceLocal.vue'
 export default {
   //dicts: ['is_delete'],
   name: 'Blog_doc',
   dicts: ['watermark_type', 'doc_status', 'is_delete', 'doc_editor_mode', 'role'],
   components: {
-    showDocDialog: showDocDialog
+    showDocDialog: showDocDialog,
+    //tinymceLocal: tinymceLocal,
   },
   data() {
     return {
@@ -526,14 +531,19 @@ export default {
       const id = row.id || this.ids
       getBlog_doc(id).then(response => {
         this.form = response.data
+        console.log("获取数据response.data: ", response.data);
         this.open = true
         this.title = '修改文章'
+        //this.$refs['getTinymceData'].setTinymceData(response.data.content);
       })
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          // let tinymceData = this.$refs['getTinymceData'].getTinymceData();
+          // console.log("获取到的富文本内容打印: ", tinymceData);
+          // this.form.content = tinymceData;
           if (this.form.id != null) {
             updateBlog_doc(this.form).then(response => {
               this.$modal.msgSuccess('修改成功')
