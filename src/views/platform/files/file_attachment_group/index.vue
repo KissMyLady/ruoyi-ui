@@ -201,7 +201,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        orderByColumn: 'create_time',
+        sortStr: 'create_time',
         isAsc: "desc",  //desc, acs
         //sortStr: "-create_time",  //sql排序字段
         pageNum: 1,
@@ -248,11 +248,8 @@ export default {
       this.getList_v2()
     },
     getList_v2() {
-      this.loading = true
       list_sqlFile_attachment_group(this.queryParams).then(response => {
-        this.file_attachment_groupList = response.rows;
-        this.total = response.total
-        this.loading = false
+        console.log("response: ", response);
       }).catch((err) => {
         this.loading = false
         console.log('请求错误: ', err)
