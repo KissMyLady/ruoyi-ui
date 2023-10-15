@@ -18,6 +18,16 @@ export function list_sqlFile_attachment_group(data) {
   })
 }
 
+//第三个版本, 返回为ResultVo类型
+export function list_sqlFile_attachment_group_v3(data) {
+  return request({
+    url: '/file_attachment_group/file_attachment_group/list_sql_v3',
+    method: 'post',
+    data: data
+  })
+}
+
+
 // 查询附件分组详细
 export function getFile_attachment_group(id) {
   return request({

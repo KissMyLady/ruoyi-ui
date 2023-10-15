@@ -6,6 +6,7 @@
             v-model="queryParams.dictName"
             placeholder="请输入字典名称"
             clearable
+            @change="handleQuery"
             style="width: 240px"
             @keyup.enter.native="handleQuery"
         />
@@ -14,6 +15,7 @@
         <el-input
             v-model="queryParams.dictType"
             placeholder="请输入字典类型"
+            @change="handleQuery"
             clearable
             style="width: 240px"
             @keyup.enter.native="handleQuery"
@@ -24,6 +26,7 @@
             v-model="queryParams.status"
             placeholder="字典状态"
             clearable
+            @change="handleQuery"
             style="width: 240px"
         >
           <el-option

@@ -58,6 +58,7 @@ export default {
     unmatch() {
       this.unmatchArray = [];
       if (this.value !== null && typeof this.value !== "undefined") {
+        //console.log("传入this.options打印: ", this.options);
         // 传入值为非数组
         if (!Array.isArray(this.value)) {
           if (this.options.some((v) => v.value == this.value)) return false;

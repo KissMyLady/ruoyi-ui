@@ -180,9 +180,12 @@ export default {
     //转json格式
     toJson(jsonData){
       try {
-        let jData = JSON.parse(jsonData);
-        // console.log("转换后的json: ", jData);
-        return jData;
+        if(jsonData !== undefined && jsonData !== null && jsonData !== "{}"){
+          let jData = JSON.parse(jsonData);
+          // console.log("转换后的json: ", jData);
+          return jData;
+        }
+        return {}
       }catch (error){
         console.log("转换json失败: ", error);
         return jsonData;

@@ -386,7 +386,7 @@ export default {
       this.$refs['showSendContentDialog'].showDialog(data);
     },
     showLogs(data){
-      console.log("传递dialog的data: ", data);
+      // console.log("传递dialog的data: ", data);
       this.$refs['showSendContentDialog'].showDialog(data);
     },
   }

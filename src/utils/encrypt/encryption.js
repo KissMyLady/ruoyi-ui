@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js'
 //import { cipherName } from '@/utils/mySettings'
+import {changeDictToString, switchBool2Number, switchListBool2Number} from '@/utils/myUtils/changeSomething'
 
 let cipherName = 'random_key'
 
@@ -47,6 +48,27 @@ export function aesDecrypt(encryptStr) {
   let key = CryptoJS.enc.Utf8.parse(secretKey)
   let decrypt = CryptoJS.AES.decrypt(encryptStr, key, option)
   return CryptoJS.enc.Utf8.stringify(decrypt).toString()
+}
+
+//解密, 直接返回json对象
+export function aesDecrypt2Json(encryptStr) {
+  const date = new Date()
+  //密钥长度为16位
+  let secretKey = dateFormat('YYYY_mm_dd_HH_MM', date)
+  let key = CryptoJS.enc.Utf8.parse(secretKey)
+  let decrypt = CryptoJS.AES.decrypt(encryptStr, key, option)
+  let strD = CryptoJS.enc.Utf8.stringify(decrypt).toString()
+  let jsonData = JSON.parse(strD);
+  //单json查询返回
+  if(jsonData["1"] !== undefined && jsonData["1"] != null){
+    return switchBool2Number(jsonData["1"])
+  }
+  //如果是数组json
+  if(jsonData.length >= 1){
+    //遍历[josn]
+    return switchListBool2Number(jsonData)
+  }
+  return jsonData;
 }
 
 //升级的加密

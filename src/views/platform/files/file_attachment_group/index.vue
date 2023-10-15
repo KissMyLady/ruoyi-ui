@@ -175,7 +175,8 @@ import {
   updateFile_attachment_group
 } from "@/api/platform/files/file_attachment_group";
 import TipMessage from '@/utils/myUtils/TipMessage'
-
+import { changeDictToString } from '@/utils/myUtils/changeSomething'
+import { aesEncrypt, aesDecrypt } from '@/utils/encrypt/encryption'
 export default {
   dicts: ['is_delete'],
   name: "File_attachment_group",
@@ -236,8 +237,12 @@ export default {
     /** 查询附件分组列表 */
     getList() {
       this.loading = true;
-      listFile_attachment_group(this.queryParams).then(response => {
-        this.file_attachment_groupList = response.rows;
+      list_sqlFile_attachment_group(this.queryParams).then(response => {
+        let privateObj = response.text;
+        let publicObj = aesDecrypt(privateObj);
+        let jsonData = JSON.parse(publicObj);
+        console.log("jsonData: ", jsonData);
+        this.file_attachment_groupList =jsonData;
         this.total = response.total;
         this.loading = false;
       }).catch((err) => {
@@ -245,16 +250,6 @@ export default {
         //Message({ message: ""+err, type: 'error' })
         console.log("请求错误: ", err);
       });
-      this.getList_v2()
-    },
-    getList_v2() {
-      list_sqlFile_attachment_group(this.queryParams).then(response => {
-        console.log("response: ", response);
-      }).catch((err) => {
-        this.loading = false
-        console.log('请求错误: ', err)
-        // TipMessage.Warning("请求错误"+ err);
-      })
     },
     // 取消按钮
     cancel() {
@@ -301,8 +296,13 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
+      //重新查询赋值
       getFile_attachment_group(id).then(response => {
-        this.form = response.data;
+        let privateObj = response.text;
+        let publicObj = aesDecrypt(privateObj);
+        let jsonData = JSON.parse(publicObj);
+        console.log("修改按钮点击jsonData: ", jsonData);
+        this.form = jsonData;
         this.open = true;
         this.title = "修改附件分组";
       });
@@ -311,14 +311,22 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          //对表单加密
+          let dict2String = changeDictToString(this.form);
+          //发起请求, 获取请求
+          let sendData = {
+            "a": aesEncrypt("1024"),
+            "b": aesEncrypt(dict2String),
+            "c": aesEncrypt("Hello World !")
+          }
           if (this.form.id != null) {
-            updateFile_attachment_group(this.form).then(response => {
+            updateFile_attachment_group(sendData).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addFile_attachment_group(this.form).then(response => {
+            addFile_attachment_group(sendData).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
