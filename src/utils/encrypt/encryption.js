@@ -59,16 +59,13 @@ export function aesDecrypt2Json(encryptStr) {
   let decrypt = CryptoJS.AES.decrypt(encryptStr, key, option)
   let strD = CryptoJS.enc.Utf8.stringify(decrypt).toString()
   let jsonData = JSON.parse(strD);
-  //单json查询返回
-  if(jsonData["1"] !== undefined && jsonData["1"] != null){
-    return switchBool2Number(jsonData["1"])
-  }
-  //如果是数组json
-  if(jsonData.length >= 1){
+  //如果是数组
+  if( Array.isArray(jsonData) ){
     //遍历[josn]
     return switchListBool2Number(jsonData)
   }
-  return jsonData;
+  //不是数组, 是Map<String, Object>对象
+  return switchBool2Number(jsonData)
 }
 
 //升级的加密
