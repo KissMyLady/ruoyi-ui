@@ -138,32 +138,37 @@
         </template>
       </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
-      <el-table-column align="center" width="auto" label="分组id" prop="groupId"/>
+      <el-table-column align="center" width="100" label="分组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <!--      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
-      <el-table-column align="center" width="auto" label="文件名" prop="fileName"/>
-      <el-table-column align="center" width="auto" label="文件大小" prop="fileSize"/>
-      <el-table-column align="center" width="auto" label="上传方式" prop="upMethod"/>
-      <el-table-column align="center" width="auto" label="文件后缀" prop="fileSuffix"/>
+      <el-table-column align="center" width="auto" label="文件名" prop="fileName">
+        <template slot-scope="scope">
+          <el-link @click="jumpToImageMedia(scope.row.filePath)"
+                   type="primary"
+          >{{ scope.row.filePath }}
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>
+      <el-table-column align="center" width="100" label="上传方式" prop="upMethod"/>
+      <el-table-column align="center" width="100" label="文件后缀" prop="fileSuffix"/>
       <!--      <el-table-column align="center" width="auto" label="url链接" prop="url"/>-->
       <!--      <el-table-column align="center" width="auto" label="在存储地址的真实绝对路径" prop="absPath"/>-->
       <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
-        <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.isDelete == 1"
-                    @click="switchDeleteState(scope.row.id, 0)"
-                    style="cursor:pointer;"
-                    type="danger"
-            >是
-            </el-tag>
-            <el-tag v-else-if="scope.row.isDelete == 0"
-                    @click="switchDeleteState(scope.row.id, 1)"
-                    style="cursor:pointer;"
-            >否
-            </el-tag>
-          </template>
-        </el-table-column>
+      <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger"
+          >是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;"
+          >否
+          </el-tag>
+        </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -210,17 +215,20 @@
         <el-form-item label="文件路径" prop="filePath">
           <el-input v-model="form.filePath"
                     disabled
-                    placeholder="请输入文件路径"/>
+                    placeholder="请输入文件路径"
+          />
         </el-form-item>
         <el-form-item label="文件名" prop="fileName">
           <el-input v-model="form.fileName"
                     disabled
-                    placeholder="请输入文件名"/>
+                    placeholder="请输入文件名"
+          />
         </el-form-item>
         <el-form-item label="文件大小" prop="fileSize">
           <el-input v-model="form.fileSize"
                     disabled
-                    placeholder="请输入文件大小"/>
+                    placeholder="请输入文件大小"
+          />
         </el-form-item>
         <el-form-item label="上传方式" prop="upMethod">
           <el-input v-model="form.upMethod" placeholder="请输入上传方式"/>
@@ -228,7 +236,8 @@
         <el-form-item label="文件后缀" prop="fileSuffix">
           <el-input v-model="form.fileSuffix"
                     disabled
-                    placeholder="请输入文件后缀"/>
+                    placeholder="请输入文件后缀"
+          />
         </el-form-item>
         <el-form-item label="url链接" prop="url">
           <el-input v-model="form.url" autosize type="textarea" placeholder="请输入内容"/>
@@ -239,7 +248,8 @@
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5"
                     disabled
-                    placeholder="请输入md5校验值"/>
+                    placeholder="请输入md5校验值"
+          />
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
@@ -482,7 +492,7 @@ export default {
         'id': rowId,
         'isDelete': isD
       }
-      let dict2String = changeDictToString(sendForm);
+      let dict2String = changeDictToString(sendForm)
       let sendData = {
         'a': aesEncrypt('1024'),
         'b': aesEncrypt(dict2String),
@@ -502,6 +512,10 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
+    },
+    jumpToImageMedia(filePath) {
+      let url = process.env.VUE_APP_media_domain + filePath
+      window.open(url, '_blank')
     }
     //==========================底部结束==================================
   }

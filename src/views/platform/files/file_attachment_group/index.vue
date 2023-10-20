@@ -107,6 +107,7 @@
       <el-table-column label="上传操作" align="center" width="260">
         <template slot-scope="scope">
           <el-upload class="upload-demo"
+                     :ref="'uploadFile' + scope.row.groupId"
                      style="display: inline-block; margin-right: 10px"
                      :action="upload.url"
                      :multiple="false"
@@ -128,6 +129,7 @@
 <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <el-table-column align="center" width="auto" label="分组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="组名" prop="groupName"/>
+      <el-table-column align="center" width="auto" label="文件数量" prop="fileCount"/>
       <el-table-column align="center" width="auto" label="备注" prop="note"/>
       <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
@@ -284,7 +286,9 @@ export default {
         fileList: [],//文件列表
         // 上传的地址
         url: process.env.VUE_APP_target_url + '/file_attachment/upload/upload'
-      }
+      },
+      group_ids: [],//组ids
+
     };
   },
   created() {
@@ -300,6 +304,13 @@ export default {
         //  let jsonData = JSON.parse(publicObj);
         console.log("jsonData: ", jsonData);
         this.file_attachment_groupList =jsonData;
+        var gList = [];
+        for (let i = 0; i < jsonData.length; i++) {
+          let resData = jsonData[i];
+          let group_ud = resData['groupId'];
+          gList.push(group_ud);
+        }
+        this.group_ids = gList;
         this.total = response.total;
         this.loading = false;
       }).catch((err) => {
@@ -307,6 +318,8 @@ export default {
         //Message({ message: ""+err, type: 'error' })
         console.log("请求错误: ", err);
       });
+      //清除文件上传
+      this.clearFilesMethod();
     },
     // 取消按钮
     cancel() {
@@ -336,6 +349,7 @@ export default {
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
+      this.clearFilesMethod();
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -473,7 +487,16 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
-    }
+    },
+    //清除已上传的文件列表
+    clearFilesMethod() {
+      let groupIds = this.group_ids;
+      for (let i = 0; i < groupIds.length; i++) {
+        let group_id = groupIds[i];
+        this.$refs['uploadFile' + group_id].clearFiles();
+      }
+      // this.$refs['uploadFile' + groupId].clearFiles();
+    },
     //====================================底部结束=========================================
   }
 };
