@@ -118,21 +118,53 @@
               border
               stripe
               :data="file_attachmentList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>
+      <el-table-column label="预览" align="center" width="200">
+        <template slot-scope="scope">
+          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"
+                    style="margin: 0;padding:0"
+                    fit="contain"
+                    lazy
+                    :src="scope.row.url"
+                    :preview-src-list="[scope.row.url]"
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
       <el-table-column align="center" width="auto" label="分组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
-      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>
+      <!--      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
       <el-table-column align="center" width="auto" label="文件名" prop="fileName"/>
       <el-table-column align="center" width="auto" label="文件大小" prop="fileSize"/>
       <el-table-column align="center" width="auto" label="上传方式" prop="upMethod"/>
       <el-table-column align="center" width="auto" label="文件后缀" prop="fileSuffix"/>
-      <el-table-column align="center" width="auto" label="url链接" prop="url"/>
-      <el-table-column align="center" width="auto" label="在存储地址的真实绝对路径" prop="absPath"/>
-      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
+      <!--      <el-table-column align="center" width="auto" label="url链接" prop="url"/>-->
+      <!--      <el-table-column align="center" width="auto" label="在存储地址的真实绝对路径" prop="absPath"/>-->
+      <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
+      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
+        <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.isDelete == 1"
+                    @click="switchDeleteState(scope.row.id, 0)"
+                    style="cursor:pointer;"
+                    type="danger"
+            >是
+            </el-tag>
+            <el-tag v-else-if="scope.row.isDelete == 0"
+                    @click="switchDeleteState(scope.row.id, 1)"
+                    style="cursor:pointer;"
+            >否
+            </el-tag>
+          </template>
+        </el-table-column>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -176,28 +208,38 @@
           <el-input v-model="form.title" placeholder="请输入名称,描述"/>
         </el-form-item>
         <el-form-item label="文件路径" prop="filePath">
-          <el-input v-model="form.filePath" placeholder="请输入文件路径"/>
+          <el-input v-model="form.filePath"
+                    disabled
+                    placeholder="请输入文件路径"/>
         </el-form-item>
         <el-form-item label="文件名" prop="fileName">
-          <el-input v-model="form.fileName" placeholder="请输入文件名"/>
+          <el-input v-model="form.fileName"
+                    disabled
+                    placeholder="请输入文件名"/>
         </el-form-item>
         <el-form-item label="文件大小" prop="fileSize">
-          <el-input v-model="form.fileSize" placeholder="请输入文件大小"/>
+          <el-input v-model="form.fileSize"
+                    disabled
+                    placeholder="请输入文件大小"/>
         </el-form-item>
         <el-form-item label="上传方式" prop="upMethod">
           <el-input v-model="form.upMethod" placeholder="请输入上传方式"/>
         </el-form-item>
         <el-form-item label="文件后缀" prop="fileSuffix">
-          <el-input v-model="form.fileSuffix" placeholder="请输入文件后缀"/>
+          <el-input v-model="form.fileSuffix"
+                    disabled
+                    placeholder="请输入文件后缀"/>
         </el-form-item>
         <el-form-item label="url链接" prop="url">
           <el-input v-model="form.url" autosize type="textarea" placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item label="在存储地址的真实绝对路径" prop="absPath">
+        <el-form-item label="绝对路径" prop="absPath">
           <el-input v-model="form.absPath" autosize type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
-          <el-input v-model="form.md5" placeholder="请输入md5校验值"/>
+          <el-input v-model="form.md5"
+                    disabled
+                    placeholder="请输入md5校验值"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
@@ -218,14 +260,14 @@ import {
   delFile_attachment,
   addFile_attachment,
   updateFile_attachment
-} from "@/api/platform/files/file_attachment";
+} from '@/api/platform/files/file_attachment'
 import TipMessage from '@/utils/myUtils/TipMessage'
-import {changeDictToString, switchBool2Number} from '@/utils/myUtils/changeSomething'
-import {aesEncrypt, aesDecrypt, aesDecrypt2Json} from '@/utils/encrypt/encryption'
+import { changeDictToString, switchBool2Number } from '@/utils/myUtils/changeSomething'
+import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 
 export default {
   //dicts: ['is_delete'],
-  name: "File_attachment",
+  name: 'File_attachment',
   data() {
     return {
       // 遮罩层
@@ -243,14 +285,14 @@ export default {
       // 附件表格数据
       file_attachmentList: [],
       // 弹出层标题
-      title: "",
+      title: '',
       // 是否显示弹出层
       open: false,
       // 查询参数
       queryParams: {
-        orderByColumn: 'create_time',
-        isAsc: "desc",  //desc, acs
-        //sortStr: "-create_time",  //sql排序字段
+        //orderByColumn: 'create_time',
+        isAsc: 'desc',  //desc, acs
+        sortStr: 'create_time',  //sql排序字段
         pageNum: 1,
         pageSize: 10,
         groupId: null,
@@ -258,7 +300,7 @@ export default {
         fileName: null,
         upMethod: null,
         fileSuffix: null,
-        isDelete: null,
+        isDelete: null
       },
       // 表单参数
       form: {},
@@ -266,16 +308,16 @@ export default {
       rules: {},
       //表格行
       columns: [
-        {key: 'id', align: 'center', width: 'auth', label: `主键`, prop: 'id', visible: true},
-        {key: 'user_id', align: 'center', width: 'auth', label: `用户ID`, prop: 'user_id', visible: true},
-        {key: 'group_id', align: 'center', width: 'auth', label: `分组id`, prop: 'group_id', visible: true},
-        {key: 'title', align: 'center', width: 'auth', label: `名称,描述`, prop: 'title', visible: true},
-        {key: 'file_path', align: 'center', width: 'auth', label: `文件路径`, prop: 'file_path', visible: true},
-        {key: 'file_name', align: 'center', width: 'auth', label: `文件名`, prop: 'file_name', visible: true},
-        {key: 'file_size', align: 'center', width: 'auth', label: `文件大小`, prop: 'file_size', visible: true},
-        {key: 'up_method', align: 'center', width: 'auth', label: `上传方式`, prop: 'up_method', visible: true},
-        {key: 'file_suffix', align: 'center', width: 'auth', label: `文件后缀`, prop: 'file_suffix', visible: true},
-        {key: 'url', align: 'center', width: 'auth', label: `url链接`, prop: 'url', visible: true},
+        { key: 'id', align: 'center', width: 'auth', label: `主键`, prop: 'id', visible: true },
+        { key: 'user_id', align: 'center', width: 'auth', label: `用户ID`, prop: 'user_id', visible: true },
+        { key: 'group_id', align: 'center', width: 'auth', label: `分组id`, prop: 'group_id', visible: true },
+        { key: 'title', align: 'center', width: 'auth', label: `名称,描述`, prop: 'title', visible: true },
+        { key: 'file_path', align: 'center', width: 'auth', label: `文件路径`, prop: 'file_path', visible: true },
+        { key: 'file_name', align: 'center', width: 'auth', label: `文件名`, prop: 'file_name', visible: true },
+        { key: 'file_size', align: 'center', width: 'auth', label: `文件大小`, prop: 'file_size', visible: true },
+        { key: 'up_method', align: 'center', width: 'auth', label: `上传方式`, prop: 'up_method', visible: true },
+        { key: 'file_suffix', align: 'center', width: 'auth', label: `文件后缀`, prop: 'file_suffix', visible: true },
+        { key: 'url', align: 'center', width: 'auth', label: `url链接`, prop: 'url', visible: true },
         {
           key: 'abs_path',
           align: 'center',
@@ -284,40 +326,40 @@ export default {
           prop: 'abs_path',
           visible: true
         },
-        {key: 'md5', align: 'center', width: 'auth', label: `md5校验值`, prop: 'md5', visible: true},
-        {key: 'is_delete', align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true},
-        {key: 'create_time', align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true},
-        {key: 'update_time', align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true},
+        { key: 'md5', align: 'center', width: 'auth', label: `md5校验值`, prop: 'md5', visible: true },
+        { key: 'is_delete', align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true },
+        { key: 'create_time', align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true },
+        { key: 'update_time', align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true }
       ]
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询附件列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listFile_attachment(this.queryParams).then(response => {
-        let privateObj = response.text;
+        let privateObj = response.text
         // let publicObj = aesDecrypt(privateObj);
         // let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log("查询结果jsonData", jsonData)
-        this.file_attachmentList = jsonData;
+        console.log('查询结果jsonData', jsonData)
+        this.file_attachmentList = jsonData
         //this.file_attachmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        this.total = response.total
+        this.loading = false
       }).catch((err) => {
         this.loading = false
         //Message({ message: ""+err, type: 'error' })
-        console.log("请求错误: ", err);
-      });
+        console.log('请求错误: ', err)
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -337,18 +379,18 @@ export default {
         isDelete: null,
         createTime: null,
         updateTime: null
-      };
-      this.resetForm("form");
+      }
+      this.resetForm('form')
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm('queryForm')
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -358,34 +400,34 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加附件";
+      this.reset()
+      this.open = true
+      this.title = '添加附件'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const id = row.id || this.ids
       getFile_attachment(id).then(response => {
-        let privateObj = response.text;
-        let publicObj = aesDecrypt2Json(privateObj);
-        console.log("查询结果打印: ", publicObj);
-        this.form = publicObj;
+        let privateObj = response.text
+        let publicObj = aesDecrypt2Json(privateObj)
+        console.log('查询结果打印: ', publicObj)
+        this.form = publicObj
         //this.form = response.data;
-        this.open = true;
-        this.title = "修改附件";
-      });
+        this.open = true
+        this.title = '修改附件'
+      })
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs['form'].validate(valid => {
         if (valid) {
           //对表单加密
-          let dict2String = changeDictToString(this.form);
+          let dict2String = changeDictToString(this.form)
           let sendData = {
-            "a": aesEncrypt("1024"),
-            "b": aesEncrypt(dict2String),
-            "c": aesEncrypt("Hello World !")
+            'a': aesEncrypt('1024'),
+            'b': aesEncrypt(dict2String),
+            'c': aesEncrypt('Hello World !')
           }
 
           //发送内容加密
@@ -397,10 +439,10 @@ export default {
               // let jsonData = JSON.parse(publicObj);
               // TipMessage.isOK(jsonData);
 
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('修改成功')
+              this.open = false
+              this.getList()
+            })
           } else {
             addFile_attachment(sendData).then(response => {
               // let privateObj = response.text;
@@ -408,31 +450,60 @@ export default {
               // let jsonData = JSON.parse(publicObj);
               // TipMessage.isOK(jsonData);
 
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess('新增成功')
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除附件编号为"' + ids + '"的数据项？').then(function () {
-        return delFile_attachment(ids);
+      const ids = row.id || this.ids
+      this.$modal.confirm('是否确认删除附件编号为"' + ids + '"的数据项？').then(function() {
+        return delFile_attachment(ids)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
+        this.getList()
+        this.$modal.msgSuccess('删除成功')
       }).catch(() => {
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
       this.download('file_attachment/file_attachment/export', {
         ...this.queryParams
       }, `file_attachment_${new Date().getTime()}.xlsx`)
+    },
+    //删除切换
+    switchDeleteState(rowId, isD) {
+      //console.log("删除切换row: ", rowId);
+      let sendForm = {
+        'id': rowId,
+        'isDelete': isD
+      }
+      let dict2String = changeDictToString(sendForm);
+      let sendData = {
+        'a': aesEncrypt('1024'),
+        'b': aesEncrypt(dict2String),
+        'c': aesEncrypt('Hello World !')
+      }
+      updateFile_attachment(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg)
+          return null
+        }
+        if (isD == 1) {
+          TipMessage.Warning('删除成功')
+        } else {
+          TipMessage.isOK('取消删除成功')
+        }
+        this.getList()
+      }).catch((err) => {
+        //TipMessage.Error("错误"+ err);
+      })
     }
+    //==========================底部结束==================================
   }
-};
+}
 </script>

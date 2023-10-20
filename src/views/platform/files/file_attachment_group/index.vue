@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="88px">
       <el-form-item label="创建用户id" prop="userId">
         <el-input
             v-model="queryParams.userId"
@@ -94,20 +99,51 @@
     </el-row>
 
     <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
-              :header-row-style="{height:'32px'}"
-              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="file_attachment_groupList"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>
+      <el-table-column label="上传操作" align="center" width="260">
+        <template slot-scope="scope">
+          <el-upload class="upload-demo"
+                     style="display: inline-block; margin-right: 10px"
+                     :action="upload.url"
+                     :multiple="false"
+                     :headers="upLoadHeaders(scope.row.groupId)"
+                     :on-preview="handlePreview"
+                     :on-remove="handleRemove"
+                     :before-upload="beforeUpload"
+                     :on-success="handleFileSuccess"
+                     :file-list="upload.fileList"
+                     list-type="picture">
+            <el-button size="small" plain
+                       style="margin: 0"
+                       icon="el-icon-upload"
+                       type="primary">上传文件到 {{scope.row.groupName}}</el-button>
+          </el-upload>
+        </template>
+      </el-table-column>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <el-table-column align="center" width="auto" label="分组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="组名" prop="groupName"/>
       <el-table-column align="center" width="auto" label="备注" prop="note"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
+      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger"
+          >是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  style="cursor:pointer;"
+          >否
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -176,7 +212,9 @@ import {
 } from "@/api/platform/files/file_attachment_group";
 import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
-import { aesEncrypt, aesDecrypt } from '@/utils/encrypt/encryption'
+import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
+import { getToken } from "@/utils/auth";
+import { updateFile_attachment } from '@/api/platform/files/file_attachment'
 export default {
   dicts: ['is_delete'],
   name: "File_attachment_group",
@@ -227,7 +265,26 @@ export default {
         {align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true},
         {align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true},
         {align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true},
-      ]
+      ],
+      // 用户导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: '',
+        filePath: '',
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: {
+          Authorization: 'Bearer ' + getToken()
+        },
+        fileList: [],//文件列表
+        // 上传的地址
+        url: process.env.VUE_APP_target_url + '/file_attachment/upload/upload'
+      }
     };
   },
   created() {
@@ -239,8 +296,8 @@ export default {
       this.loading = true;
       list_sqlFile_attachment_group(this.queryParams).then(response => {
         let privateObj = response.text;
-        let publicObj = aesDecrypt(privateObj);
-        let jsonData = JSON.parse(publicObj);
+        let jsonData = aesDecrypt2Json(privateObj);
+        //  let jsonData = JSON.parse(publicObj);
         console.log("jsonData: ", jsonData);
         this.file_attachment_groupList =jsonData;
         this.total = response.total;
@@ -299,8 +356,10 @@ export default {
       //重新查询赋值
       getFile_attachment_group(id).then(response => {
         let privateObj = response.text;
-        let publicObj = aesDecrypt(privateObj);
-        let jsonData = JSON.parse(publicObj);
+        let jsonData = aesDecrypt2Json(privateObj);
+
+        //let publicObj = aesDecrypt(privateObj);
+        //let jsonData = JSON.parse(publicObj);
         console.log("修改按钮点击jsonData: ", jsonData);
         this.form = jsonData;
         this.open = true;
@@ -351,7 +410,71 @@ export default {
       this.download('file_attachment_group/file_attachment_group/export', {
         ...this.queryParams
       }, `file_attachment_group_${new Date().getTime()}.xlsx`)
+    },
+    uploadAttachment(){
+      TipMessage.isOK("文件上传");
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      console.log("文件上传成功处理: ", response);
+      // this.upload.isUploading = false
+      // this.form.filePath = response.url
+      // this.msgSuccess(response.msg);
+      TipMessage.isOK("上传成功");
+      this.getList()
+    },
+    beforeUpload(file) {
+      this.upload.isUploading = true
+    },
+    handlePreview(file) {
+      //console.log(': ', file)
+    },
+    //移除
+    handleRemove(file, fileList) {
+    },
+    jumpToImageMedia(filePath){
+      let url = process.env.VUE_APP_target_url + filePath;
+      window.open(url, "_blank")
+    },
+    upLoadHeaders(group_id){
+      return {
+        "Authorization": 'Bearer ' + getToken(),
+        "group_id": group_id
+      }
+    },
+    //删除切换
+    switchDeleteState(rowId, isD) {
+      //console.log("删除切换row: ", rowId);
+      let sendForm = {
+        'id': rowId,
+        'isDelete': isD
+      }
+      let dict2String = changeDictToString(sendForm);
+      let sendData = {
+        'a': aesEncrypt('1024'),
+        'b': aesEncrypt(dict2String),
+        'c': aesEncrypt('Hello World !')
+      }
+      updateFile_attachment_group(sendData).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg)
+          return null
+        }
+        if (isD == 1) {
+          TipMessage.Warning('删除成功')
+        } else {
+          TipMessage.isOK('取消删除成功')
+        }
+        this.getList()
+      }).catch((err) => {
+        //TipMessage.Error("错误"+ err);
+      })
     }
+    //====================================底部结束=========================================
   }
 };
 </script>
