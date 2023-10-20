@@ -395,12 +395,17 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除图片分组编号为"' + ids + '"的数据项？').then(function () {
-        return delFile_image_group(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+        delFile_image_group(ids).then((res)=>{
+          if (res.data.code !== 200){
+            TipMessage.Warning(res.data.msg);
+            return null;
+          }
+          TipMessage.isOK(res.data.msg);
+          this.getList();
+        }).catch((err)=>{
+          //TipMessage.Error("错误"+ err);
+        })
+      })
     },
     /** 导出按钮操作 */
     handleExport() {

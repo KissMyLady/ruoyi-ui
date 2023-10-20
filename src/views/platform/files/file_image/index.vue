@@ -151,11 +151,11 @@
         </template>
       </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
-      <el-table-column align="center" width="auto" label="文件大小" prop="fileSize"/>
-      <el-table-column align="center" width="auto" label="上传方式" prop="upMethod"/>
+      <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>
+      <el-table-column align="center" width="100" label="上传方式" prop="upMethod"/>
 <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
-      <el-table-column align="center" width="auto" label="图片后缀" prop="fileSuffix"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
+      <el-table-column align="center" width="100" label="图片后缀" prop="fileSuffix"/>
+      <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
@@ -204,34 +204,42 @@
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
+          <el-input v-model="form.userId" placeholder=""/>
         </el-form-item>
         <el-form-item label="图片分组" prop="groupId">
-          <el-input v-model="form.groupId" placeholder="请输入图片分组"/>
+          <el-input v-model="form.groupId" placeholder=""/>
         </el-form-item>
         <el-form-item label="名称,描述" prop="title">
-          <el-input v-model="form.title" placeholder="请输入名称,描述"/>
+          <el-input v-model="form.title" placeholder=""/>
         </el-form-item>
         <el-form-item label="图片名称" prop="fileName">
-          <el-input v-model="form.fileName" placeholder="请输入图片名称"/>
+          <el-input v-model="form.fileName" disabled placeholder=""/>
         </el-form-item>
         <el-form-item label="图片路径" prop="filePath">
-          <el-input v-model="form.filePath" placeholder="请输入图片路径"/>
+          <el-input v-model="form.filePath" disabled placeholder=""/>
         </el-form-item>
         <el-form-item label="文件大小" prop="fileSize">
-          <el-input v-model="form.fileSize" placeholder="请输入文件大小"/>
+          <el-input v-model="form.fileSize" disabled placeholder=""/>
         </el-form-item>
         <el-form-item label="上传方式" prop="upMethod">
-          <el-input v-model="form.upMethod" placeholder="请输入上传方式"/>
+          <el-input v-model="form.upMethod" placeholder=""/>
+        </el-form-item>
+        <el-form-item label="url" prop="url">
+          <el-input v-model="form.url"
+                    disabled
+                    placeholder="url"/>
+        </el-form-item>
+        <el-form-item label="图片路径" prop="md5">
+          <el-input v-model="form.absPath" disabled placeholder="abs_path"/>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
-          <el-input v-model="form.md5" placeholder="请输入md5校验值"/>
+          <el-input v-model="form.md5" disabled placeholder=""/>
         </el-form-item>
-        <el-form-item label="图片后缀" prop="fileSuffix">
-          <el-input v-model="form.fileSuffix" placeholder="请输入图片后缀"/>
+        <el-form-item label="图片后缀" disabled prop="fileSuffix">
+          <el-input v-model="form.fileSuffix" placeholder=""/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
+          <el-input v-model="form.isDelete" placeholder=""/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
