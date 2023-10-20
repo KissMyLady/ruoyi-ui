@@ -104,7 +104,7 @@
               :data="file_attachment_groupList"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="上传操作" align="center" width="260">
+      <el-table-column label="上传文件" align="left" width="260">
         <template slot-scope="scope">
           <el-upload class="upload-demo"
                      :ref="'uploadFile' + scope.row.groupId"
@@ -121,7 +121,7 @@
             <el-button size="small" plain
                        style="margin: 0"
                        icon="el-icon-upload"
-                       type="primary">上传文件到 {{scope.row.groupName}}</el-button>
+                       type="primary">上传到 {{scope.row.groupName}}</el-button>
           </el-upload>
         </template>
       </el-table-column>

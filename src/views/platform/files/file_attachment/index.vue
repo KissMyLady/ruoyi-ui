@@ -121,22 +121,22 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column label="预览" align="center" width="200">
-        <template slot-scope="scope">
-          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"
-                    style="margin: 0;padding:0"
-                    fit="contain"
-                    lazy
-                    :src="scope.row.url"
-                    :preview-src-list="[scope.row.url]"
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+<!--      <el-table-column label="预览" align="center" width="200">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"-->
+<!--                    style="margin: 0;padding:0"-->
+<!--                    fit="contain"-->
+<!--                    lazy-->
+<!--                    :src="scope.row.url"-->
+<!--                    :preview-src-list="[scope.row.url]"-->
+<!--          >-->
+<!--            <div slot="error" class="image-slot">-->
+<!--              <i class="el-icon-picture-outline"></i>-->
+<!--            </div>-->
+<!--          </el-image>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
       <el-table-column align="center" width="100" label="分组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
@@ -304,7 +304,7 @@ export default {
         isAsc: 'desc',  //desc, acs
         sortStr: 'create_time',  //sql排序字段
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         groupId: null,
         title: null,
         fileName: null,
