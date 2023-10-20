@@ -438,7 +438,7 @@ export default {
       // this.upload.isUploading = false
       // this.form.filePath = response.url
       // this.msgSuccess(response.msg);
-      TipMessage.isOK("上传成功");
+      TipMessage.isOK(response.msg);
       this.getList()
     },
     beforeUpload(file) {
@@ -457,7 +457,7 @@ export default {
     upLoadHeaders(group_id){
       return {
         "Authorization": 'Bearer ' + getToken(),
-        "group_id": group_id
+        "http-group-id": group_id
       }
     },
     //删除切换
