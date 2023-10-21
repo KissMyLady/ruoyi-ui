@@ -82,7 +82,7 @@
 <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>
       <el-table-column align="center" width="auto" label="分配的key" prop="respKey"/>
-      <el-table-column align="center" width="auto" label="请求参数" prop="reqParams"/>
+<!--      <el-table-column align="center" width="auto" label="请求参数" prop="reqParams"/>-->
       <el-table-column label="key过期时间" align="center" prop="keyOverdue" width="180">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.keyOverdue" placement="top">

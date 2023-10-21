@@ -343,7 +343,6 @@ export default {
   methods: {
     /** 查询api请求记录列表 */
     getList() {
-      this.total = 0
       this.request_api_key_logList = []
       this.loading = true
       listRequest_api_key_log(this.queryParams).then(response => {
@@ -351,7 +350,7 @@ export default {
         //let publicObj = aesDecrypt(privateObj);
         //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('list数据查询结果', jsonData)
+        // console.log('list数据查询结果', jsonData)
         this.request_api_key_logList = jsonData
         //this.request_api_key_logList = response.rows;
         this.total = response.total
