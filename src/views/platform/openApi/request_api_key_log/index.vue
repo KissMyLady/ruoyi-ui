@@ -100,42 +100,64 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <el-table-column align="center" width="auto" label="记录标题" prop="logTitle"/>
-      <el-table-column align="center" width="auto" label="操作IP" prop="reqIp"/>
-<!--      <el-table-column align="center" width="auto" label="IP地址" prop="reqAddress"/>-->
-<!--      <el-table-column align="center" width="auto" label="请求头" prop="reqAgent"/>-->
-<!--      <el-table-column align="center" width="auto" label="浏览器" prop="reqBrowser"/>-->
-      <el-table-column align="center" width="auto" label="操作系统" prop="reqSystem"/>
-<!--      <el-table-column align="center" width="auto" label="请求URI" prop="reqUrl"/>-->
-<!--      <el-table-column align="center" width="auto" label="操作方式" prop="reqMethod"/>-->
-<!--      <el-table-column align="center" width="auto" label="请求的key" prop="reqKey"/>-->
-<!--      <el-table-column align="center" width="auto" label="操作提交的数据" prop="reqParams"/>-->
-      <el-table-column align="center" width="auto" label="是否成功" prop="isSuccess">
+      <el-table-column align="center" width="auto" label="操作IP" prop="reqIp">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.isSuccess == 1"
-                  style="cursor:pointer;">是
-          </el-tag>
-          <el-tag v-else-if="scope.row.isSuccess == 0"
-                  style="cursor:pointer;"
-                  type="warning"
-          >否
-          </el-tag>
+          <p style="margin: 0;padding: 0">{{ scope.row.reqIp }}</p>
+          <p style="margin: 0;padding: 0">{{ scope.row.reqAddress }}</p>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="影响行数" prop="effectRows"/>
-      <el-table-column align="center" width="auto" label="执行时间" prop="timeOut"/>
-<!--      <el-table-column align="center" width="auto" label="异常信息" prop="exception"/>-->
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
+      <!--      <el-table-column align="center" width="auto" label="IP地址" prop="reqAddress"/>-->
+      <!--      <el-table-column align="center" width="auto" label="请求头" prop="reqAgent"/>-->
+      <!--      <el-table-column align="center" width="auto" label="浏览器" prop="reqBrowser"/>-->
+      <el-table-column align="center" width="auto" label="操作系统" prop="reqSystem"/>
+      <!--      <el-table-column align="center" width="auto" label="请求URI" prop="reqUrl"/>-->
+      <!--      <el-table-column align="center" width="auto" label="操作方式" prop="reqMethod"/>-->
+      <!--      <el-table-column align="center" width="auto" label="请求的key" prop="reqKey"/>-->
+      <!--      <el-table-column align="center" width="auto" label="操作提交的数据" prop="reqParams"/>-->
+      <el-table-column align="center" width="85" label="是否成功" prop="isSuccess">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isSuccess == 1">是</el-tag>
+          <el-tag v-else-if="scope.row.isSuccess == 0" type="warning">否</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="auto" label="异常信息" prop="exception">
+        <template slot-scope="scope">
+          <el-popover placement="top-start"
+                      title="异常信息"
+                      width="200"
+                      trigger="hover"
+                      :content="scope.row.exception"
+          >
+            <span slot="reference">{{ LimitStringShow(scope.row.exception) }}</span>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="85" label="影响行数" prop="effectRows"/>
+      <el-table-column align="center" width="110" label="执行时间(毫秒)" prop="timeOut"/>
+      <el-table-column align="center" width="120" label="请求时间" prop="createTime">
+        <template slot-scope="scope">
+          <el-tooltip class="item"
+                      effect="dark"
+                      :content="scope.row.createTime"
+                      placement="top">
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
                   style="cursor:pointer;"
-                  type="danger">是
+                  type="danger"
+          >是
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
-                  style="cursor:pointer;">否
+                  style="cursor:pointer;"
+          >否
           </el-tag>
         </template>
       </el-table-column>
@@ -200,7 +222,16 @@
           <el-input v-model="form.reqKey" placeholder="请输入请求的key"/>
         </el-form-item>
         <el-form-item label="操作提交的数据" prop="reqParams">
-          <el-input v-model="form.reqParams" autosize type="textarea" placeholder="请输入内容"/>
+          <!--          <el-input v-model="form.reqParams" -->
+          <!--                    autosize -->
+          <!--                    type="textarea" -->
+          <!--                    placeholder="请输入内容"/>-->
+          <JsonViewer :expand-depth=5
+                      copyable
+                      boxed
+                      sort
+                      :value="toJson(form.reqParams)"
+          />
         </el-form-item>
         <el-form-item label="是否成功" prop="isSuccess">
           <el-input v-model="form.isSuccess" placeholder="请输入是否成功"/>
@@ -460,7 +491,7 @@ export default {
         'id': rowId,
         'isDelete': isD
       }
-      let dict2String = changeDictToString(sendForm);
+      let dict2String = changeDictToString(sendForm)
       let sendData = {
         'a': aesEncrypt('1024'),
         'b': aesEncrypt(dict2String),
@@ -480,6 +511,20 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
+    },
+    //转json格式
+    toJson(jsonData) {
+      try {
+        if (jsonData !== undefined && jsonData !== null && jsonData !== '{}') {
+          let jData = JSON.parse(jsonData)
+          // console.log("转换后的json: ", jData);
+          return jData
+        }
+        return {}
+      } catch (error) {
+        console.log('转换json失败: ', error)
+        return jsonData
+      }
     }
     //==========================底部结束==================================
   }

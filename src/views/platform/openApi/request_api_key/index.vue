@@ -137,18 +137,31 @@
     />
 
     <!-- 添加或修改api请求-key对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="关联用户表" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入关联用户表"/>
+          <el-input v-model="form.userId"
+                    style="width: 200px"
+                    placeholder="请输入关联用户表"/>
         </el-form-item>
         <el-form-item label="分配的key" prop="respKey">
           <el-input v-model="form.respKey"
                     disabled
+                    style="width: 300px"
+                    :autosize="{ minRows: 2, maxRows: 4}"
+                    type="textarea"
                     placeholder="请输入分配的key"/>
         </el-form-item>
+        <el-form-item label="随机生成">
+          <el-button type="primary" plain
+                     @click="generateUUID"
+                     class="el-icon-plus">随机生成key</el-button>
+        </el-form-item>
         <el-form-item label="请求参数" prop="reqParams">
-          <el-input v-model="form.reqParams" autosize type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.reqParams"
+                    style="width: 300px"
+                    autosize type="textarea"
+                    placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="key过期时间" prop="keyOverdue">
           <el-date-picker clearable
@@ -161,16 +174,26 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="发送总数量限制" prop="keySmsCount">
-          <el-input v-model="form.keySmsCount" placeholder="请输入发送总数量限制"/>
+          <el-input v-model="form.keySmsCount"
+                    style="width: 200px"
+                    placeholder="请输入发送总数量限制"/>
         </el-form-item>
         <el-form-item label="当前key已经发送数" prop="sendCount">
-          <el-input v-model="form.sendCount" placeholder="请输入当前key已经发送数"/>
+          <el-input v-model="form.sendCount"
+                    style="width: 200px"
+                    placeholder="请输入当前key已经发送数"/>
         </el-form-item>
         <el-form-item label="允许的ip地址" prop="ipAllowList">
-          <el-input v-model="form.ipAllowList" autosize type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.ipAllowList"
+                    style="width: 200px"
+                    :autosize="{ minRows: 2, maxRows: 4}"
+                    type="textarea"
+                    placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
+          <el-input v-model="form.isDelete"
+                    style="width: 200px"
+                    placeholder="请输入逻辑删除"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -361,22 +384,20 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           //对表单加密
+          //this.form.respKey = null; //key不允许被修改
           let dict2String = changeDictToString(this.form)
           let sendData = {
             'a': aesEncrypt('1024'),
             'b': aesEncrypt(dict2String),
             'c': aesEncrypt('Hello World !')
           }
-
           //发送内容加密
           if (this.form.id != null) {
             updateRequest_api_key(sendData).then(response => {
-
               // let privateObj = response.text;
               // let publicObj = aesDecrypt(privateObj);
               // let jsonData = JSON.parse(publicObj);
               // TipMessage.isOK(jsonData);
-
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
@@ -387,7 +408,6 @@ export default {
               // let publicObj = aesDecrypt(privateObj);
               // let jsonData = JSON.parse(publicObj);
               // TipMessage.isOK(jsonData);
-
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -439,7 +459,19 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
-    }
+    },
+    generateUUID(){
+      var s = [];
+      var hexDigits = "0123456789abcdef";
+      for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      }
+      s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      s[8] = s[13] = s[18] = s[23] = "-";
+      var uuid = s.join("");
+      this.form.respKey = uuid;
+    },
     //==========================底部结束==================================
   }
 }
