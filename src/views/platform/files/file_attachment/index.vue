@@ -240,10 +240,16 @@
           />
         </el-form-item>
         <el-form-item label="url链接" prop="url">
-          <el-input v-model="form.url" autosize type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.url"
+                    disabled
+                    autosize
+                    type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="绝对路径" prop="absPath">
-          <el-input v-model="form.absPath" autosize type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.absPath"
+                    disabled
+                    autosize
+                    type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5"
