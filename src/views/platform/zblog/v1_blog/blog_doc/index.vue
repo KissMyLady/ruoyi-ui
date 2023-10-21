@@ -639,7 +639,7 @@ export default {
       }
       updateBlog_doc(sendData).then((res) => {
         if (res.code !== 200) {
-          TipMessage.Warning(res.data.msg)
+          TipMessage.Warning(res.msg)
           return null
         }
         TipMessage.isOK(res.msg)

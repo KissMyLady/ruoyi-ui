@@ -122,10 +122,11 @@
       </el-table-column>
 <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
 <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
-      <el-table-column align="center" width="auto" label="分组id" prop="groupId"/>
+      <el-table-column align="center" width="auto" label="图片组id" prop="groupId"/>
       <el-table-column align="center" width="auto" label="图片组名" prop="groupName"/>
+      <el-table-column align="center" width="100" label="图片数量" prop="countImage"/>
       <el-table-column align="center" width="auto" label="备注" prop="note"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete">
+      <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
@@ -176,8 +177,13 @@
         <el-form-item label="创建用户id" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
         </el-form-item>
-        <el-form-item label="分组id" prop="groupId">
-          <el-input v-model="form.groupId" placeholder="请输入分组id"/>
+        <el-form-item label="图片组id"
+                      :rules="[
+                      { required: true, message: '分组id不能为空'},
+                      { type: 'number', message: 'id必须为数字'}]"
+                      prop="groupId">
+          <el-input v-model.number="form.groupId"
+                    placeholder="请输入分组id"/>
         </el-form-item>
         <el-form-item label="图片组名" prop="groupName">
           <el-input v-model="form.groupName" placeholder="请输入图片组名"/>
@@ -185,9 +191,9 @@
         <el-form-item label="备注" prop="note">
           <el-input v-model="form.note" autosize type="textarea" placeholder="请输入内容"/>
         </el-form-item>
-        <el-form-item label="逻辑删除" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
-        </el-form-item>
+<!--        <el-form-item label="逻辑删除" prop="isDelete">-->
+<!--          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -356,7 +362,7 @@ export default {
       getFile_image_group(id).then(response => {
         let privateObj = response.text;
         let jsonData = aesDecrypt2Json(privateObj);
-        console.log("修改按钮操作.查询结果打印: ", jsonData);
+        // console.log("修改按钮操作.查询结果打印: ", jsonData);
         this.form = jsonData;
         //this.form = response.data;
         this.open = true;
@@ -377,6 +383,7 @@ export default {
           //发送内容加密
           if (this.form.id != null) {
             updateFile_image_group(sendData).then(response => {
+              console.log("修改response返回: ", response);
               this.$modal.msgSuccess(response.msg);
               this.open = false;
               this.getList();
@@ -396,11 +403,11 @@ export default {
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除图片分组编号为"' + ids + '"的数据项？').then(function () {
         delFile_image_group(ids).then((res)=>{
-          if (res.data.code !== 200){
-            TipMessage.Warning(res.data.msg);
+          if (res.code !== 200){
+            TipMessage.Warning(res.msg);
             return null;
           }
-          TipMessage.isOK(res.data.msg);
+          TipMessage.isOK(res.msg);
           this.getList();
         }).catch((err)=>{
           //TipMessage.Error("错误"+ err);
