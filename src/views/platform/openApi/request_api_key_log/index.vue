@@ -294,9 +294,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        orderByColumn: 'create_time',
+        //orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
-        //sortStr: "-create_time",  //sql排序字段
+        sortStr: "create_time",  //sql排序字段
         pageNum: 1,
         pageSize: 10,
         logTitle: null,
