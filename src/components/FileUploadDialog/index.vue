@@ -7,54 +7,6 @@
   >
     <div>
       <el-row>
-        <!-- 文件上传-->
-        <el-col :span="12">
-          <!-- 文件上传 按钮-->
-          <el-form ref="form" :model="file_form" label-width="80px">
-            <el-form-item label="文件上传">
-              <el-button type="primary" plain class="el-icon-plus">上传文件</el-button>
-            </el-form-item>
-          </el-form>
-          <!-- 表格-->
-          <el-table :row-style="{height:'32px'}"
-                    :header-row-style="{height:'32px'}"
-                    :cell-style="{padding:'1px'}"
-                    border
-                    stripe
-                    :data="file_attachmentList"
-          >
-            <!-- <el-table-column type="selection" width="55" align="center"/>-->
-            <!-- <el-table-column align="center" width="100" label="分组id" prop="groupId"/>-->
-            <!-- <el-table-column align="center" width="260" label="名称,描述" prop="title"/>-->
-            <!-- <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
-            <el-table-column align="center" width="auto" label="文件名" prop="fileName">
-              <template slot-scope="scope">
-                <el-row>
-                  <el-col :span="4">
-                    <el-button tpye="text"
-                               size="mini"
-                               @click="copyPath(scope.row.filePath, $event)"
-                    >复制
-                    </el-button>
-                  </el-col>
-                  <el-col :span="20">
-                    <el-link @click="jumpToImageMedia(scope.row.filePath)" type="primary"
-                    >{{ scope.row.filePath }}
-                    </el-link>
-                  </el-col>
-                </el-row>
-              </template>
-            </el-table-column>
-            <!-- <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>-->
-          </el-table>
-          <pagination v-show="file_total>0"
-                      :total="file_total"
-                      :page.sync="file_queryParams.pageNum"
-                      :limit.sync="file_queryParams.pageSize"
-                      @pagination="get_file_List"
-          />
-        </el-col>
-
         <!-- 图片上传-->
         <el-col :span="12">
           <el-form ref="form" :model="image_form" label-width="140px">
@@ -76,7 +28,7 @@
             <el-form-item label="请请选图片">
               <el-col :span="1.5">
                 <el-upload class="upload-demo"
-                           ref="dialog_upload_file"
+                           ref="dialog_upload_image"
                            style="display: inline-block; margin-right: 10px"
                            :action="image_upload.url"
                            :multiple="true"
@@ -148,12 +100,97 @@
           </el-table>
 
           <pagination v-show="image_total>0"
+                      ref="pagination_v2"
                       :total="image_total"
                       :page.sync="image_queryParams.pageNum"
                       :limit.sync="image_queryParams.pageSize"
                       @pagination="get_image_List"
           />
 
+        </el-col>
+
+        <!-- 文件上传-->
+        <el-col :span="12">
+          <!-- 文件上传 按钮-->
+          <el-form ref="form" :model="file_form" label-width="140px">
+            <el-form-item label="请选择文件组">
+              <el-select v-model="file_form.group_id"
+                         style="width: 220px"
+                         placeholder="请选择文件组"
+                         @change="openUploadButton_file"
+                         clearable
+              >
+                <el-option v-for="item in file_groups"
+                           :key="item.groupId"
+                           :label="' 数量: ' +item.fileCount  + ' '+  item.groupName"
+                           :value="item.groupId"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="请选择文件">
+              <el-col :span="1.5">
+                <el-upload class="upload-demo"
+                           ref="dialog_upload_file"
+                           style="display: inline-block; margin-right: 10px"
+                           :action="file_upload.url"
+                           :multiple="true"
+                           :headers="file_upLoadHeaders()"
+                           :on-preview="file_handlePreview"
+                           :on-remove="file_handleRemove"
+                           :before-upload="file_beforeUpload"
+                           :on-success="file_handleFileSuccess"
+                           :file-list="file_upload.fileList"
+                           list-type="picture"
+                >
+                  <el-button size="small"
+                             :disabled="file_form.allowUpload"
+                             style="margin: 0"
+                             type="primary"
+                  ><i class="el-icon-upload"></i>上传
+                  </el-button>
+                </el-upload>
+              </el-col>
+            </el-form-item>
+          </el-form>
+          <!-- 表格-->
+          <el-table :row-style="{height:'32px'}"
+                    :header-row-style="{height:'32px'}"
+                    :cell-style="{padding:'1px'}"
+                    border
+                    stripe
+                    :data="file_attachmentList"
+          >
+            <!-- <el-table-column type="selection" width="55" align="center"/>-->
+            <!-- <el-table-column align="center" width="100" label="分组id" prop="groupId"/>-->
+            <!-- <el-table-column align="center" width="260" label="名称,描述" prop="title"/>-->
+            <!-- <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
+            <el-table-column align="center" width="auto" label="文件名" prop="fileName">
+              <template slot-scope="scope">
+                <el-row>
+                  <el-col :span="4">
+                    <el-button tpye="text"
+                               size="mini"
+                               @click="copyPath(scope.row.filePath, $event)"
+                    >复制
+                    </el-button>
+                  </el-col>
+                  <el-col :span="20">
+                    <el-link @click="jumpToImageMedia(scope.row.filePath)" type="primary"
+                    >{{ scope.row.filePath }}
+                    </el-link>
+                  </el-col>
+                </el-row>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>-->
+          </el-table>
+          <pagination v-show="file_total>0"
+                      ref="pagination_v1"
+                      :total="file_total"
+                      :page.sync="file_queryParams.pageNum"
+                      :limit.sync="file_queryParams.pageSize"
+                      @pagination="get_file_List"
+          />
         </el-col>
       </el-row>
     </div>
@@ -229,23 +266,26 @@ export default {
         },
         fileList: [],//文件列表
         // 上传的地址
-        url: process.env.VUE_APP_target_url + '/file_image/upload/upload'
+        url: process.env.VUE_APP_target_url + '/file_attachment/upload/upload'
       },
-      file_form: {},
+      file_form: {
+        group_id: undefined,
+        allowUpload: true
+      },
       image_form: {
         group_id: undefined,
         allowUpload: true
       },
       //图片
       image_imageList: [],
-      image_groups: [], //图片组
+      image_groups: [], //图片组select
 
       image_total: 0,
       image_queryParams: {
         isAsc: 'desc',  //desc, acs
         sortStr: 'create_time',  //sql排序字段
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         groupId: null,
         title: null,
         fileName: null,
@@ -255,6 +295,7 @@ export default {
       },
       //附件
       file_attachmentList: [],
+      file_groups: [],  //文件组select
       file_total: 0,
       file_queryParams: {
         isAsc: 'desc',  //desc, acs
@@ -293,8 +334,8 @@ export default {
 
     },
     get_image_List() {
-      this.file_imageList = []
-      listFile_image(this.file_queryParams).then(response => {
+      this.image_imageList = []
+      listFile_image(this.image_queryParams).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
         //console.log('image list数据查询结果', jsonData)
@@ -305,7 +346,7 @@ export default {
       })
     },
     get_file_List() {
-      listFile_attachment(this.image_queryParams).then(response => {
+      listFile_attachment(this.file_queryParams).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
         //console.log('file list数据查询结果', jsonData)
@@ -320,20 +361,21 @@ export default {
       this.get_image_List()
       this.get_file_List()
       this.get_image_groups()
+      this.get_file_groups()
       this.dialogFormVisible = true
     },
     //查询全部分组
-    getFileGroupList() {
+    get_file_groups() {
       let senData = {
         isDelete: 0,
         pageNum: 1,
         pageSize: 100
       }
-      listFile_image_group(senData).then(response => {
+      list_sqlFile_attachment_group(senData).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log("查询图片组: ", jsonData);
-        this.fileGroupList = jsonData
+        console.log('查询文件组: ', jsonData)
+        this.file_groups = jsonData
       }).catch((error) => {
         TipMessage.Error('请求错误' + error)
       })
@@ -348,7 +390,7 @@ export default {
       listFile_image_group(senData).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log("查询图片组: ", jsonData);
+        console.log('查询图片组: ', jsonData)
         this.image_groups = jsonData
       }).catch((error) => {
         TipMessage.Error('请求错误' + error)
@@ -368,6 +410,7 @@ export default {
       this.close()
     },
     close() {
+      this.$refs['dialog_upload_image'].clearFiles()
       this.$refs['dialog_upload_file'].clearFiles()
       this.$emit('upload_dialog')
       this.dialogFormVisible = false
@@ -390,6 +433,14 @@ export default {
         this.image_form.allowUpload = false
       }
     },
+    openUploadButton_file() {
+      if (this.file_form.group_id == null || this.file_form.group_id == '') {
+        this.file_form.allowUpload = true
+      } else {
+        this.file_form.allowUpload = false
+      }
+    },
+    //==========================图片上传==================================
     // 文件上传中处理
     image_handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true
@@ -427,6 +478,46 @@ export default {
       return {
         'Authorization': 'Bearer ' + getToken(),
         'http-group-id': this.image_form.group_id
+      }
+    },
+    //==========================文件上传==================================
+    // 文件上传中处理
+    file_handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    file_handleFileSuccess(response, file, fileList) {
+      console.log('文件上传成功处理: ', response)
+      // this.upload.isUploading = false
+      // this.form.filePath = response.url
+      // this.msgSuccess(response.msg);
+      if (response.code !== 200) {
+        TipMessage.Warning(response.msg)
+        return null
+      }
+      TipMessage.isOK(response.msg + response.url)
+      this.upload.isUploading = false
+    },
+    file_beforeUpload(file) {
+      if (this.file_form.group_id == undefined || this.file_form.group_id == '') {
+        TipMessage.Warning('请选择一个分组上传')
+        this.file_upload.isUploading = false
+        return null
+      }
+      this.file_upload.isUploading = true
+    },
+    file_handlePreview(file) {
+      console.log('handlePreview: ', file)
+    },
+    //移除
+    file_handleRemove(file, fileList) {
+      console.log('handleRemove, file: ', file)
+      console.log('handleRemove, fileList: ', fileList)
+    },
+    file_upLoadHeaders(group_id) {
+      return {
+        'Authorization': 'Bearer ' + getToken(),
+        'http-group-id': this.file_form.group_id
       }
     }
     //=====================================底部结束=====================================

@@ -216,6 +216,7 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import { getToken } from "@/utils/auth";
+import clip from '@/components/vab/clipboardVab'
 export default {
   dicts: ['is_delete'],
   name: "File_attachment_group",
