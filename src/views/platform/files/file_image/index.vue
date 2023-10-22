@@ -145,9 +145,11 @@
       <el-table-column align="center" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
           <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                   type="primary"
-          >{{ scope.row.filePath }}
-          </el-link>
+                     type="primary">{{ scope.row.filePath }}</el-link>
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(scope.row.filePath, $event)">复制路径
+          </el-button>
         </template>
       </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
@@ -262,7 +264,7 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import { updateFile_attachment } from '@/api/platform/files/file_attachment'
-
+import clip from '@/components/vab/clipboardVab'
 export default {
   //dicts: ['is_delete'],
   name: 'File_image',
@@ -500,6 +502,9 @@ export default {
     getSPrefix(filePath){
       return process.env.VUE_APP_media_domain + filePath;
     },
+    copyPath(url, event) {
+      clip(url, event)
+    }
     //==========================底部结束==================================
   }
 }

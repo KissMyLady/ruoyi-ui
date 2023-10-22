@@ -121,32 +121,41 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-<!--      <el-table-column label="预览" align="center" width="200">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"-->
-<!--                    style="margin: 0;padding:0"-->
-<!--                    fit="contain"-->
-<!--                    lazy-->
-<!--                    :src="scope.row.url"-->
-<!--                    :preview-src-list="[scope.row.url]"-->
-<!--          >-->
-<!--            <div slot="error" class="image-slot">-->
-<!--              <i class="el-icon-picture-outline"></i>-->
-<!--            </div>-->
-<!--          </el-image>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <!--      <el-table-column label="预览" align="center" width="200">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"-->
+      <!--                    style="margin: 0;padding:0"-->
+      <!--                    fit="contain"-->
+      <!--                    lazy-->
+      <!--                    :src="scope.row.url"-->
+      <!--                    :preview-src-list="[scope.row.url]"-->
+      <!--          >-->
+      <!--            <div slot="error" class="image-slot">-->
+      <!--              <i class="el-icon-picture-outline"></i>-->
+      <!--            </div>-->
+      <!--          </el-image>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
       <el-table-column align="center" width="100" label="分组id" prop="groupId"/>
-      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="260" label="名称,描述" prop="title"/>
       <!--      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
       <el-table-column align="center" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
-          <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                   type="primary"
-          >{{ scope.row.filePath }}
-          </el-link>
+          <el-row>
+            <el-col :span="4">
+              <el-button tpye="text"
+                         size="mini"
+                         @click="copyPath(scope.row.filePath, $event)">复制
+              </el-button>
+            </el-col>
+            <el-col :span="20">
+              <el-link @click="jumpToImageMedia(scope.row.filePath)" type="primary"
+              >{{ scope.row.filePath }}
+              </el-link>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>
@@ -243,13 +252,15 @@
           <el-input v-model="form.url"
                     disabled
                     autosize
-                    type="textarea" placeholder="请输入内容"/>
+                    type="textarea" placeholder="请输入内容"
+          />
         </el-form-item>
         <el-form-item label="绝对路径" prop="absPath">
           <el-input v-model="form.absPath"
                     disabled
                     autosize
-                    type="textarea" placeholder="请输入内容"/>
+                    type="textarea" placeholder="请输入内容"
+          />
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5"
@@ -280,6 +291,7 @@ import {
 import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString, switchBool2Number } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
+import clip from '@/components/vab/clipboardVab'
 
 export default {
   //dicts: ['is_delete'],
@@ -427,7 +439,7 @@ export default {
       getFile_attachment(id).then(response => {
         let privateObj = response.text
         let publicObj = aesDecrypt2Json(privateObj)
-        console.log('查询结果打印: ', publicObj)
+        //console.log('查询结果打印: ', publicObj)
         this.form = publicObj
         //this.form = response.data;
         this.open = true
@@ -522,6 +534,9 @@ export default {
     jumpToImageMedia(filePath) {
       let url = process.env.VUE_APP_media_domain + filePath
       window.open(url, '_blank')
+    },
+    copyPath(url, event) {
+      clip(url, event)  //调用封装的剪切板组件
     }
     //==========================底部结束==================================
   }
