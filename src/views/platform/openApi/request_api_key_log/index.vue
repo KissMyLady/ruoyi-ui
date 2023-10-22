@@ -17,22 +17,32 @@
         />
       </el-form-item>
       <el-form-item label="是否成功" prop="isSuccess">
-        <el-input
-            v-model="queryParams.isSuccess"
-            placeholder="请输入是否成功"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isSuccess"
+                   style="width: 130px"
+                   @change="handleQuery"
+                   placeholder="筛选删除"
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDelete"
+                   style="width: 130px"
+                   @change="handleQuery"
+                   placeholder="筛选删除"
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -116,13 +126,13 @@
       <!--      <el-table-column align="center" width="auto" label="操作方式" prop="reqMethod"/>-->
       <!--      <el-table-column align="center" width="auto" label="请求的key" prop="reqKey"/>-->
       <!--      <el-table-column align="center" width="auto" label="操作提交的数据" prop="reqParams"/>-->
-      <el-table-column align="center" width="85" label="是否成功" prop="isSuccess">
+      <el-table-column align="center" width="85" label="请求成功" prop="isSuccess">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isSuccess == 1">是</el-tag>
           <el-tag v-else-if="scope.row.isSuccess == 0" type="warning">否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="异常信息" prop="exception">
+      <el-table-column align="center" width="auto" label="消息/异常信息" prop="exception">
         <template slot-scope="scope">
           <el-popover placement="top-start"
                       title="异常信息"
@@ -134,7 +144,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="85" label="影响行数" prop="effectRows"/>
+<!--      <el-table-column align="center" width="85" label="影响行数" prop="effectRows"/>-->
       <el-table-column align="center" width="110" label="执行时间(毫秒)" prop="timeOut"/>
       <el-table-column align="center" width="120" label="请求时间" prop="createTime">
         <template slot-scope="scope">
@@ -156,12 +166,13 @@
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
+                  type="info"
                   style="cursor:pointer;"
           >否
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"

@@ -16,13 +16,18 @@
         />
       </el-form-item>
       <el-form-item label="消息级别" prop="lvCode">
-        <el-input
-            v-model="queryParams.lvCode"
-            placeholder="消息级别代号"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.lvCode"
+                   style="width: 130px"
+                   @change="handleQuery"
+                   placeholder="筛选删除"
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.lv_code"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="是否已读" prop="isRead">
         <el-select v-model="queryParams.isRead"
@@ -109,17 +114,14 @@
     </el-row>
 
     <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
-              :header-row-style="{height:'32px'}"
-              :cell-style="{padding:'1px'}"
               border
               stripe
               :data="tb_msgList"
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="UUID" prop="msgUuid"/>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+<!--      <el-table-column align="center" width="auto" label="UUID" prop="msgUuid"/>-->
 <!--      <el-table-column align="center" width="auto" label="用户id" prop="userId"/>-->
       <el-table-column align="center" width="auto" label="标题" prop="title"/>
       <el-table-column align="center" width="auto" label="内容" prop="content">
@@ -133,28 +135,68 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="消息级别" prop="lvCode"/>
-      <el-table-column align="center" width="auto" label="消息发送人" prop="sendCode"/>
-      <el-table-column align="center" width="auto" label="消息类型" prop="typeCode"/>
+      <el-table-column align="center" width="110" label="消息级别" prop="lvCode">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.lv_code" :value="scope.row.lvCode"/>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="110" label="消息发送人" prop="sendCode">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.send_code" :value="scope.row.sendCode"/>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="110" label="消息类型" prop="typeCode">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.type_code" :value="scope.row.typeCode"/>
+        </template>
+      </el-table-column>
       <el-table-column align="center" width="85" label="是否已读" prop="isRead">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isRead"/>
+          <el-tag v-if="scope.row.isRead == 1"
+                  @click="switchDeleteState(scope.row.id, 0, 'isRead')"
+                  type="success"
+                  style="cursor:pointer;">是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isRead == 0"
+                  @click="switchDeleteState(scope.row.id, 1, 'isRead')"
+                  type="info"
+                  style="cursor:pointer;">否
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="85" label="已发送否" prop="isSend">
+<!--      <el-table-column align="center" width="85" label="已发送否" prop="isSend">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-tag v-if="scope.row.isSend == 1"-->
+<!--                  @click="switchDeleteState(scope.row.id, 0, 'isSend')"-->
+<!--                  type="success"-->
+<!--                  style="cursor:pointer;">是-->
+<!--          </el-tag>-->
+<!--          <el-tag v-else-if="scope.row.isSend == 0"-->
+<!--                  @click="switchDeleteState(scope.row.id, 1, 'isSend')"-->
+<!--                  type="info"-->
+<!--                  style="cursor:pointer;">否-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" width="auto" label="备注" prop="note">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-popover placement="top-start"-->
+<!--                      title="备注"-->
+<!--                      width="200"-->
+<!--                      trigger="hover"-->
+<!--                      :content="scope.row.note">-->
+<!--            <span slot="reference">{{ LimitStringShow(scope.row.note) }}</span>-->
+<!--          </el-popover>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column align="center" width="120" label="消息时间" prop="createTime">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.is_delete" :value="scope.row.isSend"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" width="auto" label="备注" prop="note">
-        <template slot-scope="scope">
-          <el-popover placement="top-start"
-                      title="备注"
-                      width="200"
-                      trigger="hover"
-                      :content="scope.row.note">
-            <span slot="reference">{{ LimitStringShow(scope.row.note) }}</span>
-          </el-popover>
+          <el-tooltip class="item"
+                      effect="dark"
+                      :content="scope.row.createTime"
+                      placement="top">
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
@@ -166,11 +208,12 @@
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
+                  type="info"
                   style="cursor:pointer;">否
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -204,7 +247,9 @@
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="消息UUID" prop="msgUuid">
-          <el-input v-model="form.msgUuid" placeholder="请输入消息UUID"/>
+          <el-input v-model="form.msgUuid"
+                    disabled
+                    placeholder="请输入消息UUID"/>
         </el-form-item>
         <el-form-item label="用户id" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入用户id"/>
@@ -258,7 +303,7 @@ import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 
 export default {
-  dicts: ['is_delete'],
+  dicts: ['is_delete', "lv_code", "send_code", "type_code"],
   name: 'Tb_msg',
   data() {
     return {
@@ -343,7 +388,7 @@ export default {
         //let publicObj = aesDecrypt(privateObj);
         //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('list数据查询结果', jsonData)
+        // console.log('list数据查询结果', jsonData)
         this.tb_msgList = jsonData
         //this.tb_msgList = response.rows;
         this.total = response.total
@@ -472,12 +517,12 @@ export default {
         ...this.queryParams
       }, `tb_msg_${new Date().getTime()}.xlsx`)
     },
-    switchDeleteState(rowId, isD) {
+    switchDeleteState(rowId, isD, switchRow="isDelete") {
       //console.log("删除切换row: ", rowId);
       let sendForm = {
         'id': rowId,
-        'isDelete': isD
       }
+      sendForm[`${switchRow}`] = isD
       let dict2String = changeDictToString(sendForm);
       let sendData = {
         'a': aesEncrypt('1024'),
@@ -490,9 +535,9 @@ export default {
           return null
         }
         if (isD == 1) {
-          TipMessage.Warning('删除成功')
+          TipMessage.Warning(res.msg)
         } else {
-          TipMessage.isOK('取消删除成功')
+          TipMessage.isOK(res.msg)
         }
         this.getList()
       }).catch((err) => {

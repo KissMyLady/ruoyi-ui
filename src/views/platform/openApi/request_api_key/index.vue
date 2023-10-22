@@ -102,6 +102,7 @@
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
+                  type="info"
                   style="cursor:pointer;">否
           </el-tag>
         </template>
@@ -310,7 +311,7 @@ export default {
         //let publicObj = aesDecrypt(privateObj);
         //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('list数据查询结果', jsonData)
+        //console.log('list数据查询结果', jsonData)
         this.request_api_keyList = jsonData
         //this.request_api_keyList = response.rows;
         this.total = response.total

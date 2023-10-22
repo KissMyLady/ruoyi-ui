@@ -321,13 +321,13 @@ export default {
         if (valid) {
           if (this.form.dictId != undefined) {
             updateType(this.form).then(response => {
-              this.$modal.msgSuccess('修改成功')
+              this.$modal.msgSuccess(response.msg)
               this.open = false
               this.getList()
             })
           } else {
             addType(this.form).then(response => {
-              this.$modal.msgSuccess('新增成功')
+              this.$modal.msgSuccess(response.msg)
               this.open = false
               this.getList()
             })
