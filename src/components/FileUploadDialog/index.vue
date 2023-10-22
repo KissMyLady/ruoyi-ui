@@ -84,12 +84,18 @@
                 <el-button tpye="text"
                            size="mini"
                            @click="copyPath(scope.row.filePath, $event)"
-                >复制路径
+                >路径
                 </el-button>
                 <el-link @click="jumpToImageMedia(scope.row.filePath)"
                          type="primary"
                 >{{ scope.row.filePath }}
                 </el-link>
+                <el-button tpye="text"
+                           style="float: right"
+                           size="mini"
+                           @click="copyPath(scope.row.url, $event)"
+                >Url
+                </el-button>
               </template>
             </el-table-column>
             <!-- <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
@@ -171,13 +177,21 @@
                     <el-button tpye="text"
                                size="mini"
                                @click="copyPath(scope.row.filePath, $event)"
-                    >复制
+                    >路径
                     </el-button>
                   </el-col>
-                  <el-col :span="20">
+                  <el-col :span="16">
                     <el-link @click="jumpToImageMedia(scope.row.filePath)" type="primary"
                     >{{ scope.row.filePath }}
                     </el-link>
+                  </el-col>
+                  <el-col :span="4">
+                    <el-button tpye="text"
+                               style="float: right"
+                               size="mini"
+                               @click="copyPath(scope.row.url, $event)"
+                    >Url
+                    </el-button>
                   </el-col>
                 </el-row>
               </template>

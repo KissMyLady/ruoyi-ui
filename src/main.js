@@ -21,6 +21,67 @@ import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
 import { formatTime, LimitStringShow } from '@/utils';
 
+
+//v-md-editor
+//安装: http://ckang1229.gitee.io/vue-markdown-editor/zh/quick-start.html
+import VueMarkdownEditor from '@kangc/v-md-editor';
+import VMdPreview from '@kangc/v-md-editor/lib/preview';
+import VMdPreviewHtml from '@kangc/v-md-editor/lib/preview-html';
+import '@kangc/v-md-editor/lib/style/base-editor.css';
+import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+import '@kangc/v-md-editor/lib/theme/style/github.css';
+//行号插件
+//参考: https://ckang1229.gitee.io/vue-markdown-editor/zh/plugins/line-number.html
+import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
+//复制
+import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
+import createCopyCodePreview from '@kangc/v-md-editor/lib/plugins/copy-code/preview';
+import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
+
+
+// 按需引入语言包
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import javascript from 'highlight.js/lib/languages/javascript'
+import java from 'highlight.js/lib/languages/java'
+import cpp from 'highlight.js/lib/languages/cpp'
+import bash from 'highlight.js/lib/languages/bash'
+import sql from 'highlight.js/lib/languages/sql'
+import htmlbars from 'highlight.js/lib/languages/htmlbars'
+
+// highlightjs 核心代码
+import hljs from 'highlight.js/lib/core'
+
+// 引入所有语言包
+// import hljs from 'highlight.js/lib/index';
+
+hljs.registerLanguage('json', json)
+hljs.registerLanguage('python', python)
+hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('java', java)
+hljs.registerLanguage('cpp', cpp)
+hljs.registerLanguage('bash', bash)
+hljs.registerLanguage('sql', sql)
+hljs.registerLanguage('html', htmlbars)
+
+VueMarkdownEditor.use(createLineNumbertPlugin());
+VueMarkdownEditor.use(createCopyCodePlugin());
+VueMarkdownEditor.use(githubTheme, {
+  Hljs: hljs,
+  extend(md) {
+    // md为 markdown-it 实例，可以在此处进行修改配置,并使用 plugin 进行语法扩展
+    // md.set(option).use(plugin);
+  },
+})
+VMdPreview.use(githubTheme, {
+  Hljs: hljs,
+});
+//使 preview html 组件支持复制代码功能
+VMdPreviewHtml.use(createCopyCodePreview());
+
+Vue.use(VMdPreview);
+Vue.use(VueMarkdownEditor)
+
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
