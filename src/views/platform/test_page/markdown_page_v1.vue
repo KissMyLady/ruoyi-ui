@@ -31,6 +31,11 @@
 
     <template>
       <v-md-editor v-model="text"
+                   :disabled-menus="[]"
+                   :left-toolbar="left_toolbar_default"
+                   :right-toolbar="right_toolbar_default"
+                   :autofocus="autofocus"
+                   @upload-image="handleUploadImage"
                    @copy-code-success="handleCopyCodeSuccess"
                    height="550px"
       ></v-md-editor>
@@ -58,6 +63,10 @@ export default {
         'page': 1,
         'pageSize': 20
       },
+      left_toolbar_default : "undo redo clear | h bold italic strikethrough quote | ul ol table hr | link image code emoji | save",
+      right_toolbar_default: "preview toc sync-scroll fullscreen",
+      autofocus: true,
+      default_fullscreen: true,
 
       columns: [
         { align: 'center', label: '创建时间', width: 'auto', prop: 'createTime' }
@@ -109,12 +118,38 @@ export default {
     setMdData(){
       this.text = "Hello World !";
     },
+    //图片上传
+    handleUploadImage(event, insertImage, files){
+      //参考文档: https://ckang1229.gitee.io/vue-markdown-editor/zh/senior/upload-image.html
+      // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
+      console.log(files);
+      // 此处只做示例
+      insertImage({
+        url: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1269952892,3525182336&fm=26&gp=0.jpg',
+        desc: '七龙珠',
+        // width: 'auto',
+        // height: 'auto',
+      });
+    },
     //==========================底部结束==================================
 
   }
 
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+.CodeMirror {
+  font-family: Helvetica,Microsoft Yahei,Hiragino Sans GB;
+  font-size: 16px;
+}
+
+.CodeMirror pre.CodeMirror-line {
+  font-size: 14px ;
+  line-height: 25px ;
+}
+.CodeMirror-linenumber{
+  font-size: 14px ;
+  line-height: 25px ;
+}
 
 </style>

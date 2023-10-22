@@ -26,12 +26,17 @@ import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
 //v-md-editor
 import VMdPreview from '@kangc/v-md-editor/lib/preview';
 import VMdPreviewHtml from '@kangc/v-md-editor/lib/preview-html';
+import createCopyCodePreview from '@kangc/v-md-editor/lib/plugins/copy-code/preview';  //预览复制代码
+
 import '@kangc/v-md-editor/lib/style/base-editor.css';
 import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
 import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
 // 引入使用主题的样式
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
+//emoji支持
+import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
+import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 
 // codemirror 编辑器的相关资源
 import Codemirror from 'codemirror';
@@ -84,11 +89,14 @@ import hljs from 'highlight.js/lib/index';
 VMdPreview.use(githubTheme, {
   Hljs: hljs,
 });
+VMdPreviewHtml.use(createCopyCodePreview());
+
 //编辑组件
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
 });
+VMdEditor.use(createEmojiPlugin());
 
 Vue.use(VMdEditor);
 Vue.use(VMdPreview); //markdown预览
