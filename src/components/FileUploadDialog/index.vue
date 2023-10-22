@@ -13,7 +13,7 @@
             <el-form-item label="请选择图片组">
               <el-select v-model="image_form.group_id"
                          style="width: 220px"
-                         placeholder="请请选择图片组"
+                         placeholder="请选择图片组"
                          @change="openUploadButton"
                          clearable
               >
@@ -25,7 +25,7 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="请请选图片">
+            <el-form-item label="上传图片">
               <el-col :span="1.5">
                 <el-upload class="upload-demo"
                            ref="dialog_upload_image"
