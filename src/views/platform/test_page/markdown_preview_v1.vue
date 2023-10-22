@@ -4,7 +4,7 @@
     <div class="box-specialist">
       <div class="box-tips">
         <span class="blue-tag"></span>
-        <span>测试模块 markdown v1</span>
+        <span>markdown 预览组件</span>
       </div>
     </div>
 
@@ -12,17 +12,16 @@
       <el-form :inline="true" style="margin-bottom:10px">
         <el-row :gutter="8">
           <el-col :span="12">
-            <el-form-item label="标题" style="margin-left: 6px;margin-bottom: 0;"></el-form-item>
-            <el-button type="primary" plain
-                       @click="getMdData">获取文本</el-button>
-            <el-button type="primary" plain
-                       @click="setMdData">设置内容</el-button>
+            <el-form-item label="标题" style="margin-left: 6px;margin-bottom: 0;">
+            </el-form-item>
           </el-col>
+
           <el-col :span="12">
             <el-button type="primary"
                        @click="flushTableData"
                        class=""
-                       plain>刷新
+                       plain
+            >刷新
             </el-button>
           </el-col>
         </el-row>
@@ -30,10 +29,7 @@
     </div>
 
     <template>
-      <v-md-editor v-model="text"
-                   @copy-code-success="handleCopyCodeSuccess"
-                   height="550px"
-      ></v-md-editor>
+      <v-md-preview :text="text"></v-md-preview>
     </template>
 
   </div>
@@ -43,7 +39,7 @@
 <script>
 
 import TipMessage from '@/utils/myUtils/TipMessage'
-import clip from '@/components/vab/clipboardVab'
+
 export default {
   components: {},
 
@@ -62,7 +58,25 @@ export default {
       columns: [
         { align: 'center', label: '创建时间', width: 'auto', prop: 'createTime' }
       ],
-      text: '',
+      text: "```html\n" +
+          "<el-table-column align=\"center\" width=\"auto\" label=\"文件名\" prop=\"fileName\">\n" +
+          "  <template slot-scope=\"scope\">\n" +
+          "    <el-row>\n" +
+          "      <el-col :span=\"4\">\n" +
+          "        <el-button tpye=\"text\"\n" +
+          "                   size=\"mini\"\n" +
+          "                   @click=\"copyPath(scope.row.filePath, $event)\">复制\n" +
+          "        </el-button>\n" +
+          "      </el-col>\n" +
+          "      <el-col :span=\"20\">\n" +
+          "        <el-link @click=\"jumpToImageMedia(scope.row.filePath)\" type=\"primary\"\n" +
+          "        >{{ scope.row.filePath }}\n" +
+          "        </el-link>\n" +
+          "      </el-col>\n" +
+          "    </el-row>\n" +
+          "  </template>\n" +
+          "</el-table-column>\n" +
+          "```",
     }
   },
 
@@ -95,26 +109,13 @@ export default {
     },
     modifyCategoryButton(row) {
 
-    },
-    handleCopyCodeSuccess(code) {
-      clip(code, event)
-    },
-    copyPath(url, event) {
-      clip(url, event)
-    },
-    getMdData(){
-      TipMessage.isOK("获取markdown内容"+this.text);
-      console.log("获取markdown内容: ", this.text);
-    },
-    setMdData(){
-      this.text = "Hello World !";
-    },
-    //==========================底部结束==================================
+    }
 
   }
 
 }
 </script>
-<style lang="scss" scoped>
 
+
+<style lang="scss" scoped>
 </style>

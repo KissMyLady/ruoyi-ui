@@ -21,66 +21,78 @@ import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
 import { formatTime, LimitStringShow } from '@/utils';
 
+import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
 
 //v-md-editor
-//安装: http://ckang1229.gitee.io/vue-markdown-editor/zh/quick-start.html
-import VueMarkdownEditor from '@kangc/v-md-editor';
 import VMdPreview from '@kangc/v-md-editor/lib/preview';
 import VMdPreviewHtml from '@kangc/v-md-editor/lib/preview-html';
 import '@kangc/v-md-editor/lib/style/base-editor.css';
 import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
-//行号插件
-//参考: https://ckang1229.gitee.io/vue-markdown-editor/zh/plugins/line-number.html
-import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
-//复制
-import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
-import createCopyCodePreview from '@kangc/v-md-editor/lib/plugins/copy-code/preview';
 import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
+// 引入使用主题的样式
+import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
 
+// codemirror 编辑器的相关资源
+import Codemirror from 'codemirror';
+// mode
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/mode/vue/vue';
+// edit
+import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/edit/closetag';
+import 'codemirror/addon/edit/matchbrackets';
+// placeholder
+import 'codemirror/addon/display/placeholder';
+// active-line
+import 'codemirror/addon/selection/active-line';
+// scrollbar
+import 'codemirror/addon/scroll/simplescrollbars';
+import 'codemirror/addon/scroll/simplescrollbars.css';
+// style
+import 'codemirror/lib/codemirror.css';
 
 // 按需引入语言包
-import json from 'highlight.js/lib/languages/json'
-import python from 'highlight.js/lib/languages/python'
-import javascript from 'highlight.js/lib/languages/javascript'
-import java from 'highlight.js/lib/languages/java'
-import cpp from 'highlight.js/lib/languages/cpp'
-import bash from 'highlight.js/lib/languages/bash'
-import sql from 'highlight.js/lib/languages/sql'
-import htmlbars from 'highlight.js/lib/languages/htmlbars'
+// import json from 'highlight.js/lib/languages/json'
+// import python from 'highlight.js/lib/languages/python'
+// import javascript from 'highlight.js/lib/languages/javascript'
+// import java from 'highlight.js/lib/languages/java'
+// import cpp from 'highlight.js/lib/languages/cpp'
+// import bash from 'highlight.js/lib/languages/bash'
+// import sql from 'highlight.js/lib/languages/sql'
+// import htmlbars from 'highlight.js/lib/languages/htmlbars'
 
 // highlightjs 核心代码
-import hljs from 'highlight.js/lib/core'
+// import hljs from 'highlight.js/lib/core'
 
 // 引入所有语言包
-// import hljs from 'highlight.js/lib/index';
+import hljs from 'highlight.js/lib/index';
 
-hljs.registerLanguage('json', json)
-hljs.registerLanguage('python', python)
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('java', java)
-hljs.registerLanguage('cpp', cpp)
-hljs.registerLanguage('bash', bash)
-hljs.registerLanguage('sql', sql)
-hljs.registerLanguage('html', htmlbars)
+// hljs.registerLanguage('json', json)
+// hljs.registerLanguage('python', python)
+// hljs.registerLanguage('javascript', javascript)
+// hljs.registerLanguage('java', java)
+// hljs.registerLanguage('cpp', cpp)
+// hljs.registerLanguage('bash', bash)
+// hljs.registerLanguage('sql', sql)
+// hljs.registerLanguage('html', htmlbars)
 
-VueMarkdownEditor.use(createLineNumbertPlugin());
-VueMarkdownEditor.use(createCopyCodePlugin());
-VueMarkdownEditor.use(githubTheme, {
-  Hljs: hljs,
-  extend(md) {
-    // md为 markdown-it 实例，可以在此处进行修改配置,并使用 plugin 进行语法扩展
-    // md.set(option).use(plugin);
-  },
-})
+//预览组件
 VMdPreview.use(githubTheme, {
   Hljs: hljs,
 });
-//使 preview html 组件支持复制代码功能
-VMdPreviewHtml.use(createCopyCodePreview());
+//编辑组件
+VMdEditor.Codemirror = Codemirror;
+VMdEditor.use(githubTheme, {
+  Hljs: hljs,
+});
 
-Vue.use(VMdPreview);
-Vue.use(VueMarkdownEditor)
+Vue.use(VMdEditor);
+Vue.use(VMdPreview); //markdown预览
+Vue.use(VMdPreviewHtml);  //html预览
 
 // 分页组件
 import Pagination from "@/components/Pagination";
