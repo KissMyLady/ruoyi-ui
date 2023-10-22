@@ -1,6 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="88px"
+    >
       <el-form-item label="分组id" prop="groupId">
         <el-input
             v-model="queryParams.groupId"
@@ -63,37 +69,42 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['file_attachment:file_attachment:add']"
-        >新增
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   @click="uploadFileDialog">上传
         </el-button>
       </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button type="primary"-->
+<!--                   plain-->
+<!--                   icon="el-icon-plus"-->
+<!--                   size="mini"-->
+<!--                   @click="handleAdd"-->
+<!--                   v-hasPermi="['file_attachment:file_attachment:add']"-->
+<!--        >新增-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['file_attachment:file_attachment:edit']"
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   :disabled="single"
+                   @click="handleUpdate"
+                   v-hasPermi="['file_attachment:file_attachment:edit']"
         >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['file_attachment:file_attachment:remove']"
+        <el-button type="danger"
+                   plain
+                   icon="el-icon-delete"
+                   size="mini"
+                   :disabled="multiple"
+                   @click="handleDelete"
+                   v-hasPermi="['file_attachment:file_attachment:remove']"
         >删除
         </el-button>
       </el-col>
@@ -147,7 +158,8 @@
             <el-col :span="4">
               <el-button tpye="text"
                          size="mini"
-                         @click="copyPath(scope.row.filePath, $event)">复制
+                         @click="copyPath(scope.row.filePath, $event)"
+              >复制
               </el-button>
             </el-col>
             <el-col :span="20">
@@ -226,6 +238,11 @@
                     disabled
                     placeholder="请输入文件路径"
           />
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.filePath, $event)"
+          >复制文件路径
+          </el-button>
         </el-form-item>
         <el-form-item label="文件名" prop="fileName">
           <el-input v-model="form.fileName"
@@ -254,6 +271,11 @@
                     autosize
                     type="textarea" placeholder="请输入内容"
           />
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.url, $event)"
+          >复制url链接
+          </el-button>
         </el-form-item>
         <el-form-item label="绝对路径" prop="absPath">
           <el-input v-model="form.absPath"
@@ -261,6 +283,11 @@
                     autosize
                     type="textarea" placeholder="请输入内容"
           />
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.absPath, $event)"
+          >复制绝对路径
+          </el-button>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5"
@@ -277,6 +304,10 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 上传图片到组-->
+    <file_upload ref="file_upload" @file_upload="file_upload"/>
+
   </div>
 </template>
 
@@ -292,10 +323,14 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString, switchBool2Number } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
+import file_upload from '@/views/platform/files/file_attachment/dialog/file_upload'
 
 export default {
   //dicts: ['is_delete'],
   name: 'File_attachment',
+  components: {
+    file_upload: file_upload
+  },
   data() {
     return {
       // 遮罩层
@@ -537,7 +572,16 @@ export default {
     },
     copyPath(url, event) {
       clip(url, event)  //调用封装的剪切板组件
-    }
+    },
+    //上传文件
+    uploadFileDialog(){
+      this.$refs["file_upload"].showDialog()
+    },
+    file_upload(){
+      //子组件回调
+      // TipMessage.isOK("子组件回调")
+      this.getList()
+    },
     //==========================底部结束==================================
   }
 }

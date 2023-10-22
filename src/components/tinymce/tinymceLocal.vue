@@ -103,6 +103,14 @@ export default {
       console.log("富组件调用, 回写数据到富文本: ", data);
       this.tinymceDatabase = data;
     },
+    //子组件调用父组件, 返回创建的数据
+    getData(){
+      return this.tinymceDatabase;
+    },
+    setData(data){
+      //富组件调用, 回写数据到富文本
+      this.tinymceDatabase = data;
+    },
   }
 }
 </script>

@@ -331,7 +331,6 @@ export default {
     /** 查询素材图片列表 */
     getList() {
       this.loading = true
-      this.total = 0;
       this.file_imageList = [];
       listFile_image(this.queryParams).then(response => {
         let privateObj = response.text

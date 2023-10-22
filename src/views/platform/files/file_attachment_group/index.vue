@@ -216,10 +216,12 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import { getToken } from "@/utils/auth";
-import { updateFile_attachment } from '@/api/platform/files/file_attachment'
 export default {
   dicts: ['is_delete'],
   name: "File_attachment_group",
+  components: {
+
+  },
   data() {
     return {
       // 遮罩层
@@ -497,6 +499,9 @@ export default {
       }
       // this.$refs['uploadFile' + groupId].clearFiles();
     },
+    copyPath(url, event) {
+      clip(url, event)
+    }
     //====================================底部结束=========================================
   }
 };

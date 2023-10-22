@@ -1,5 +1,21 @@
 <template>
   <div class="app-container home">
+
+    <el-row :gutter="20">
+      <el-col :sm="24" :lg="24">
+        <p>富文本组件测试</p>
+        <el-button type="primary" plain
+                   @click="uploadFiles"
+                   class="el-icon-plus">上传组件</el-button>
+        <el-button type="primary"
+                   @click="saveTinymceData"
+                   plain class="el-icon-plus">保存内容</el-button>
+        <tinymce-local ref="getTinymceData"/>
+      </el-col>
+    </el-row>
+
+    <el-divider/>
+
     <el-row :gutter="20">
       <el-col :sm="24" :lg="24">
         <blockquote class="text-warning" style="font-size: 14px">
@@ -255,6 +271,10 @@
         </el-card>
       </el-col>
     </el-row>
+
+
+    <upload-dialog ref="uploadDialog"></upload-dialog>
+
   </div>
 </template>
 
@@ -263,9 +283,13 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { aesEncrypt, aesDecrypt } from '@/utils/encrypt/encryption'
 import {get_hello_api_v2, get_hello_api_v3} from "@/api/platform/test_api_v2";
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
-
-
+import tinymceLocal from '@/components/tinymce/tinymceLocal'
+import uploadDialog from '@/components/FileUploadDialog'
 export default {
+  components: {
+    tinymceLocal: tinymceLocal,
+    uploadDialog: uploadDialog
+  },
   name: 'Index',
   data() {
     return {
@@ -290,7 +314,7 @@ export default {
         'b': aesEncrypt(dict2String),
         'c': aesEncrypt('Hello World !')
       }
-      console.log('sendData: ', sendData)
+      //console.log('sendData: ', sendData)
       get_hello_api_v2(sendData).then((res) => {
         if (res.code !== 200) {
           TipMessage.Warning(res.msg)
@@ -303,7 +327,15 @@ export default {
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
-    }
+    },
+    saveTinymceData(){
+      let tinymceData = this.$refs['getTinymceData'].getData();
+      console.log("输入内容是: ", tinymceData);
+    },
+    //上传弹出框
+    uploadFiles(){
+      this.$refs['uploadDialog'].showDialog();
+    },
     ///==========================================底部结束==========================================
   }
 }
