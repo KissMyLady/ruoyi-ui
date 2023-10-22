@@ -21,7 +21,8 @@
                     :cell-style="{padding:'1px'}"
                     border
                     stripe
-                    :data="file_attachmentList">
+                    :data="file_attachmentList"
+          >
             <!-- <el-table-column type="selection" width="55" align="center"/>-->
             <!-- <el-table-column align="center" width="100" label="分组id" prop="groupId"/>-->
             <!-- <el-table-column align="center" width="260" label="名称,描述" prop="title"/>-->
@@ -44,7 +45,7 @@
                 </el-row>
               </template>
             </el-table-column>
-<!--            <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>-->
+            <!-- <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>-->
           </el-table>
           <pagination v-show="file_total>0"
                       :total="file_total"
@@ -56,18 +57,56 @@
 
         <!-- 图片上传-->
         <el-col :span="12">
-          <el-form ref="form" :model="image_form" label-width="80px">
-            <el-form-item label="图片上传">
-              <el-button type="primary" plain class="el-icon-plus">上传图片</el-button>
+          <el-form ref="form" :model="image_form" label-width="140px">
+            <el-form-item label="请选择图片组">
+              <el-select v-model="image_form.group_id"
+                         style="width: 220px"
+                         placeholder="请请选择图片组"
+                         @change="openUploadButton"
+                         clearable
+              >
+                <el-option v-for="item in image_groups"
+                           :key="item.groupId"
+                           :label="' 数量: ' +item.countImage  + ' '+  item.groupName"
+                           :value="item.groupId"
+                />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="请请选图片">
+              <el-col :span="1.5">
+                <el-upload class="upload-demo"
+                           ref="dialog_upload_file"
+                           style="display: inline-block; margin-right: 10px"
+                           :action="image_upload.url"
+                           :multiple="true"
+                           :headers="image_upLoadHeaders()"
+                           :on-preview="image_handlePreview"
+                           :on-remove="image_handleRemove"
+                           :before-upload="image_beforeUpload"
+                           :on-success="image_handleFileSuccess"
+                           :file-list="image_upload.fileList"
+                           list-type="picture"
+                >
+                  <el-button size="small"
+                             :disabled="image_form.allowUpload"
+                             style="margin: 0"
+                             type="primary"
+                  ><i class="el-icon-upload"></i>上传
+                  </el-button>
+                </el-upload>
+              </el-col>
             </el-form-item>
           </el-form>
+
           <!--表格-->
           <el-table :row-style="{height:'32px'}"
                     :header-row-style="{height:'32px'}"
                     :cell-style="{padding:'1px'}"
                     border
                     stripe
-                    :data="image_imageList">
+                    :data="image_imageList"
+          >
             <!-- <el-table-column type="selection" width="55" align="center"/>-->
             <el-table-column label="预览" align="center" width="100">
               <template slot-scope="scope">
@@ -76,7 +115,8 @@
                           fit="contain"
                           lazy
                           :src="getSPrefix(scope.row.filePath)"
-                          :preview-src-list="[getSPrefix(scope.row.filePath)]">
+                          :preview-src-list="[getSPrefix(scope.row.filePath)]"
+                >
                   <div slot="error" class="image-slot">
                     <i class="el-icon-picture-outline"></i>
                   </div>
@@ -91,10 +131,13 @@
               <template slot-scope="scope">
                 <el-button tpye="text"
                            size="mini"
-                           @click="copyPath(scope.row.filePath, $event)">复制路径
+                           @click="copyPath(scope.row.filePath, $event)"
+                >复制路径
                 </el-button>
                 <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                         type="primary">{{ scope.row.filePath }}</el-link>
+                         type="primary"
+                >{{ scope.row.filePath }}
+                </el-link>
               </template>
             </el-table-column>
             <!-- <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
@@ -105,10 +148,10 @@
           </el-table>
 
           <pagination v-show="image_total>0"
-              :total="image_total"
-              :page.sync="image_queryParams.pageNum"
-              :limit.sync="image_queryParams.pageSize"
-              @pagination="get_image_List"
+                      :total="image_total"
+                      :page.sync="image_queryParams.pageNum"
+                      :limit.sync="image_queryParams.pageSize"
+                      @pagination="get_image_List"
           />
 
         </el-col>
@@ -133,12 +176,12 @@ import { listFile_attachment } from '@/api/platform/files/file_attachment'
 import { listFile_image } from '@/api/platform/files/file_image'
 import {
   listFile_attachment_group,
-  list_sqlFile_attachment_group,
-} from "@/api/platform/files/file_attachment_group";
+  list_sqlFile_attachment_group
+} from '@/api/platform/files/file_attachment_group'
 import {
   listFile_image_group,
-  getFile_image_group,
-} from "@/api/platform/files/file_image_group";
+  getFile_image_group
+} from '@/api/platform/files/file_image_group'
 
 export default {
   name: 'FileUploadDialog',
@@ -152,7 +195,25 @@ export default {
       },
       //文件组
       fileGroupList: [],
-      upload: {
+      image_upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: '',
+        filePath: '',
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: {
+          Authorization: 'Bearer ' + getToken()
+        },
+        fileList: [],//文件列表
+        // 上传的地址
+        url: process.env.VUE_APP_target_url + '/file_image/upload/upload'
+      },
+      file_upload: {
         // 是否显示弹出层（用户导入）
         open: false,
         // 弹出层标题（用户导入）
@@ -171,9 +232,14 @@ export default {
         url: process.env.VUE_APP_target_url + '/file_image/upload/upload'
       },
       file_form: {},
-      image_form: {},
+      image_form: {
+        group_id: undefined,
+        allowUpload: true
+      },
       //图片
       image_imageList: [],
+      image_groups: [], //图片组
+
       image_total: 0,
       image_queryParams: {
         isAsc: 'desc',  //desc, acs
@@ -250,15 +316,40 @@ export default {
         console.log('附件请求错误: ', err)
       })
     },
-    showDialog(data) {
+    showDialog() {
       this.get_image_List()
       this.get_file_List()
+      this.get_image_groups()
       this.dialogFormVisible = true
     },
     //查询全部分组
     getFileGroupList() {
-      listFile_image_group().then(response => {
-        this.fileGroupList = response.rows
+      let senData = {
+        isDelete: 0,
+        pageNum: 1,
+        pageSize: 100
+      }
+      listFile_image_group(senData).then(response => {
+        let privateObj = response.text
+        let jsonData = aesDecrypt2Json(privateObj)
+        console.log("查询图片组: ", jsonData);
+        this.fileGroupList = jsonData
+      }).catch((error) => {
+        TipMessage.Error('请求错误' + error)
+      })
+    },
+    //查询图片组 image_groups
+    get_image_groups() {
+      let senData = {
+        isDelete: 0,
+        pageNum: 1,
+        pageSize: 100
+      }
+      listFile_image_group(senData).then(response => {
+        let privateObj = response.text
+        let jsonData = aesDecrypt2Json(privateObj)
+        console.log("查询图片组: ", jsonData);
+        this.image_groups = jsonData
       }).catch((error) => {
         TipMessage.Error('请求错误' + error)
       })
@@ -277,6 +368,7 @@ export default {
       this.close()
     },
     close() {
+      this.$refs['dialog_upload_file'].clearFiles()
       this.$emit('upload_dialog')
       this.dialogFormVisible = false
     },
@@ -288,9 +380,55 @@ export default {
       window.open(url, '_blank')
     },
     //媒体文件: 前缀+路径
-    getSPrefix(filePath){
-      return process.env.VUE_APP_media_domain + filePath;
+    getSPrefix(filePath) {
+      return process.env.VUE_APP_media_domain + filePath
     },
+    openUploadButton() {
+      if (this.image_form.group_id == null || this.image_form.group_id == '') {
+        this.image_form.allowUpload = true
+      } else {
+        this.image_form.allowUpload = false
+      }
+    },
+    // 文件上传中处理
+    image_handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true
+    },
+    // 文件上传成功处理
+    image_handleFileSuccess(response, file, fileList) {
+      console.log('文件上传成功处理: ', response)
+      // this.upload.isUploading = false
+      // this.form.filePath = response.url
+      // this.msgSuccess(response.msg);
+      if (response.code !== 200) {
+        TipMessage.Warning(response.msg)
+        return null
+      }
+      TipMessage.isOK(response.msg + response.url)
+      this.upload.isUploading = false
+    },
+    image_beforeUpload(file) {
+      if (this.image_form.group_id == undefined || this.image_form.group_id == '') {
+        TipMessage.Warning('请选择一个分组上传')
+        this.image_upload.isUploading = false
+        return null
+      }
+      this.image_upload.isUploading = true
+    },
+    image_handlePreview(file) {
+      console.log('handlePreview: ', file)
+    },
+    //移除
+    image_handleRemove(file, fileList) {
+      console.log('handleRemove, file: ', file)
+      console.log('handleRemove, fileList: ', fileList)
+    },
+    image_upLoadHeaders(group_id) {
+      return {
+        'Authorization': 'Bearer ' + getToken(),
+        'http-group-id': this.image_form.group_id
+      }
+    }
     //=====================================底部结束=====================================
   },
   beforeDestroy() {
