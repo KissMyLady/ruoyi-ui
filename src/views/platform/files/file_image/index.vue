@@ -66,15 +66,25 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="primary"
+            type="success"
             plain
-            icon="el-icon-plus"
+            icon="el-icon-edit"
             size="mini"
-            @click="handleAdd"
             v-hasPermi="['file_image:file_image:add']"
-        >新增
+            @click="uploadFileButton">上传文件
         </el-button>
       </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="primary"-->
+<!--            plain-->
+<!--            icon="el-icon-plus"-->
+<!--            size="mini"-->
+<!--            @click="handleAdd"-->
+<!--            v-hasPermi="['file_image:file_image:add']"-->
+<!--        >新增-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
             type="success"
@@ -249,6 +259,9 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 文件上传-->
+    <image_upload ref="image_upload" @image_upload="image_upload"/>
   </div>
 </template>
 
@@ -265,9 +278,13 @@ import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import { updateFile_attachment } from '@/api/platform/files/file_attachment'
 import clip from '@/components/vab/clipboardVab'
+import image_upload from '@/views/platform/files/file_image/dialog/image_upload'
 export default {
   //dicts: ['is_delete'],
   name: 'File_image',
+  components: {
+    image_upload: image_upload
+  },
   data() {
     return {
       // 遮罩层
@@ -290,9 +307,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        orderByColumn: 'create_time',
+        //orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
-        //sortStr: "-create_time",  //sql排序字段
+        sortStr: "create_time",  //sql排序字段
         pageNum: 1,
         pageSize: 10,
         userId: null,
@@ -401,7 +418,7 @@ export default {
       getFile_image(id).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('修改按钮操作.查询结果打印: ', jsonData)
+        //console.log('修改按钮操作.查询结果打印: ', jsonData)
         this.form = jsonData
         //this.form = response.data;
         this.open = true
@@ -419,27 +436,15 @@ export default {
             'b': aesEncrypt(dict2String),
             'c': aesEncrypt('Hello World !')
           }
-
           //发送内容加密
           if (this.form.id != null) {
             updateFile_image(sendData).then(response => {
-
-              // let privateObj = response.text;
-              // let publicObj = aesDecrypt(privateObj);
-              // let jsonData = JSON.parse(publicObj);
-              // TipMessage.isOK(jsonData);
-
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
             })
           } else {
             addFile_image(sendData).then(response => {
-              // let privateObj = response.text;
-              // let publicObj = aesDecrypt(privateObj);
-              // let jsonData = JSON.parse(publicObj);
-              // TipMessage.isOK(jsonData);
-
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -484,9 +489,9 @@ export default {
           return null
         }
         if (isD == 1) {
-          TipMessage.Warning('删除成功')
+          TipMessage.Warning(res.msg)
         } else {
-          TipMessage.isOK('取消删除成功')
+          TipMessage.isOK(res.msg)
         }
         this.getList()
       }).catch((err) => {
@@ -503,7 +508,14 @@ export default {
     },
     copyPath(url, event) {
       clip(url, event)
-    }
+    },
+    uploadFileButton(){
+      this.$refs["image_upload"].showDialog();
+    },
+    image_upload(){
+      //子组件回调
+      this.getList();
+    },
     //==========================底部结束==================================
   }
 }

@@ -7,10 +7,10 @@
         <el-button type="primary" plain
                    @click="uploadFiles"
                    class="el-icon-plus">上传组件</el-button>
-        <el-button type="primary"
-                   @click="saveTinymceData"
-                   plain class="el-icon-plus">保存内容</el-button>
-        <tinymce-local ref="getTinymceData"/>
+<!--        <el-button type="primary"-->
+<!--                   @click="saveTinymceData"-->
+<!--                   plain class="el-icon-plus">保存内容</el-button>-->
+<!--        <tinymce-local ref="getTinymceData"/>-->
       </el-col>
     </el-row>
 
@@ -283,11 +283,11 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { aesEncrypt, aesDecrypt } from '@/utils/encrypt/encryption'
 import {get_hello_api_v2, get_hello_api_v3} from "@/api/platform/test_api_v2";
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
-import tinymceLocal from '@/components/tinymce/tinymceLocal'
+//import tinymceLocal from '@/components/tinymce/tinymceLocal'
 import uploadDialog from '@/components/FileUploadDialog'
 export default {
   components: {
-    tinymceLocal: tinymceLocal,
+    //tinymceLocal: tinymceLocal,
     uploadDialog: uploadDialog
   },
   name: 'Index',
@@ -329,8 +329,8 @@ export default {
       })
     },
     saveTinymceData(){
-      let tinymceData = this.$refs['getTinymceData'].getData();
-      console.log("输入内容是: ", tinymceData);
+      // let tinymceData = this.$refs['getTinymceData'].getData();
+      // console.log("输入内容是: ", tinymceData);
     },
     //上传弹出框
     uploadFiles(){
