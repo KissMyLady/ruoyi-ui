@@ -66,6 +66,70 @@ export function formatTime(time, option) {
   }
 }
 
+/**
+ * @param {number} time
+ * @param {string} option
+ * @returns {string}
+ */
+var weekList = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+export function formatTime_am(time, option) {
+  //console.log("入参time: ", time);
+  if (('' + time).length === 10) {
+    time = parseInt(time) * 1000
+  } else if ((''+time).length === 13){
+    time = new Date(time)
+    // console.log("时间戳转换: ", time);
+  }
+  else {
+    time = ''+time
+  }
+  //console.log("time: ", time);
+  const d = new Date(time)
+  const now = Date.now()
+
+  const diff = (now - d) / 1000
+  //console.log("diff: ", diff);
+  let dd = d.getMonth() +1
+  let hh = d.getHours();
+  let day = d.getDay();
+  let week = weekList[day]
+
+  var hhStr = "";
+  if (hh <= 12){
+    hhStr = d.getDate() + '' + week + ' am '+ hh+':' + d.getMinutes()
+  } else if ( hh <= 18){
+    hhStr = d.getDate() + '' +  week + ' pm '+ (hh - 12)+':' + d.getMinutes()
+  }
+  else {
+    hhStr = d.getDate() + '' + week + ' 晚上 '+ (hh - 12)+':' + d.getMinutes()
+  }
+
+  if (diff < 30) {
+    return hhStr + ' 刚刚 '
+  } else if (diff < 3600) {
+    // less 1 hour
+    return hhStr + " " + Math.ceil(diff / 60) + '分钟前 '
+  } else if (diff < 3600 * 24) {
+    return hhStr
+  } else if (diff < 3600 * 24 * 2) {
+    return hhStr
+  }
+  if (option) {
+    return parseTime(time, option)
+  } else {
+    return (
+      week +
+      dd +
+      '月' +
+      d.getDate() +
+      '日' +
+      d.getHours() +
+      '时' +
+      d.getMinutes() +
+      '分'
+    )
+  }
+}
 //超过字符的隐藏
 export function LimitStringShow(dataStr, sLen=20) {
   if(typeof dataStr === 'string' && dataStr.length >= sLen){

@@ -19,7 +19,7 @@ import './permission' // permission control
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
-import { formatTime, LimitStringShow } from '@/utils';
+import { formatTime, LimitStringShow, formatTime_am } from '@/utils';
 
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
 
@@ -133,6 +133,7 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.formatTime = formatTime
+Vue.prototype.formatTime_am = formatTime_am
 Vue.prototype.LimitStringShow = LimitStringShow
 
 // 全局组件挂载

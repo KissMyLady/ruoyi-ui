@@ -189,13 +189,13 @@
 <!--          </el-popover>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column align="center" width="120" label="消息时间" prop="createTime">
+      <el-table-column align="left" width="150" label="消息时间" prop="createTime">
         <template slot-scope="scope">
           <el-tooltip class="item"
                       effect="dark"
                       :content="scope.row.createTime"
                       placement="top">
-            <span>{{ formatTime(scope.row.createTime) }}</span>
+            <span>{{ formatTime_am(scope.row.createTime) }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
