@@ -143,7 +143,9 @@
           <el-input v-model="form.parentId" style="width: 300px" placeholder="请输入父评论id"/>
         </el-form-item>
         <el-form-item label="评论人id" prop="author">
-          <el-input v-model="form.author" style="width: 300px" placeholder="请输入评论人id"/>
+          <el-input v-model="form.author"
+                    style="width: 300px"
+                    placeholder="请输入评论人id"/>
         </el-form-item>
         <el-form-item label="评论内容">
           <editor v-model="form.content" :min-height="192"/>

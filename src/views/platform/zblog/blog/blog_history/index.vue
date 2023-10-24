@@ -145,7 +145,9 @@
           <editor v-model="form.preContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="创建用户" prop="userId">
-          <el-input v-model="form.userId" style="width: 300px" placeholder="请输入创建用户"/>
+          <el-input v-model="form.userId" style="width: 300px"
+                    disabled
+                    placeholder="请输入创建用户"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" style="width: 300px" placeholder="请输入逻辑删除"/>

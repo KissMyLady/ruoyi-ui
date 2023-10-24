@@ -160,7 +160,9 @@
     <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="userId">
-          <el-input v-model="form.userId" style="width: 300px" placeholder="请输入创建用户id"/>
+          <el-input v-model="form.userId" style="width: 300px"
+                    disabled
+                    placeholder="请输入创建用户id"/>
         </el-form-item>
         <el-form-item label="文集名称" prop="name">
           <el-input v-model="form.name" style="width: 300px" placeholder="请输入文集名称"/>
@@ -178,7 +180,10 @@
           <el-input v-model="form.authorityCode" style="width: 300px" placeholder="请输入权限代号"/>
         </el-form-item>
         <el-form-item label="权限具体限定内容" prop="authorityValue">
-          <el-input v-model="form.authorityValue" autosize type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.authorityValue"
+                    style="width: 300px"
+                    :autosize="{ minRows: 2, maxRows: 4}" 
+                    type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="水印" prop="isWatermark">
           <el-input v-model="form.isWatermark" style="width: 300px" placeholder="请输入水印"/>
