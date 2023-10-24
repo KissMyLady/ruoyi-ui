@@ -380,7 +380,6 @@ export default {
   methods: {
     /** 查询消息列表 */
     getList() {
-      this.total = 0
       this.tb_msgList = []
       this.loading = true
       listTb_msg(this.queryParams).then(response => {
