@@ -216,7 +216,9 @@
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder=""/>
+          <el-input v-model="form.userId"
+                    disabled
+                    placeholder=""/>
         </el-form-item>
         <el-form-item label="图片分组" prop="groupId">
           <el-input v-model="form.groupId" placeholder=""/>

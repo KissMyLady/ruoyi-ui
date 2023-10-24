@@ -180,7 +180,9 @@
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="创建用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入创建用户id"/>
+          <el-input v-model="form.userId"
+                    disabled
+                    placeholder="请输入创建用户id"/>
         </el-form-item>
         <el-form-item label="分组id" prop="groupId">
           <el-input v-model="form.groupId" placeholder="请输入分组id"/>

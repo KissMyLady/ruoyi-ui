@@ -380,7 +380,6 @@ export default {
   methods: {
     /** 查询消息列表 */
     getList() {
-      this.tb_msgList = []
       this.loading = true
       listTb_msg(this.queryParams).then(response => {
         let privateObj = response.text
@@ -388,6 +387,7 @@ export default {
         //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
         // console.log('list数据查询结果', jsonData)
+        this.tb_msgList = []
         this.tb_msgList = jsonData
         //this.tb_msgList = response.rows;
         this.total = response.total
