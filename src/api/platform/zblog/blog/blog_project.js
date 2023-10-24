@@ -1,15 +1,19 @@
 import request from '@/utils/request'
 
-// 查询文章分类列表
-export function listBlog_project(query) {
+//
+// 博客文集 Api
+//
+
+// 查询列表
+export function listBlog_project(data) {
   return request({
     url: '/blog_project/blog_project/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: data
   })
 }
 
-// 查询文章分类详细
+// 详细
 export function getBlog_project(id) {
   return request({
     url: '/blog_project/blog_project/' + id,
@@ -17,7 +21,7 @@ export function getBlog_project(id) {
   })
 }
 
-// 新增文章分类
+// ++新增++
 export function addBlog_project(data) {
   return request({
     url: '/blog_project/blog_project',
@@ -26,7 +30,7 @@ export function addBlog_project(data) {
   })
 }
 
-// 修改文章分类
+// +修改+
 export function updateBlog_project(data) {
   return request({
     url: '/blog_project/blog_project',
@@ -35,7 +39,7 @@ export function updateBlog_project(data) {
   })
 }
 
-// 删除文章分类
+// --删除--
 export function delBlog_project(id) {
   return request({
     url: '/blog_project/blog_project/' + id,

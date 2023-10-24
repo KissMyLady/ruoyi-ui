@@ -7,27 +7,32 @@
              v-show="showSearch"
              label-width="88px"
     >
-      <!--      <el-form-item label="创建用户" prop="userId">-->
-      <!--        <el-input-->
-      <!--            v-model="queryParams.userId"-->
-      <!--            placeholder="请输入创建用户"-->
-      <!--            clearable-->
-      <!--            @change="handleQuery"-->
-      <!--            @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
+      <el-form-item label="文档id" prop="blogId">
+        <el-input
+            v-model="queryParams.blogId"
+            placeholder="请输入文档id"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="创建用户" prop="userId">
+        <el-input
+            v-model="queryParams.userId"
+            placeholder="请输入创建用户"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-select v-model="queryParams.isDelete"
-                   style="width: 120px"
-                   @change="handleQuery"
-                   placeholder="筛选删除"
-                   clearable>
-          <el-option v-for="dict in dict.type.is_delete"
-                     :key="dict.value"
-                     :label="dict.label"
-                     :value="dict.value"
-          />
-        </el-select>
+        <el-input
+            v-model="queryParams.isDelete"
+            placeholder="请输入逻辑删除"
+            clearable
+            @change="handleQuery"
+            @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -92,32 +97,14 @@
               border
               stripe
               :data="blog_historyList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="120" label="文档id" prop="blogDocId"/>
-      <!--      <el-table-column align="center" width="auto" label="历史内容" prop="preContent"/>-->
-      <el-table-column align="center" width="120" label="创建用户" prop="userId"/>
-      <el-table-column label="逻辑删除" align="center" prop="isDelete" width="120">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.isDelete == 1"
-                  @click="switchDeleteState(scope.row.id, 0)"
-                  style="cursor:pointer;"
-                  type="danger">是
-          </el-tag>
-          <el-tag v-else-if="scope.row.isDelete == 0"
-                  @click="switchDeleteState(scope.row.id, 1)"
-                  style="cursor:pointer;">否
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.createTime" placement="top">
-            <span>{{ formatTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
+      <el-table-column align="center" width="auto" label="文档id" prop="blogId"/>
+<!--      <el-table-column align="center" width="auto" label="文档历史编辑内容" prop="preContent"/>-->
+      <el-table-column align="center" width="auto" label="创建用户" prop="userId"/>
+      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -148,23 +135,20 @@
         @pagination="getList"
     />
 
-    <!-- 添加或修改文档历史记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+    <!-- 添加或修改博客文档历史记录对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="文档id" prop="blogDocId">
-          <el-input v-model="form.blogDocId" placeholder="请输入文档id"/>
+        <el-form-item label="文档id" prop="blogId">
+          <el-input v-model="form.blogId" style="width: 300px" placeholder="请输入文档id"/>
         </el-form-item>
         <el-form-item label="文档历史编辑内容">
-          <el-input v-model="form.preContent"
-                    type="textarea"
-                    :autosize="{ minRows: 8, maxRows: 16}"
-                    placeholder="文档内容_预览_纯文本"/>
+          <editor v-model="form.preContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="创建用户" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入创建用户"/>
+          <el-input v-model="form.userId" style="width: 300px" placeholder="请输入创建用户"/>
         </el-form-item>
         <el-form-item label="逻辑删除" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入逻辑删除"/>
+          <el-input v-model="form.isDelete" style="width: 300px" placeholder="请输入逻辑删除"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -182,11 +166,14 @@ import {
   delBlog_history,
   addBlog_history,
   updateBlog_history
-} from '@/api/platform/zblog/v1_blog/blog_history'
+} from '@/api/platform/zblog/blog/blog_history'
 import TipMessage from '@/utils/myUtils/TipMessage'
+import { changeDictToString } from '@/utils/myUtils/changeSomething'
+import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
+import clip from '@/components/vab/clipboardVab'
 
 export default {
-  dicts: ['is_delete'],
+  //dicts: ['is_delete'],
   name: 'Blog_history',
   data() {
     return {
@@ -202,7 +189,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 文档历史记录表格数据
+      // 博客文档历史记录表格数据
       blog_historyList: [],
       // 弹出层标题
       title: '',
@@ -210,12 +197,12 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        orderByColumn: 'create_time',
+        //orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
+        sortStr: 'create_time',  //sql排序字段
         pageNum: 1,
         pageSize: 10,
-        blogDocId: null,
-        preContent: null,
+        blogId: null,
         userId: null,
         isDelete: null
       },
@@ -223,31 +210,47 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        blogDocId: [
-          {required: true, message: '文档id不能为空', trigger: 'blur'}
+        blogId: [
+          { required: true, message: '文档id不能为空', trigger: 'blur' }
         ]
-      }
+      },
+      //表格行
+      columns: [
+        { key: 'id', align: 'center', width: 'auth', label: `主键`, prop: 'id', visible: true },
+        { key: 'blog_id', align: 'center', width: 'auth', label: `文档id`, prop: 'blog_id', visible: true },
+        {
+          key: 'pre_content',
+          align: 'center',
+          width: 'auth',
+          label: `文档历史编辑内容`,
+          prop: 'pre_content',
+          visible: true
+        },
+        { key: 'user_id', align: 'center', width: 'auth', label: `创建用户`, prop: 'user_id', visible: true },
+        { key: 'is_delete', align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true },
+        { key: 'create_time', align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true },
+        { key: 'update_time', align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true }
+      ]
     }
   },
   created() {
-    let is_showSearch = window.localStorage.getItem('showSearch');
-    if (is_showSearch == 'true'){
-      this.showSearch = true;
-    }else{
-      this.showSearch = false;
-    }
-    this.getList();
-    let page_showSearch = window.localStorage.getItem('showSearchBar');
-    if (page_showSearch != null ){
-      this.showSearch = showSearchBar
-    }
+    this.getList()
   },
   methods: {
-    /** 查询文档历史记录列表 */
+    /** 查询博客文档历史记录列表 */
     getList() {
+      //this.total = 0;
+      //this.blog_historyList = [];
       this.loading = true
       listBlog_history(this.queryParams).then(response => {
-        this.blog_historyList = response.rows
+        let privateObj = response.text
+        //let publicObj = aesDecrypt(privateObj);
+        //let jsonData = JSON.parse(publicObj);
+        let jsonData = aesDecrypt2Json(privateObj)
+        this.blog_historyList = []
+        console.log('list数据查询结果', jsonData)
+        this.blog_historyList = jsonData
+        //this.blog_historyList = response.rows;
         this.total = response.total
         this.loading = false
       }).catch((err) => {
@@ -265,7 +268,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        blogDocId: null,
+        blogId: null,
         preContent: null,
         userId: null,
         isDelete: null,
@@ -294,30 +297,53 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = '添加文档历史记录'
+      this.title = '添加博客文档历史记录'
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
       const id = row.id || this.ids
       getBlog_history(id).then(response => {
-        this.form = response.data
+        let privateObj = response.text
+        let jsonData = aesDecrypt2Json(privateObj)
+        console.log('修改按钮操作.查询结果打印: ', jsonData)
+        this.form = jsonData
+        //this.form = response.data;
         this.open = true
-        this.title = '修改文档历史记录'
+        this.title = '修改博客文档历史记录'
       })
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          //对表单加密
+          let dict2String = changeDictToString(this.form)
+          let sendData = {
+            'a': aesEncrypt('1024'),
+            'b': aesEncrypt(dict2String),
+            'c': aesEncrypt('Hello World !')
+          }
+          //发送内容加密
           if (this.form.id != null) {
-            updateBlog_history(this.form).then(response => {
+            updateBlog_history(sendData).then(response => {
+
+              // let privateObj = response.text;
+              // let publicObj = aesDecrypt(privateObj);
+              // let jsonData = JSON.parse(publicObj);
+              // TipMessage.isOK(jsonData);
+
               this.$modal.msgSuccess('修改成功')
               this.open = false
               this.getList()
             })
           } else {
-            addBlog_history(this.form).then(response => {
+            addBlog_history(sendData).then(response => {
+              // let privateObj = response.text;
+              // let publicObj = aesDecrypt(privateObj);
+              // let jsonData = JSON.parse(publicObj);
+              // TipMessage.isOK(jsonData);
+
               this.$modal.msgSuccess('新增成功')
               this.open = false
               this.getList()
@@ -329,7 +355,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除文档历史记录编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除博客文档历史记录编号为"' + ids + '"的数据项？').then(function() {
         return delBlog_history(ids)
       }).then(() => {
         this.getList()
@@ -344,29 +370,38 @@ export default {
       }, `blog_history_${new Date().getTime()}.xlsx`)
     },
     //删除切换
-    switchDeleteState(rowId, isD) {
+    switchDeleteState(rowId, isD, switchRow = 'isDelete') {
       //console.log("删除切换row: ", rowId);
+      let sendForm = {
+        'id': rowId
+        // 'isDelete': isD
+      }
+      sendForm[`${switchRow}`] = isD
+      let dict2String = changeDictToString(sendForm)
       let sendData = {
-        "id": rowId,
-        "isDelete": isD
+        'a': aesEncrypt('1024'),
+        'b': aesEncrypt(dict2String),
+        'c': aesEncrypt('Hello World !')
       }
       updateBlog_history(sendData).then((res) => {
         if (res.code !== 200) {
-          TipMessage.Warning(res.msg);
-          return null;
+          TipMessage.Warning(res.msg)
+          return null
         }
         if (isD == 1) {
-          TipMessage.Warning("删除成功");
+          TipMessage.Warning(res.msg)
         } else {
-          TipMessage.isOK("取消删除成功");
+          TipMessage.isOK(res.msg)
         }
         this.getList()
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
     },
-
-    //====================================底部结束==============================================
+    copyPath(url, event) {
+      clip(url, event)
+    }
+    //==========================底部结束==================================
   }
 }
 </script>

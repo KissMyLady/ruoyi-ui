@@ -1,15 +1,19 @@
 import request from '@/utils/request'
 
-// 查询文档历史记录列表
-export function listBlog_history(query) {
+//
+// 博客文档历史记录 Api
+//
+
+// 查询列表
+export function listBlog_history(data) {
   return request({
     url: '/blog_history/blog_history/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: data
   })
 }
 
-// 查询文档历史记录详细
+// 详细
 export function getBlog_history(id) {
   return request({
     url: '/blog_history/blog_history/' + id,
@@ -17,7 +21,7 @@ export function getBlog_history(id) {
   })
 }
 
-// 新增文档历史记录
+// ++新增++
 export function addBlog_history(data) {
   return request({
     url: '/blog_history/blog_history',
@@ -26,7 +30,7 @@ export function addBlog_history(data) {
   })
 }
 
-// 修改文档历史记录
+// +修改+
 export function updateBlog_history(data) {
   return request({
     url: '/blog_history/blog_history',
@@ -35,7 +39,7 @@ export function updateBlog_history(data) {
   })
 }
 
-// 删除文档历史记录
+// --删除--
 export function delBlog_history(id) {
   return request({
     url: '/blog_history/blog_history/' + id,
