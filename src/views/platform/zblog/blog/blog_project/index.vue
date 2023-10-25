@@ -99,61 +99,100 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
-              :header-row-style="{height:'32px'}"
-              :cell-style="{padding:'1px'}"
-              border
+    <el-table border
               stripe
               :data="blog_projectList"
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
-      <el-table-column align="center" width="auto" label="文集类型" prop="blogType"/>
+      <el-table-column label="添加文章" align="center" width="260">
+        <template slot-scope="scope">
+          <el-button icon="el-icon-plus"
+                     size="small"
+                     @click="addArticle_by_markdown(scope.row.id)"
+                     v-hasPermi="['blog_project:blog_project:add']"
+          >Markdown
+          </el-button>
+          <el-button icon="el-icon-plus"
+                     size="small"
+                     @click="addArticle_by_tinymce(scope.row.id)"
+                     v-hasPermi="['blog_project:blog_project:add']"
+          >富文本
+          </el-button>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
+<!--      <el-table-column align="center" width="auto" label="文集类型" prop="blogType"/>-->
       <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
-<!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
-<!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
+      <!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
+      <!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
       <el-table-column align="center" width="auto" label="封面图" prop="coverImg"/>
-      <el-table-column align="center" width="auto" label="权限代号" prop="authorityCode"/>
-<!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印类型" prop="watermarkType"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
-      <el-table-column align="center" width="auto" label="是否置顶" prop="isTop"/>
-      <el-table-column align="center" width="auto" label="项目浏览次数" prop="visitor"/>
-<!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
-<!--      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>-->
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
+      <el-table-column align="center" width="90" label="权限代号" prop="authorityCode"/>
+      <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印类型" prop="watermarkType"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
+      <el-table-column align="center" width="90" label="是否置顶" prop="isTop">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isTop == 1"
+                  @click="switchDeleteState(scope.row.id, 0, 'isTop')"
+                  style="cursor:pointer;"
+                  type="danger"
+          >是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isTop == 0"
+                  @click="switchDeleteState(scope.row.id, 1, 'isTop')"
+                  type="info"
+                  style="cursor:pointer;"
+          >否
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="90" label="浏览数" prop="visitor"/>
+      <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
+      <!--      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>-->
+      <el-table-column align="center" width="90" label="逻辑删除" prop="isDelete">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isDelete == 1"
+                  @click="switchDeleteState(scope.row.id, 0)"
+                  style="cursor:pointer;"
+                  type="danger"
+          >是
+          </el-tag>
+          <el-tag v-else-if="scope.row.isDelete == 0"
+                  @click="switchDeleteState(scope.row.id, 1)"
+                  type="info"
+                  style="cursor:pointer;"
+          >否
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['blog_project:blog_project:edit']"
+          <el-button size="mini"
+                     type="text"
+                     icon="el-icon-edit"
+                     @click="handleUpdate(scope.row)"
+                     v-hasPermi="['blog_project:blog_project:edit']"
           >修改
           </el-button>
-          <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['blog_project:blog_project:remove']"
+          <el-button size="mini"
+                     type="text"
+                     icon="el-icon-delete"
+                     @click="handleDelete(scope.row)"
+                     v-hasPermi="['blog_project:blog_project:remove']"
           >删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
     />
 
     <!-- 添加或修改博客文集对话框 -->
@@ -162,7 +201,8 @@
         <el-form-item label="创建用户id" prop="userId">
           <el-input v-model="form.userId" style="width: 300px"
                     disabled
-                    placeholder="请输入创建用户id"/>
+                    placeholder="请输入创建用户id"
+          />
         </el-form-item>
         <el-form-item label="文集名称" prop="name">
           <el-input v-model="form.name" style="width: 300px" placeholder="请输入文集名称"/>
@@ -182,8 +222,9 @@
         <el-form-item label="权限具体限定内容" prop="authorityValue">
           <el-input v-model="form.authorityValue"
                     style="width: 300px"
-                    :autosize="{ minRows: 2, maxRows: 4}" 
-                    type="textarea" placeholder="请输入内容"/>
+                    :autosize="{ minRows: 2, maxRows: 4}"
+                    type="textarea" placeholder="请输入内容"
+          />
         </el-form-item>
         <el-form-item label="水印" prop="isWatermark">
           <el-input v-model="form.isWatermark" style="width: 300px" placeholder="请输入水印"/>
@@ -233,8 +274,6 @@ export default {
   name: 'Blog_project',
   data() {
     return {
-      // 遮罩层
-      loading: true,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -342,7 +381,6 @@ export default {
     getList() {
       //this.total = 0;
       //this.blog_projectList = [];
-      this.loading = true
       listBlog_project(this.queryParams).then(response => {
         let privateObj = response.text
         //let publicObj = aesDecrypt(privateObj);
@@ -353,9 +391,7 @@ export default {
         this.blog_projectList = jsonData
         //this.blog_projectList = response.rows;
         this.total = response.total
-        this.loading = false
       }).catch((err) => {
-        this.loading = false
         //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
       })
@@ -513,6 +549,18 @@ export default {
     },
     copyPath(url, event) {
       clip(url, event)
+    },
+    //添加文章弹出框
+    addArticle_by_markdown(project_id) {
+      //跳转到markdown文章添加页面
+      //md文档修改
+      let jumpUrl = '/blog_project/blog_add_markdown?project_id=' + project_id
+      this.$router.push(jumpUrl)
+    },
+    addArticle_by_tinymce(project_id) {
+      //跳转到markdown文章添加页面
+      let jumpUrl = '/blog_project/blog_add_tinymce?project_id=' + project_id
+      this.$router.push(jumpUrl)
     }
     //==========================底部结束==================================
   }

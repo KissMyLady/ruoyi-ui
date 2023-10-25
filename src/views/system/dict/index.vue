@@ -1,24 +1,28 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams"
+             ref="queryForm"
+             size="small"
+             :inline="true"
+             v-show="showSearch"
+             label-width="68px"
+    >
       <el-form-item label="字典名称" prop="dictName">
-        <el-input
-            v-model="queryParams.dictName"
-            placeholder="请输入字典名称"
-            clearable
-            @change="handleQuery"
-            style="width: 240px"
-            @keyup.enter.native="handleQuery"
+        <el-input v-model="queryParams.dictName"
+                  placeholder="请输入字典名称"
+                  clearable
+                  @change="handleQuery"
+                  style="width: 240px"
+                  @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="字典类型" prop="dictType">
-        <el-input
-            v-model="queryParams.dictType"
-            placeholder="请输入字典类型"
-            @change="handleQuery"
-            clearable
-            style="width: 240px"
-            @keyup.enter.native="handleQuery"
+        <el-input v-model="queryParams.dictType"
+                  placeholder="请输入字典类型"
+                  @change="handleQuery"
+                  clearable
+                  style="width: 240px"
+                  @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
@@ -164,12 +168,11 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
     />
 
     <!-- 添加或修改参数配置对话框 -->
@@ -204,7 +207,12 @@
 </template>
 
 <script>
-import { listType, getType, delType, addType, updateType, refreshCache } from '@/api/system/dict/type'
+import {
+  listType,
+  getType,
+  delType, addType,
+  updateType, refreshCache
+} from '@/api/system/dict/type'
 
 export default {
   name: 'Dict',
@@ -358,7 +366,8 @@ export default {
         this.$modal.msgSuccess('刷新成功')
         this.$store.dispatch('dict/cleanDict')
       })
-    }
+    },
+    //==========================底部结束==================================
   }
 }
 </script>

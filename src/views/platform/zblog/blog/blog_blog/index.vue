@@ -118,27 +118,70 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-      <el-table-column align="center" width="auto" label="所属文集" prop="projectId"/>
-<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
-<!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentBlog"/>-->
-      <el-table-column align="center" width="auto" label="标题" prop="name"/>
-      <el-table-column align="center" width="auto" label="编辑器" prop="editorMode"/>
-<!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
-<!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
-      <el-table-column align="center" width="auto" label="排序" prop="sort"/>
-      <el-table-column align="center" width="auto" label="状态码" prop="status"/>
-<!--      <el-table-column align="center" width="auto" label="编辑状态,打开下级" prop="editOpenChildren"/>-->
-<!--      <el-table-column align="center" width="auto" label="浏览状态,打开下级" prop="showOpenChildren"/>-->
-      <el-table-column align="center" width="auto" label="权限代号" prop="authorityCode"/>
-<!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印类型 1表示文字水印 2表示图片水印" prop="watermarkType"/>-->
-<!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
-      <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <el-table-column align="center" width="100" label="所属文集" prop="projectId"/>
+      <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
+      <!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentBlog"/>-->
+      <el-table-column align="center" width="90" label="编辑器" prop="editorMode">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.editorMode == 1"
+                  style="cursor:pointer;"
+          >Md
+          </el-tag>
+          <el-tag v-else-if="scope.row.editorMode == 2"
+                  style="cursor:pointer;">Tiny
+          </el-tag>
+          <el-tag v-else
+                  style="cursor:pointer;">未知
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="auto" label="标题" prop="name">
+        <template slot-scope="scope">
+          <el-button type="primary"
+                     style="float: left;margin-left: 0;"
+                     size="mini"
+                     @click="showBlogContent(scope.row.id)"
+                     plain
+                     class="el-icon-view"></el-button>
+<!--          <span>{{ scope.row.name }}</span>-->
+          <el-input placeholder="文章标题"
+                    class="edit-input"
+                    size="small"
+                    style="padding-left:0;margin-left:2px;width: 70%;border: 0;font-size: 14px"
+                    v-model="scope.row.name">
+          </el-input>
+          <el-button type="primary"
+                     style="float: right"
+                     size="mini"
+                     @click="editBlogTitle(scope.row)"
+                     plain
+                     class="el-icon-finished"></el-button>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
+      <!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
+<!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
+      <el-table-column align="center" width="90" label="状态码" prop="status"/>
+      <!--      <el-table-column align="center" width="auto" label="编辑状态,打开下级" prop="editOpenChildren"/>-->
+      <!--      <el-table-column align="center" width="auto" label="浏览状态,打开下级" prop="showOpenChildren"/>-->
+      <el-table-column align="center" width="90" label="权限代号" prop="authorityCode"/>
+      <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印类型 1表示文字水印 2表示图片水印" prop="watermarkType"/>-->
+      <!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
+      <el-table-column align="center" width="90" label="浏览次数" prop="visitor"/>
+      <el-table-column align="center" width="90" label="逻辑删除" prop="isDelete"/>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="editContent(scope.row)"
+              v-hasPermi="['blog_blog:blog_blog:edit']"
+          >编辑
+          </el-button>
           <el-button
               size="mini"
               type="text"
@@ -159,12 +202,11 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
     />
 
     <!-- 添加或修改博客文档对话框 -->
@@ -177,7 +219,8 @@
           <el-input v-model="form.userId"
                     disabled
                     style="width: 300px"
-                    placeholder="请输入创建用户id"/>
+                    placeholder="请输入创建用户id"
+          />
         </el-form-item>
         <el-form-item label="父级文档" prop="parentBlog">
           <el-input v-model="form.parentBlog" style="width: 300px" placeholder="请输入父级文档"/>
@@ -210,7 +253,8 @@
           <el-input v-model="form.authorityValue"
                     style="width: 300px"
                     :autosize="{ minRows: 2, maxRows: 4}"
-                    type="textarea" placeholder="请输入内容"/>
+                    type="textarea" placeholder="请输入内容"
+          />
         </el-form-item>
         <el-form-item label="水印状态" prop="isWatermark">
           <el-input v-model="form.isWatermark" style="width: 300px" placeholder="请输入水印状态"/>
@@ -230,6 +274,11 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--富文本预览弹出框-->
+
+    <!--markdown预览弹出框-->
+
   </div>
 </template>
 
@@ -288,93 +337,6 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-      //表格行
-      columns: [
-        { key: 'id', align: 'center', width: 'auth', label: `主键`, prop: 'id', visible: true },
-        { key: 'project_id', align: 'center', width: 'auth', label: `所属文集`, prop: 'project_id', visible: true },
-        { key: 'user_id', align: 'center', width: 'auth', label: `创建用户id`, prop: 'user_id', visible: true },
-        { key: 'parent_blog', align: 'center', width: 'auth', label: `父级文档`, prop: 'parent_blog', visible: true },
-        { key: 'name', align: 'center', width: 'auth', label: `标题`, prop: 'name', visible: true },
-        {
-          key: 'editor_mode',
-          align: 'center',
-          width: 'auth',
-          label: `编辑器模式.1md,2富文本`,
-          prop: 'editor_mode',
-          visible: true
-        },
-        { key: 'content', align: 'center', width: 'auth', label: `文档内容`, prop: 'content', visible: true },
-        {
-          key: 'pre_content',
-          align: 'center',
-          width: 'auth',
-          label: `文档内容_预览_纯文本`,
-          prop: 'pre_content',
-          visible: true
-        },
-        { key: 'sort', align: 'center', width: 'auth', label: `排序`, prop: 'sort', visible: true },
-        {
-          key: 'status',
-          align: 'center',
-          width: 'auth',
-          label: `状态码.0草稿,1发布,2删除`,
-          prop: 'status',
-          visible: true
-        },
-        {
-          key: 'edit_open_children',
-          align: 'center',
-          width: 'auth',
-          label: `编辑状态,打开下级`,
-          prop: 'edit_open_children',
-          visible: true
-        },
-        {
-          key: 'show_open_children',
-          align: 'center',
-          width: 'auth',
-          label: `浏览状态,打开下级`,
-          prop: 'show_open_children',
-          visible: true
-        },
-        {
-          key: 'authority_code',
-          align: 'center',
-          width: 'auth',
-          label: `权限代号`,
-          prop: 'authority_code',
-          visible: true
-        },
-        {
-          key: 'authority_value',
-          align: 'center',
-          width: 'auth',
-          label: `权限具体限定内容`,
-          prop: 'authority_value',
-          visible: true
-        },
-        { key: 'is_watermark', align: 'center', width: 'auth', label: `水印状态`, prop: 'is_watermark', visible: true },
-        {
-          key: 'watermark_type',
-          align: 'center',
-          width: 'auth',
-          label: `水印类型 1表示文字水印 2表示图片水印`,
-          prop: 'watermark_type',
-          visible: true
-        },
-        {
-          key: 'watermark_value',
-          align: 'center',
-          width: 'auth',
-          label: `水印内容`,
-          prop: 'watermark_value',
-          visible: true
-        },
-        { key: 'visitor', align: 'center', width: 'auth', label: `浏览次数`, prop: 'visitor', visible: true },
-        { key: 'is_delete', align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true },
-        { key: 'create_time', align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true },
-        { key: 'update_time', align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true }
-      ]
     }
   },
   created() {
@@ -558,7 +520,50 @@ export default {
     },
     copyPath(url, event) {
       clip(url, event)
-    }
+    },
+    //内容编辑
+    editContent(row) {
+      let editorMode = row.editorMode
+      if (editorMode === '1' || editorMode === 1) {
+        //跳转到markdown编辑器页面
+        let jumpUrl = '/blog_project/blog_add_markdown' //+ row.id
+        this.$router.push(jumpUrl)
+      } else if (editorMode === '2' || editorMode === 2) {
+        //跳转到富文本编辑器页面
+        let jumpUrl = '/blog_project/blog_add_tinymce' //+ row.id
+        this.$router.push(jumpUrl)
+      } else {
+        TipMessage.Warning('当前内容未指定编辑器模式, 请检查')
+        return null
+      }
+    },
+    //修改文章的标题
+    editBlogTitle(row){
+      let sendForm = {
+        "id": row.id,
+        "name": row.name,
+      }
+      let dict2String = changeDictToString(sendForm)
+      let sendData = {
+        'a': aesEncrypt('1024'),
+        'b': aesEncrypt(dict2String),
+        'c': aesEncrypt('Hello World !')
+      }
+      updateBlog_blog(sendData).then((res)=>{
+        if (res.code !== 200){
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        TipMessage.isOK(res.msg);
+        this.getList();
+      }).catch((err)=>{
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    showBlogContent(blog_id){
+      //查询文章的内容展示, 打开弹出框
+      TipMessage.isOK("查询"+ blog_id);
+    },
     //==========================底部结束==================================
   }
 }
