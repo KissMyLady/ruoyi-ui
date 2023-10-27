@@ -108,12 +108,14 @@
       <el-table-column label="添加文章" align="center" width="260">
         <template slot-scope="scope">
           <el-button icon="el-icon-plus"
+                     type="success" plain
                      size="small"
                      @click="addArticle_by_markdown(scope.row.id)"
                      v-hasPermi="['blog_project:blog_project:add']"
           >Markdown
           </el-button>
           <el-button icon="el-icon-plus"
+                     type="primary" plain
                      size="small"
                      @click="addArticle_by_tinymce(scope.row.id)"
                      v-hasPermi="['blog_project:blog_project:add']"
@@ -124,10 +126,23 @@
       <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
 <!--      <el-table-column align="center" width="auto" label="文集类型" prop="blogType"/>-->
+      <el-table-column align="center" width="auto" label="封面图" prop="coverImg">
+        <template slot-scope="scope">
+          <el-image style="width: 80%"
+                    fit="contain"
+                    lazy
+                    :src="scope.row.coverImg"
+                    :preview-src-list="[scope.row.coverImg]">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
+      <el-table-column align="center" width="100" label="文章数" prop="countSum"/>
       <!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
       <!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
-      <el-table-column align="center" width="auto" label="封面图" prop="coverImg"/>
       <el-table-column align="center" width="90" label="权限代号" prop="authorityCode"/>
       <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
@@ -561,7 +576,10 @@ export default {
       //跳转到markdown文章添加页面
       let jumpUrl = '/blog_project/blog_add_tinymce?project_id=' + project_id
       this.$router.push(jumpUrl)
-    }
+    },
+    getImageUrl(filePath){
+      return process.env.VUE_APP_target_url + filePath;
+    },
     //==========================底部结束==================================
   }
 }

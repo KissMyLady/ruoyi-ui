@@ -231,6 +231,10 @@
         </el-form-item>
         <el-form-item label="图片路径" prop="filePath">
           <el-input v-model="form.filePath" disabled placeholder=""/>
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.filePath, $event)">复制路径
+          </el-button>
         </el-form-item>
         <el-form-item label="文件大小" prop="fileSize">
           <el-input v-model="form.fileSize" disabled placeholder=""/>
@@ -242,9 +246,17 @@
           <el-input v-model="form.url"
                     disabled
                     placeholder="url"/>
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.url, $event)">复制url
+          </el-button>
         </el-form-item>
-        <el-form-item label="图片路径" prop="md5">
+        <el-form-item label="图片绝对路径" prop="md5">
           <el-input v-model="form.absPath" disabled placeholder="abs_path"/>
+          <el-button tpye="text"
+                     size="mini"
+                     @click="copyPath(form.absPath, $event)">复制绝对路径
+          </el-button>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
           <el-input v-model="form.md5" disabled placeholder=""/>
