@@ -139,7 +139,17 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="文集名称" prop="name"/>
+      <el-table-column align="center" width="auto" label="文集名称" prop="name">
+        <template slot-scope="scope">
+          <el-popover placement="top-start"
+                      title="介绍"
+                      width="200"
+                      trigger="hover"
+                      :content="scope.row.intro">
+            <span slot="reference" style="margin: 0;padding:0;font-size: 16px;font-weight: bold">{{ scope.row.name }}</span>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column align="center" width="100" label="文章数" prop="countSum"/>
       <!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
       <!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
@@ -148,22 +158,7 @@
       <!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印类型" prop="watermarkType"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
-      <el-table-column align="center" width="90" label="是否置顶" prop="isTop">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.isTop == 1"
-                  @click="switchDeleteState(scope.row.id, 0, 'isTop')"
-                  style="cursor:pointer;"
-                  type="danger"
-          >是
-          </el-tag>
-          <el-tag v-else-if="scope.row.isTop == 0"
-                  @click="switchDeleteState(scope.row.id, 1, 'isTop')"
-                  type="info"
-                  style="cursor:pointer;"
-          >否
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" width="90" label="是否置顶" prop="isTop"/>-->
       <el-table-column align="center" width="90" label="浏览数" prop="visitor"/>
       <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>-->
@@ -308,8 +303,10 @@ export default {
       // 查询参数
       queryParams: {
         //orderByColumn: 'create_time',
-        isAsc: 'desc',  //desc, acs
-        sortStr: 'create_time',  //sql排序字段
+        // isAsc: 'desc',  //desc, acs
+        // sortStr: 'create_time',  //sql排序字段
+        "isAsc": 'desc',  //desc, acs
+        "sortStr": 'countSum',  //按数量排序
         pageNum: 1,
         pageSize: 10,
         userId: null,

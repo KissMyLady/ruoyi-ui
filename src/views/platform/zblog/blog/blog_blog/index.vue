@@ -314,7 +314,7 @@
                append-to-body
     >
       <el-row>
-        <el-col :span="12">更新时间: {{ content_detail.updateTime }}</el-col>
+        <el-col :span="12">更新时间: {{ formatTime_am(content_detail.updateTime) }}</el-col>
         <el-col :span="12"></el-col>
       </el-row>
       <template>
@@ -327,6 +327,13 @@
           ></v-md-preview-html>
         </template>
       </template>
+      <el-row style="margin:0;padding:0">
+        <el-col :span="12">
+          <p style="margin:0;padding:0">创建时间: {{ content_detail.createTime }}</p>
+          <p style="margin:0;padding:0">更新时间: {{ content_detail.updateTime }}</p>
+        </el-col>
+        <el-col :span="12"></el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="content_dialog_cancel">关闭</el-button>
       </div>

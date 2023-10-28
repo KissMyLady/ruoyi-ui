@@ -14,13 +14,13 @@
                         style="width: 360px"
                         placeholder="请输入文章标题"
                         clearable/>
+              <el-button type="primary" plain
+                         @click="uploadFiles"
+                         class="el-icon-upload2">上传</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-button type="primary" plain
-                       @click="uploadFiles"
-                       class="el-icon-upload2">上传</el-button>
-            <el-button type="primary"
+            <el-button type="success"
                        plain
                        @click="addArticleBtn"
                        class="el-icon-check">保存内容</el-button>
