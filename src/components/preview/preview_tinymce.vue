@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
-      dialogWidth: '47%',
+      dialogWidth: '60%',
       form: {},
       title: '',
       tinymce_text: '',

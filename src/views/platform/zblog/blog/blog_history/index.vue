@@ -157,7 +157,10 @@
     />
 
     <!-- 添加或修改博客文档历史记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
+    <el-dialog :title="title"
+               :visible.sync="open"
+               width="60%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="文档id" prop="blogId">
           <el-input v-model="form.blogId"

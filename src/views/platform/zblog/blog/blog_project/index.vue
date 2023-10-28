@@ -583,7 +583,8 @@ export default {
     addArticle_by_markdown(project_id) {
       //跳转到markdown文章添加页面
       //md文档修改
-      let jumpUrl = '/blog_project/blog_add_markdown?project_id=' + project_id
+      // let jumpUrl = '/blog_project/blog_add_markdown?project_id=' + project_id
+      let jumpUrl = '/blog_project/add_markdown_v3?project_id=' + project_id
       this.$router.push(jumpUrl)
     },
     addArticle_by_tinymce(project_id) {

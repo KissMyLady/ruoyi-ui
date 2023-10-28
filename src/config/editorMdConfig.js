@@ -1,3 +1,5 @@
+import { initPasteDragImg } from '@/config/uploadImg'
+
 const defaultConfig = {
   width: '100%',
   height: 580,
@@ -28,8 +30,8 @@ const defaultConfig = {
   // dialogMaskOpacity: 0.4,      // 设置透明遮罩层的透明度，全局通用，默认值为0.1
   // dialogMaskBgColor: "#000",   // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
   imageUpload: true,
-  imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-  imageUploadURL: "./php/upload.php",
+  imageFormats: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'],
+  imageUploadURL: process.env.VUE_APP_target_url + '/file_image/upload/upload',
   // onload: function() {
   //    // this.fullscreen();
   //    // this.unwatch();
@@ -39,7 +41,9 @@ const defaultConfig = {
   //    // this.height(480);
   //    // this.resize("100%", 640);
   // },
-
+  onload: function() {
+    initPasteDragImg(this)
+  },
   // 工具栏
   // '|', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ucwords', 'uppercase', 'lowercase', 'search',  'goto-line',
   toolbarIcons: function() {
@@ -47,7 +51,7 @@ const defaultConfig = {
       '|', 'bold', 'del', 'italic', 'quote',
       '|', 'list-ul', 'list-ol', 'hr', 'image',
       '|', 'link', 'reference-link', 'code', 'preformatted-text', 'code-block', 'table', 'datetime', 'emoji', 'html-entities', 'pagebreak',
-      '|', 'fullscreen', ]
+      '|', 'fullscreen']
     return arr
   }
 }

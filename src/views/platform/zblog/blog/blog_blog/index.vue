@@ -301,10 +301,17 @@
           <el-input v-model="form.name" style="width: 300px" placeholder="请输入标题"/>
         </el-form-item>
         <el-form-item label="编辑器模式.1md,2富文本" prop="editorMode">
-          <el-input v-model="form.editorMode" style="width: 300px" placeholder="请输入编辑器模式.1md,2富文本"/>
+          <el-input v-model="form.editorMode"
+                    style="width: 300px"
+                    placeholder="请输入编辑器模式.1md,2富文本"/>
         </el-form-item>
         <el-form-item label="文档内容">
-          <editor v-model="form.content" :min-height="192"/>
+<!--          <editor v-model="form.content" :min-height="192"/>-->
+          <el-input type="textarea"
+                    v-model="form.content"
+                    :autosize="{ minRows: 4, maxRows: 10}"
+                    placeholder="请输入内容">
+          </el-input>
         </el-form-item>
         <el-form-item label="文档内容_预览_纯文本">
           <el-input type="textarea"
@@ -706,7 +713,8 @@ export default {
       let editorMode = row.editorMode
       if (editorMode === '1' || editorMode === 1) {
         //跳转到markdown编辑器页面
-        let jumpUrl = '/blog_project/blog_add_markdown?dbId=' + dbId
+        // let jumpUrl = '/blog_project/blog_add_markdown?dbId=' + dbId
+        let jumpUrl = '/blog_project/add_markdown_v3?dbId=' + dbId
         this.$router.push(jumpUrl)
       } else if (editorMode === '2' || editorMode === 2) {
         //跳转到富文本编辑器页面
