@@ -112,7 +112,6 @@
               :cell-style="{padding:'1px'}"
               border
               stripe
-              v-loading="loading"
               :data="list"
               @selection-change="handleSelectionChange"
               :default-sort="defaultSort"

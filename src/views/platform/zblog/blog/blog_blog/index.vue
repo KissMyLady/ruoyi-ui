@@ -198,7 +198,7 @@
       <!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
       <!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
-      <el-table-column align="center" width="85" label="状态码" prop="status"/>
+      <!-- <el-table-column align="center" width="85" label="状态码" prop="status"/> -->
       <!--      <el-table-column align="center" width="auto" label="编辑状态,打开下级" prop="editOpenChildren"/>-->
       <!--      <el-table-column align="center" width="auto" label="浏览状态,打开下级" prop="showOpenChildren"/>-->
       <el-table-column align="center" width="85" label="权限代号" prop="authorityCode">

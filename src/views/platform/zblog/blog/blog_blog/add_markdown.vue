@@ -122,7 +122,7 @@ export default {
 
   created() {
     let dbId = this.$route.query.dbId
-    console.log('dbId: ', dbId)
+    // console.log('dbId: ', dbId)
     let project_id = this.$route.query.project_id
     if (project_id === undefined || project_id === null) {
       this.blog_detail.projectId = ''
@@ -138,7 +138,7 @@ export default {
         }
         let privateObj = res.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('jsonData: ', jsonData)
+        // console.log('jsonData: ', jsonData)
         this.blog_detail.name = jsonData.name
         this.text = jsonData.preContent
       }).catch((err) => {
@@ -276,7 +276,7 @@ export default {
         'c': aesEncrypt('Hello World !')
       }
       let dbId = this.$route.query.dbId
-      console.log('dbId: ', dbId)
+      // console.log('dbId: ', dbId)
       let project_id = this.$route.query.project_id
 
       //判断是是否为直接添加

@@ -133,6 +133,7 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column align="center" width="100" label="分组Id" prop="groupId"/>
       <el-table-column label="预览" align="center" width="200">
         <template slot-scope="scope">
           <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"
@@ -150,7 +151,6 @@
       </el-table-column>
 <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
 <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
-      <el-table-column align="center" width="auto" label="图片分组" prop="groupId"/>
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <el-table-column align="center" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
@@ -163,11 +163,11 @@
         </template>
       </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
-      <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>
+      <el-table-column align="center" width="85" label="文件大小" prop="fileSize"/>
       <el-table-column align="center" width="100" label="上传方式" prop="upMethod"/>
 <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
-      <el-table-column align="center" width="100" label="图片后缀" prop="fileSuffix"/>
-      <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete">
+      <!-- <el-table-column align="center" width="100" label="图片后缀" prop="fileSuffix"/> -->
+      <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
@@ -182,7 +182,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -331,7 +331,7 @@ export default {
         title: null,
         fileName: null,
         fileSuffix: null,
-        isDelete: null
+        isDelete: 0
       },
       // 表单参数
       form: {},

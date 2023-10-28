@@ -150,7 +150,7 @@
       <!--      </el-table-column>-->
       <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
       <el-table-column align="center" width="100" label="分组id" prop="groupId"/>
-      <el-table-column align="center" width="260" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
       <!--      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
       <el-table-column align="center" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
@@ -172,7 +172,7 @@
       </el-table-column>
       <el-table-column align="center" width="100" label="文件大小" prop="fileSize"/>
       <el-table-column align="center" width="100" label="上传方式" prop="upMethod"/>
-      <el-table-column align="center" width="100" label="文件后缀" prop="fileSuffix"/>
+      <!-- <el-table-column align="center" width="100" label="文件后缀" prop="fileSuffix"/> -->
       <!--      <el-table-column align="center" width="auto" label="url链接" prop="url"/>-->
       <!--      <el-table-column align="center" width="auto" label="在存储地址的真实绝对路径" prop="absPath"/>-->
       <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
@@ -191,7 +191,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -366,7 +366,7 @@ export default {
         fileName: null,
         upMethod: null,
         fileSuffix: null,
-        isDelete: null
+        isDelete: 0
       },
       // 表单参数
       form: {},

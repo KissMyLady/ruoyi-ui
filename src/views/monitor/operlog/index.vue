@@ -117,14 +117,13 @@
               :cell-style="{padding:'1px'}"
               border
               stripe
-              v-loading="loading"
               :data="list"
               @selection-change="handleSelectionChange"
               :default-sort="defaultSort"
               @sort-change="handleSortChange"
     >
       <el-table-column type="selection" width="50" align="center"/>
-      <el-table-column label="日志编号" align="center" prop="operId" width="100"/>
+      <!-- <el-table-column label="日志编号" align="center" prop="operId" width="100"/> -->
       <el-table-column label="操作人员" align="center" prop="operName" width="110" :show-overflow-tooltip="true" sortable="custom">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.operName == 'admin'">{{ scope.row.operName }}</el-tag>
