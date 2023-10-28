@@ -71,7 +71,7 @@ export default {
         'userId': '',
         'parentBlog': '',
         'name': '',
-        'editorMode': '',
+        'editorMode': '2',
         'content': '',
         'preContent': '',
         'sort': '',
@@ -149,8 +149,10 @@ export default {
     addArticleBtn(){
       //获取富文本编辑器内容数据
       let tinymceData = this.$refs['getTinymceData'].getData()
+      let textData = this.$refs['getTinymceData'].getTextData()
       // console.log("发送文章数据打印: ", this.blog_detail);
       this.blog_detail.content = tinymceData;
+      this.blog_detail.preContent = textData;
       let dict2String = changeDictToString(this.blog_detail)
       let sendData = {
         'a': aesEncrypt('1024'),

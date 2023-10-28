@@ -2,6 +2,7 @@
   <div class="tinymce-container">
     <!--富文本,本地渲染,不需要网络加载-->
     <editor api-key="0gxtokd1ebq1qi7h5h0qivrsh6sk0re38i0ym6onoa954l33"
+            ref="editor_ref"
             v-model="tinymceDatabase"
             :init="tinymceData"
     />
@@ -112,7 +113,7 @@ export default {
           })
         }
       },
-      uploadUrl: process.env.VUE_APP_target_url + '/file_image/upload/upload'
+      uploadUrl: process.env.VUE_APP_target_url + '/file_image/upload/upload',
       //==========================底部结束==================================
     }
   },
@@ -129,7 +130,12 @@ export default {
     },
     //子组件调用父组件, 返回创建的数据
     getData() {
-      return this.tinymceDatabase
+      let html_data = this.tinymceDatabase;
+      return html_data
+    },
+    getTextData(){
+      // JSON.stringify(tinymce.activeEditor.getContent({format: 'text'}))
+      return tinymce.activeEditor.getContent({format: 'text'})
     },
     setData(data) {
       //富组件调用, 回写数据到富文本
