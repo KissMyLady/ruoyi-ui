@@ -1,8 +1,9 @@
 import Clipboard from 'clipboard'
 import TipMessage from '@/utils/myUtils/TipMessage'
+import {LimitStringShow} from "@/utils/myUtils/stringUtils"
 
 function clipboardSuccess(text) {
-  TipMessage.isOK('复制成功: ' + text)
+  TipMessage.isOK('复制成功: '+ LimitStringShow(text, 20))
 }
 
 function clipboardError() {

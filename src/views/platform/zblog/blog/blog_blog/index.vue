@@ -13,7 +13,8 @@
                    @change="handleQuery"
                    placeholder="筛选所属文集"
                    @keyup.enter.native="handleQuery"
-                   clearable>
+                   clearable
+        >
           <el-option v-for="item in blog_projectList"
                      :key="item.id"
                      :label="' 数量: ' + item.countSum + ' '+  item.name"
@@ -21,15 +22,15 @@
           />
         </el-select>
       </el-form-item>
-<!--      <el-form-item label="筛选用户" prop="userId">-->
-<!--        <el-input-->
-<!--            v-model="queryParams.userId"-->
-<!--            placeholder="用户id"-->
-<!--            clearable-->
-<!--            @change="handleQuery"-->
-<!--            @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="筛选用户" prop="userId">-->
+      <!--        <el-input-->
+      <!--            v-model="queryParams.userId"-->
+      <!--            placeholder="用户id"-->
+      <!--            clearable-->
+      <!--            @change="handleQuery"-->
+      <!--            @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="筛选标题" prop="name">
         <el-input
             v-model="queryParams.name"
@@ -40,19 +41,33 @@
         />
       </el-form-item>
       <el-form-item label="权限代号" prop="authorityCode">
-        <el-input
-            v-model="queryParams.authorityCode"
-            placeholder="请输入权限代号"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.authorityCode"
+                   clearable
+                   @change="handleQuery"
+                   style="width: 120px">
+          <el-option v-for="item in authority_options"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="编辑器" prop="name">
+        <el-select v-model="queryParams.editorMode"
+                   clearable
+                   @change="handleQuery"
+                   style="width: 120px">
+          <el-option v-for="item in editorMode_options"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
         <el-select v-model="queryParams.isDelete"
-                   style="width: 130px"
+                   style="width: 90px"
                    @change="handleQuery"
-                   placeholder="筛选删除"
                    clearable
         >
           <el-option v-for="dict in dict.type.is_delete"
@@ -70,37 +85,43 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['blog_blog:blog_blog:add']"
+        <el-button type="primary"
+                   plain
+                   icon="el-icon-plus"
+                   size="mini"
+                   @click="handleAdd"
+                   v-hasPermi="['blog_blog:blog_blog:add']"
         >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['blog_blog:blog_blog:edit']"
-        >修改
+        <!--        <el-button-->
+        <!--            type="success"-->
+        <!--            plain-->
+        <!--            icon="el-icon-edit"-->
+        <!--            size="mini"-->
+        <!--            :disabled="single"-->
+        <!--            @click="handleUpdate"-->
+        <!--            v-hasPermi="['blog_blog:blog_blog:edit']"-->
+        <!--        >修改-->
+        <!--        </el-button>-->
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   @click="batchChangeAuthority"
+                   v-hasPermi="['blog_blog:blog_blog:edit']"
+        >批量修改权限
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['blog_blog:blog_blog:remove']"
+        <el-button type="danger"
+                   plain
+                   icon="el-icon-delete"
+                   size="mini"
+                   :disabled="multiple"
+                   @click="handleDelete"
+                   v-hasPermi="['blog_blog:blog_blog:remove']"
         >删除
         </el-button>
       </el-col>
@@ -131,7 +152,7 @@
       <el-table-column align="center" width="100" label="所属文集" prop="projectId"/>
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentBlog"/>-->
-      <el-table-column align="center" width="90" label="编辑器" prop="editorMode">
+      <el-table-column align="center" width="85" label="编辑器" prop="editorMode">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.editorMode == 1"
                   type="success"
@@ -177,26 +198,50 @@
       <!--      <el-table-column align="center" width="auto" label="文档内容" prop="content"/>-->
       <!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
-      <el-table-column align="center" width="90" label="状态码" prop="status"/>
+      <el-table-column align="center" width="85" label="状态码" prop="status"/>
       <!--      <el-table-column align="center" width="auto" label="编辑状态,打开下级" prop="editOpenChildren"/>-->
       <!--      <el-table-column align="center" width="auto" label="浏览状态,打开下级" prop="showOpenChildren"/>-->
-      <el-table-column align="center" width="90" label="权限代号" prop="authorityCode"/>
+      <el-table-column align="center" width="85" label="权限代号" prop="authorityCode">
+        <template slot-scope="scope">
+          <div @click="changAuthorityButton(scope.row)"
+               style="cursor:pointer;"
+          >
+            <dict-tag :options="dict.type.authority_code"
+                      style="cursor:pointer;"
+                      :value="scope.row.authorityCode"
+            />
+          </div>
+        </template>
+      </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印状态" prop="isWatermark"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印类型 1表示文字水印 2表示图片水印" prop="watermarkType"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印内容" prop="watermarkValue"/>-->
-      <el-table-column align="center" width="90" label="浏览次数" prop="visitor"/>
-      <el-table-column align="center" width="90" label="逻辑删除" prop="isDelete">
+      <!--      <el-table-column align="center" width="85" label="浏览次数" prop="visitor"/>-->
+      <el-table-column align="center" width="150" label="创建时间" prop="createTime">
+        <template slot-scope="scope">
+          <el-tooltip class="item"
+                      effect="dark"
+                      :content="scope.row.createTime"
+                      placement="top"
+          >
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete == 1"
                   @click="switchDeleteState(scope.row.id, 0)"
                   style="cursor:pointer;"
-                  type="danger">是
+                  type="danger"
+          >是
           </el-tag>
           <el-tag v-else-if="scope.row.isDelete == 0"
                   @click="switchDeleteState(scope.row.id, 1)"
                   type="info"
-                  style="cursor:pointer;">否
+                  style="cursor:pointer;"
+          >否
           </el-tag>
         </template>
       </el-table-column>
@@ -265,7 +310,8 @@
           <el-input type="textarea"
                     :autosize="{ minRows: 4, maxRows: 10}"
                     placeholder="请输入内容"
-                    v-model="form.preContent">
+                    v-model="form.preContent"
+          >
           </el-input>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
@@ -339,6 +385,15 @@
       </div>
     </el-dialog>
 
+    <!-- 文章权限修改-->
+    <authority_change_dialog ref="authority_change_dialog"
+                             @authority_change_dialog="authority_change_dialog"
+    />
+
+    <!-- 文章权限批量修改-->
+    <authority_batch_change_dialog ref="authority_batch_change_dialog"
+                                   @authority_batch_change_dialog="authority_batch_change_dialog"
+    />
   </div>
 </template>
 
@@ -351,18 +406,25 @@ import {
   updateBlog_blog
 } from '@/api/platform/zblog/blog/blog_blog'
 import {
-  listBlog_project,
+  listBlog_project
 } from '@/api/platform/zblog/blog/blog_project'
 import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
 import tinymceLocal from '@/components/tinymce/tinymceLocal.vue'
+import authority_change_dialog from '@/views/platform/zblog/blog/blog_blog/dialog/authority_change_dialog.vue'
+import authority_batch_change_dialog
+  from '@/views/platform/zblog/blog/blog_blog/dialog/authority_batch_change_dialog.vue'
 
 export default {
-  dicts: ['is_delete'],
+  dicts: ['is_delete', 'authority_code'],
   name: 'Blog_blog',
-  components: { tinymceLocal },
+  components: {
+    tinymceLocal,
+    authority_change_dialog: authority_change_dialog,
+    authority_batch_change_dialog: authority_batch_change_dialog
+  },
   data() {
     return {
       // 遮罩层
@@ -397,7 +459,7 @@ export default {
         sort: null,
         status: null,
         authorityCode: null,
-        isDelete: null
+        isDelete: 0
       },
       // 表单参数
       form: {},
@@ -413,12 +475,26 @@ export default {
 
       is_markdown: false,
       is_tinymce: false,
-      dialogWidth: '60%'
+      dialogWidth: '60%',
+
+      //编辑器筛选
+      editorMode_options: [
+        { value: '1', label: '1 Md'},
+        { value: '2', label: '2 富文本'},
+        { value: '9', label: '9 url静态'},
+      ],
+      authority_options: [
+        { value: '0', label: '0 公开'},
+        { value: '1', label: '1 私密'},
+        { value: '2', label: '2 指定用户可见'},
+        { value: '3', label: '3 访问码可见'},
+        { value: '9', label: '9 超管可见'},
+      ],
     }
   },
   created() {
     this.getList()
-    this.get_category_list();
+    this.get_category_list()
   },
   mounted() {
     //修改宽度
@@ -433,31 +509,36 @@ export default {
     getList() {
       listBlog_blog(this.queryParams).then(response => {
         let privateObj = response.text
-        let jsonData = aesDecrypt2Json(privateObj)
+        if(response.code !== 200){
+          TipMessage.Error("请求错误: "+ response);
+          this.blog_blogList = []
+          return null;
+        }
         this.blog_blogList = []
+        let jsonData = aesDecrypt2Json(privateObj)
         this.blog_blogList = jsonData
         this.total = response.total
       }).catch((err) => {
-        TipMessage.Warning('请求错误: '+ err)
+        // TipMessage.Warning('请求错误: ' + err)
+        console.log("转换list错误: ", err);
       })
     },
     //获取文章分类
     get_category_list() {
       let sendData = {
-        "pageNum": 1,
-        "pageSize": 100,
-        "isDelete": 0,
-        "isAsc": 'desc',  //desc, acs
-        "sortStr": 'countSum',  //按数量排序
+        'pageNum': 1,
+        'pageSize': 100,
+        'isDelete': 0,
+        'isAsc': 'desc',  //desc, acs
+        'sortStr': 'countSum'  //按数量排序
       }
       listBlog_project(sendData).then(response => {
         let privateObj = response.text
-        let jsonData = aesDecrypt2Json(privateObj)
-        console.log("get_category_list: ", jsonData);
         this.blog_projectList = []
+        let jsonData = aesDecrypt2Json(privateObj)
+        // console.log("get_category_list: ", jsonData);
         this.blog_projectList = jsonData
         //this.blog_projectList = response.rows;
-        this.total = response.total
       }).catch((err) => {
         //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
@@ -709,6 +790,21 @@ export default {
       } else {
         this.dialogWidth = def + 'px'
       }
+    },
+    //权限修改
+    changAuthorityButton(rowData) {
+      this.$refs['authority_change_dialog'].showDialog(rowData)
+    },
+    authority_change_dialog() {
+      //子组件回调
+      this.getList()
+    },
+    //批量修改权限
+    batchChangeAuthority() {
+      this.$refs['authority_batch_change_dialog'].showDialog(this.ids)
+    },
+    authority_batch_change_dialog() {
+      this.getList()
     }
     //==========================底部结束==================================
   }

@@ -5,11 +5,11 @@
              size="small"
              :inline="true"
              v-show="showSearch"
-             label-width="88px"
+             label-width="128px"
     >
-      <el-form-item label="文档id" prop="blogId">
+      <el-form-item label="文档名称筛选" prop="blogId">
         <el-input
-            v-model="queryParams.blogId"
+            v-model="queryParams.name"
             placeholder="请输入文档id"
             clearable
             @change="handleQuery"
@@ -90,8 +90,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
+    <el-table :row-style="{height:'32px'}"
               :header-row-style="{height:'32px'}"
               :cell-style="{padding:'1px'}"
               border
@@ -101,10 +100,32 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="主键" align="center" prop="id" width="100"/>
-      <el-table-column align="center" width="auto" label="文档id" prop="blogId"/>
+<!--      <el-table-column align="center" width="auto" label="文档id" prop="blogId"/>-->
+      <el-table-column align="left" width="auto" label="文档名称" prop="name">
+        <template slot-scope="scope">
+          <el-button type="primary"
+                     style="float: left;margin-left: 0;"
+                     size="mini"
+                     @click="showHistoryContent(scope.row.id)"
+                     plain
+                     class="el-icon-view"
+          ></el-button>
+          <span style="margin-left: 6px;">{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="文档历史编辑内容" prop="preContent"/>-->
-      <el-table-column align="center" width="auto" label="创建用户" prop="userId"/>
-      <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
+<!--      <el-table-column align="center" width="auto" label="创建用户" prop="userId"/>-->
+      <el-table-column align="center" width="100" label="逻辑删除" prop="isDelete"/>
+      <el-table-column align="center" width="140" label="记录时间" prop="createTime">
+        <template slot-scope="scope">
+          <el-tooltip class="item"
+                      effect="dark"
+                      :content="scope.row.createTime"
+                      placement="top">
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -139,10 +160,9 @@
     <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="文档id" prop="blogId">
-          <el-input v-model="form.blogId" style="width: 300px" placeholder="请输入文档id"/>
-        </el-form-item>
-        <el-form-item label="文档历史编辑内容">
-          <editor v-model="form.preContent" :min-height="192"/>
+          <el-input v-model="form.blogId"
+                    disabled
+                    style="width: 300px" placeholder="请输入文档id"/>
         </el-form-item>
         <el-form-item label="创建用户" prop="userId">
           <el-input v-model="form.userId" style="width: 300px"
@@ -152,12 +172,30 @@
         <el-form-item label="逻辑删除" prop="isDelete">
           <el-input v-model="form.isDelete" style="width: 300px" placeholder="请输入逻辑删除"/>
         </el-form-item>
+        <el-form-item label="标题" prop="name">
+          <el-input v-model="form.name" style="width: 500px"
+                    placeholder="请输入标题"/>
+        </el-form-item>
+        <el-form-item label="文档历史内容">
+<!--          <editor v-model="form.preContent" :min-height="192"/>-->
+          <el-input type="textarea"
+                    :autosize="{ minRows: 5, maxRows: 15}"
+                    placeholder="请输入内容"
+                    v-model="form.preContent">
+          </el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!-- 预览-->
+    <preview_markdown ref="preview_markdown"
+                      @preview_markdown="preview_markdown"/>
+
   </div>
 </template>
 
@@ -173,10 +211,14 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
+import preview_markdown from '@/components/preview/preview_markdown.vue'
 
 export default {
   //dicts: ['is_delete'],
   name: 'Blog_history',
+  components: {
+    preview_markdown: preview_markdown
+  },
   data() {
     return {
       // 遮罩层
@@ -206,7 +248,8 @@ export default {
         pageSize: 10,
         blogId: null,
         userId: null,
-        isDelete: null
+        isDelete: null,
+        name: null,
       },
       // 表单参数
       form: {},
@@ -308,7 +351,7 @@ export default {
       getBlog_history(id).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('修改按钮操作.查询结果打印: ', jsonData)
+        // console.log('修改按钮操作.查询结果打印: ', jsonData)
         this.form = jsonData
         //this.form = response.data;
         this.open = true
@@ -402,7 +445,25 @@ export default {
     },
     copyPath(url, event) {
       clip(url, event)
-    }
+    },
+    //展示弹出框, 查询
+    showHistoryContent(history_id){
+      getBlog_history(history_id).then((res)=>{
+        if (res.code !== 200){
+          TipMessage.Warning(res.msg);
+          return null;
+        }
+        let privateObj = res.text
+        let jsonData = aesDecrypt2Json(privateObj)
+        // console.log("jsonData: ", jsonData);
+        this.$refs["preview_markdown"].showDialog(jsonData)
+      }).catch((err)=>{
+        //TipMessage.Error("错误"+ err);
+      })
+    },
+    preview_markdown(){
+      //子组件回调
+    },
     //==========================底部结束==================================
   }
 }

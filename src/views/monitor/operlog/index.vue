@@ -124,24 +124,23 @@
               @sort-change="handleSortChange"
     >
       <el-table-column type="selection" width="50" align="center"/>
-      <el-table-column label="日志编号" align="center" prop="operId" width="110"/>
-      <el-table-column label="系统模块" align="center" prop="title" :show-overflow-tooltip="true"/>
-      <el-table-column label="操作类型" align="center" prop="businessType">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_oper_type" :value="scope.row.businessType"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作人员" align="center" prop="operName" width="110" :show-overflow-tooltip="true"
-                       sortable="custom" :sort-orders="['descending', 'ascending']">
+      <el-table-column label="日志编号" align="center" prop="operId" width="100"/>
+      <el-table-column label="操作人员" align="center" prop="operName" width="110" :show-overflow-tooltip="true" sortable="custom">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.operName == 'admin'">{{ scope.row.operName }}</el-tag>
           <el-tag v-else type="warning">{{ scope.row.operName }}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="系统模块" align="center" prop="title" width="auto" :show-overflow-tooltip="true"/>
+      <el-table-column label="操作类型" align="center" prop="businessType" width="100">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_oper_type" :value="scope.row.businessType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="操作地址" align="center" prop="operIp" width="130" :show-overflow-tooltip="true"/>
       <el-table-column label="操作地点" align="center" prop="operLocation" :show-overflow-tooltip="true"/>
       <el-table-column label="操作系统" align="center" prop="reqSystem" :show-overflow-tooltip="true"/>
-      <el-table-column label="操作状态" align="center" prop="status">
+      <el-table-column label="操作状态" align="center" prop="status" width="85">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
         </template>
@@ -149,9 +148,8 @@
       <el-table-column label="操作日期"
                        align="center"
                        prop="operTime"
-                       width="160"
+                       width="140"
                        sortable="custom"
-                       :sort-orders="['descending', 'ascending']"
       >
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="parseTime(scope.row.operTime)" placement="top">
@@ -163,7 +161,7 @@
       <el-table-column label="消耗时间"
                        align="center"
                        prop="costTime"
-                       width="110"
+                       width="100"
                        :show-overflow-tooltip="true"
                        sortable="custom"
                        :sort-orders="['descending', 'ascending']"
@@ -172,7 +170,7 @@
           <span>{{ scope.row.costTime }}毫秒</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini"
                      type="text"

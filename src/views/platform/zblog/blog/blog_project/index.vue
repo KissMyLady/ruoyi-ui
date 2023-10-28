@@ -35,13 +35,18 @@
         />
       </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input
-            v-model="queryParams.isDelete"
-            placeholder="请输入逻辑删除"
-            clearable
-            @change="handleQuery"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDelete"
+                   style="width: 130px"
+                   @change="handleQuery"
+                   placeholder="筛选删除"
+                   clearable
+        >
+          <el-option v-for="dict in dict.type.is_delete"
+                     :key="dict.value"
+                     :label="dict.label"
+                     :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -153,13 +158,22 @@
       <el-table-column align="center" width="100" label="文章数" prop="countSum"/>
       <!--      <el-table-column align="center" width="auto" label="介绍" prop="intro"/>-->
       <!--      <el-table-column align="center" width="auto" label="图标" prop="icon"/>-->
-      <el-table-column align="center" width="90" label="权限代号" prop="authorityCode"/>
+      <el-table-column align="center" width="90" label="权限代号" prop="authorityCode">
+        <template slot-scope="scope">
+          <div @click="changAuthorityButton(scope.row)"
+               style="cursor:pointer;">
+            <dict-tag :options="dict.type.authority_code"
+                      style="cursor:pointer;"
+                      :value="scope.row.authorityCode"/>
+          </div>
+        </template>
+      </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印" prop="isWatermark"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印类型" prop="watermarkType"/>-->
       <!--      <el-table-column align="center" width="auto" label="水印值" prop="watermarkValue"/>-->
 <!--      <el-table-column align="center" width="90" label="是否置顶" prop="isTop"/>-->
-      <el-table-column align="center" width="90" label="浏览数" prop="visitor"/>
+<!--      <el-table-column align="center" width="90" label="浏览数" prop="visitor"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
       <!--      <el-table-column align="center" width="auto" label="排序方式(sql字段)" prop="sortField"/>-->
       <el-table-column align="center" width="90" label="逻辑删除" prop="isDelete">
@@ -187,13 +201,13 @@
                      v-hasPermi="['blog_project:blog_project:edit']"
           >修改
           </el-button>
-          <el-button size="mini"
-                     type="text"
-                     icon="el-icon-delete"
-                     @click="handleDelete(scope.row)"
-                     v-hasPermi="['blog_project:blog_project:remove']"
-          >删除
-          </el-button>
+<!--          <el-button size="mini"-->
+<!--                     type="text"-->
+<!--                     icon="el-icon-delete"-->
+<!--                     @click="handleDelete(scope.row)"-->
+<!--                     v-hasPermi="['blog_project:blog_project:remove']"-->
+<!--          >删除-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -263,6 +277,10 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改文集权限-->
+    <authority_change_dialog ref="authority_change_dialog"
+                             @authority_change_dialog="authority_change_dialog"/>
   </div>
 </template>
 
@@ -278,10 +296,14 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
+import authority_change_dialog from '@/views/platform/zblog/blog/blog_project/dialog/authority_change_dialog'
 
 export default {
-  //dicts: ['is_delete'],
+  dicts: ['is_delete', 'authority_code'],
   name: 'Blog_project',
+  components: {
+    authority_change_dialog: authority_change_dialog,
+  },
   data() {
     return {
       // 选中数组
@@ -313,7 +335,7 @@ export default {
         blogType: null,
         name: null,
         authorityCode: null,
-        isDelete: null
+        isDelete: 0
       },
       // 表单参数
       form: {},
@@ -391,15 +413,10 @@ export default {
   methods: {
     /** 查询博客文集列表 */
     getList() {
-      //this.total = 0;
-      //this.blog_projectList = [];
       listBlog_project(this.queryParams).then(response => {
         let privateObj = response.text
-        //let publicObj = aesDecrypt(privateObj);
-        //let jsonData = JSON.parse(publicObj);
-        let jsonData = aesDecrypt2Json(privateObj)
         this.blog_projectList = []
-        console.log('list数据查询结果', jsonData)
+        let jsonData = aesDecrypt2Json(privateObj)
         this.blog_projectList = jsonData
         //this.blog_projectList = response.rows;
         this.total = response.total
@@ -576,6 +593,15 @@ export default {
     },
     getImageUrl(filePath){
       return process.env.VUE_APP_target_url + filePath;
+    },
+    changAuthorityButton(rowData){
+
+      console.log("修改文章权限blog_id: ", rowData);
+      this.$refs["authority_change_dialog"].showDialog(rowData);
+    },
+    authority_change_dialog(){
+      //修改文集权限, 子组件回调
+      this.getList();
     },
     //==========================底部结束==================================
   }
