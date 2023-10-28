@@ -194,8 +194,8 @@ export default {
             let filePath = response.data.fileName
             tinymce.execCommand(
                 'mceReplaceContent',
-                false,
-                `<img class="wscnph" src="${filePath}" >`
+                false, //是否保存更改
+                `<img class="wscnph" src="${filePath}" width="500">`
             )
           }).catch(function(err) {
             // 上传错误可⾃⾏给出提⽰
