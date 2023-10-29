@@ -12,7 +12,7 @@ module.exports = {
         'dynamic-import-node',
         ["prismjs", {
           "languages": ["javascript", "css", "markup", "python", "java", "cpp", "shell"],
-          "plugins": ["line-numbers"], //配置显示行号插件
+          "plugins": ["line-numbers", "copy-to-clipboard"], //配置显示行号插件
           "theme": "coy", //主体名称
           "css": true
         }]

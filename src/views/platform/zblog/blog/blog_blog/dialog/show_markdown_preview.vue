@@ -26,8 +26,6 @@
 
 <script>
 import TipMessage from '@/utils/myUtils/TipMessage'
-import Prism from 'prismjs'
-
 export default {
   //组件
   components: {},
@@ -74,12 +72,14 @@ export default {
       TipMessage.isOK('未开通api')
     },
     showDialog(jsonData) {
-      console.log('传递过来的row打印: ', jsonData)
+      //console.log('传递过来的row打印: ', jsonData)
       this.form = jsonData
       this.name = jsonData.name
       this.markdown_text = jsonData.preContent
-      Prism.highlightAll();
       this.dialogFormVisible = true
+      setTimeout(()=>{
+        Prism.highlightAll()
+      }, 100)
     },
     close() {
       this.dialogFormVisible = false
@@ -90,10 +90,3 @@ export default {
 
 }
 </script>
-
-
-<style scoped>
-h1 {
-  color: #000;
-}
-</style>

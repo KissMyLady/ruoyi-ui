@@ -398,7 +398,7 @@ import show_tinymce_preview from '@/views/platform/zblog/blog/blog_blog/dialog/s
 import show_markdown_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_markdown_preview.vue'
 
 
-import 'prismjs/themes/prism.css';
+
 export default {
   dicts: ['is_delete', 'authority_code'],
   name: 'Blog_blog',
@@ -769,3 +769,17 @@ export default {
   }
 }
 </script>
+<style scoped>
+/*复制按钮*/
+.vuepress-markdown-body pre {
+  /*border: 1px solid #ddd;*/
+  border: 0px solid #ddd;
+  background: #f6f6f6;
+  padding: 10px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+}
+</style>

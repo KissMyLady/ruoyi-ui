@@ -32,8 +32,7 @@ import '@kangc/v-md-editor/lib/style/preview-html.css';
 // import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
 
 // highlightjs 核心代码
-// import hljs from 'highlight.js/lib/core'
-
+import hljs from 'highlight.js/lib/core'
 // 引入所有语言包
 // import hljs from 'highlight.js/lib/index';
 hljs.registerLanguage('json', require('highlight.js/lib/languages/json'))
@@ -48,8 +47,9 @@ hljs.registerLanguage('vue', require('highlight.js/lib/languages/xml'))
 
 //预览组件
 VMdPreview.use(githubTheme, {
-  Hljs: hljs,
+  Hljs: hljs
 });
+
 Vue.use(VMdPreview); //markdown预览
 Vue.use(VMdPreviewHtml);  //html预览
 
@@ -72,7 +72,6 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 import JsonViewer from 'vue-json-viewer';
-import hljs from 'highlight.js/lib/core'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -96,6 +95,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+//Vue.component('Prism', Prism)
 
 Vue.use(directive)
 Vue.use(plugins)

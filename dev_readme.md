@@ -1,5 +1,12 @@
 
 
+**vue-markdown-editor**
+
+markdown预览组件
+
+https://code-farmer-i.github.io/vue-markdown-editor/zh/examples/preview-demo.html
+
+
 **highlight**
 
 https://github.com/highlightjs/highlight.js/tree/main

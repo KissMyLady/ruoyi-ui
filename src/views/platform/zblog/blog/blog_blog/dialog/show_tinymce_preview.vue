@@ -23,11 +23,12 @@
 </template>
 
 <script>
-import TipMessage from '@/utils/myUtils/TipMessage'
 import Prism from 'prismjs'
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.js"//行号插件
 import "prismjs/themes/prism-coy.min.css"//高亮主题
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.css"//行号插件的样式
+import 'prismjs/themes/prism.css';
+import TipMessage from '@/utils/myUtils/TipMessage'
 export default {
   //组件
   components: {},
@@ -73,7 +74,7 @@ export default {
       TipMessage.isOK('未开通api')
     },
     showDialog(jsonData) {
-      console.log('传递过来的row打印: ', jsonData)
+      //console.log('传递过来的row打印: ', jsonData)
       this.form = jsonData
       //this.is_markdown = false
       //this.is_tinymce = true
@@ -93,3 +94,6 @@ export default {
 
 }
 </script>
+<style scoped>
+
+</style>
