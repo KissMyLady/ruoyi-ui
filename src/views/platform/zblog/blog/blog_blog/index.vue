@@ -359,39 +359,6 @@
       </div>
     </el-dialog>
 
-    <!--文章预览弹出框-->
-    <el-dialog :title="dialog_content_title"
-               :center="true"
-               :visible.sync="open_content_dialog"
-               :width="dialogWidth"
-               append-to-body
-    >
-      <el-row>
-        <el-col :span="12">更新时间: {{ formatTime_am(content_detail.updateTime) }}</el-col>
-        <el-col :span="12"></el-col>
-      </el-row>
-      <template>
-        <template v-if="is_markdown === true">
-          <v-md-preview :text="markdown_text"></v-md-preview>
-        </template>
-        <template v-if="is_tinymce === true">
-          <v-md-preview-html :html="tinymce_text"
-                             preview-class="vuepress-markdown-body"
-          ></v-md-preview-html>
-        </template>
-      </template>
-      <el-row style="margin:0;padding:0">
-        <el-col :span="12">
-          <p style="margin:0;padding:0">创建时间: {{ content_detail.createTime }}</p>
-          <p style="margin:0;padding:0">更新时间: {{ content_detail.updateTime }}</p>
-        </el-col>
-        <el-col :span="12"></el-col>
-      </el-row>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="content_dialog_cancel">关闭</el-button>
-      </div>
-    </el-dialog>
-
     <!-- 文章权限修改-->
     <authority_change_dialog ref="authority_change_dialog"
                              @authority_change_dialog="authority_change_dialog"
@@ -401,6 +368,12 @@
     <authority_batch_change_dialog ref="authority_batch_change_dialog"
                                    @authority_batch_change_dialog="authority_batch_change_dialog"
     />
+
+    <!-- 富文本展示-->
+    <show_tinymce_preview ref="show_tinymce_preview"/>
+
+    <!-- markdown展示-->
+    <show_markdown_preview ref="show_markdown_preview"/>
   </div>
 </template>
 
@@ -419,18 +392,21 @@ import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
-import tinymceLocal from '@/components/tinymce/tinymceLocal.vue'
 import authority_change_dialog from '@/views/platform/zblog/blog/blog_blog/dialog/authority_change_dialog.vue'
-import authority_batch_change_dialog
-  from '@/views/platform/zblog/blog/blog_blog/dialog/authority_batch_change_dialog.vue'
+import authority_batch_change_dialog from '@/views/platform/zblog/blog/blog_blog/dialog/authority_batch_change_dialog.vue'
+import show_tinymce_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_tinymce_preview.vue'
+import show_markdown_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_markdown_preview.vue'
 
+
+import 'prismjs/themes/prism.css';
 export default {
   dicts: ['is_delete', 'authority_code'],
   name: 'Blog_blog',
   components: {
-    tinymceLocal,
     authority_change_dialog: authority_change_dialog,
-    authority_batch_change_dialog: authority_batch_change_dialog
+    authority_batch_change_dialog: authority_batch_change_dialog,
+    show_tinymce_preview: show_tinymce_preview,
+    show_markdown_preview: show_markdown_preview,
   },
   data() {
     return {
@@ -472,18 +448,7 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-
-      //show dialog弹出层
-      dialog_content_title: '',
-      markdown_text: '',
-      tinymce_text: '',
-      open_content_dialog: false,
-      content_detail: {},
-
-      is_markdown: false,
-      is_tinymce: false,
       dialogWidth: '60%',
-
       //编辑器筛选
       editorMode_options: [
         { value: '1', label: '1 Md'},
@@ -760,26 +725,12 @@ export default {
         let privateObj = res.text
         let jsonData = aesDecrypt2Json(privateObj)
         this.content_detail = jsonData
-        let name = jsonData.name
         let editorMode = jsonData.editorMode
-        let content = jsonData.content
-        let preContent = jsonData.preContent
-        // let createTime = jsonData.createTime
-        // let updateTime = jsonData.updateTime
-        //console.log('查询文章的内容展示: ', jsonData)
-        this.dialog_content_title = name
-
         //markdown
         if (editorMode == '1' || editorMode == 1) {
-          this.is_tinymce = false
-          this.is_markdown = true
-          this.markdown_text = preContent
-          this.open_content_dialog = true
+          this.$refs["show_markdown_preview"].showDialog(jsonData)
         } else if (editorMode == '2' || editorMode == 2) {
-          this.is_markdown = false
-          this.is_tinymce = true
-          this.tinymce_text = content
-          this.open_content_dialog = true
+          this.$refs["show_tinymce_preview"].showDialog(jsonData)
         } else {
           TipMessage.Warning('未知编辑器模式' + editorMode)
         }

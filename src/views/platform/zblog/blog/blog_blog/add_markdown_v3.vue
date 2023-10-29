@@ -97,7 +97,7 @@ export default {
         'status': '',
         'editOpenChildren': '',
         'showOpenChildren': '',
-        'authorityCode': '',
+        'authorityCode': '1',  //默认私密
         'authorityValue': '',
         'isWatermark': '',
         'watermarkType': '',

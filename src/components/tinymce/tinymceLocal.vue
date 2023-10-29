@@ -1,7 +1,7 @@
 <template>
   <div class="tinymce-container">
     <!--富文本,本地渲染,不需要网络加载-->
-    <editor api-key="0gxtokd1ebq1qi7h5h0qivrsh6sk0re38i0ym6onoa954l33"
+    <editor api-key="0gxtokd1ebq1qi7h5h0qivrsh6sk0re38i0ym6onoa954l33Z"
             ref="editor_ref"
             v-model="tinymceDatabase"
             :init="tinymceData"
@@ -81,7 +81,7 @@ export default {
         code_dialog_width: 1000,
         skin_url: '/tinymce/skins/ui/oxide',
         language_url: '/tinymce/langs/zh_CN.js',
-        menubar: false,  //顶部菜单栏, 一定要打开的
+        menubar: true,  //顶部菜单栏, 一定要打开的
         plugins: tinymcePlugins,  //插件
         toolbar: tinymceToolbar,  //顶部栏
         advlist_bullet_styles: 'squar',
@@ -156,7 +156,8 @@ export default {
             success(response.data.fileName)
           },
           error => {
-            TipMessage.Warning('上传图片失败: ' + error)
+            //TipMessage.Warning('上传图片失败: ' + error)
+            console.log("富文本上传图片失败: ", error);
           }
       )
     },
@@ -209,7 +210,8 @@ export default {
           })
         } else {
           // 不是图⽚类型直接粘贴, 跳过oss上传处理
-          TipMessage.Error('粘贴的不是图⽚')
+          // TipMessage.Error('粘贴的不是图⽚')
+          console.log("粘贴的不是图" );
         }
       }
     }

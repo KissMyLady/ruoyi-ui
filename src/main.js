@@ -1,7 +1,5 @@
 import Vue from 'vue'
-
 import Cookies from 'js-cookie'
-
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
 
@@ -21,84 +19,37 @@ import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
 import { formatTime, LimitStringShow, formatTime_am } from '@/utils';
 
-import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
-
-//v-md-editor
+//v-md-editor md预览
 import VMdPreview from '@kangc/v-md-editor/lib/preview';
-import VMdPreviewHtml from '@kangc/v-md-editor/lib/preview-html';
-import createCopyCodePreview from '@kangc/v-md-editor/lib/plugins/copy-code/preview';  //预览复制代码
-
-import '@kangc/v-md-editor/lib/style/base-editor.css';
-import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+import '@kangc/v-md-editor/lib/style/preview.css';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
-import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
-// 引入使用主题的样式
-import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
-//emoji支持
-import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
-import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
+import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 
-// codemirror 编辑器的相关资源
-import Codemirror from 'codemirror';
-// mode
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/css/css';
-import 'codemirror/mode/htmlmixed/htmlmixed';
-import 'codemirror/mode/vue/vue';
-// edit
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/edit/closetag';
-import 'codemirror/addon/edit/matchbrackets';
-// placeholder
-import 'codemirror/addon/display/placeholder';
-// active-line
-import 'codemirror/addon/selection/active-line';
-// scrollbar
-import 'codemirror/addon/scroll/simplescrollbars';
-import 'codemirror/addon/scroll/simplescrollbars.css';
-// style
-import 'codemirror/lib/codemirror.css';
-
-// 按需引入语言包
-// import json from 'highlight.js/lib/languages/json'
-// import python from 'highlight.js/lib/languages/python'
-// import javascript from 'highlight.js/lib/languages/javascript'
-// import java from 'highlight.js/lib/languages/java'
-// import cpp from 'highlight.js/lib/languages/cpp'
-// import bash from 'highlight.js/lib/languages/bash'
-// import sql from 'highlight.js/lib/languages/sql'
-// import htmlbars from 'highlight.js/lib/languages/htmlbars'
+//html预览
+import VMdPreviewHtml from '@kangc/v-md-editor/lib/preview-html';
+import '@kangc/v-md-editor/lib/style/preview-html.css';
+// 引入使用主题的样式 可能会与 prism.js 代码高亮冲突
+// import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
 
 // highlightjs 核心代码
 // import hljs from 'highlight.js/lib/core'
 
 // 引入所有语言包
-import hljs from 'highlight.js/lib/index';
-
-// hljs.registerLanguage('json', json)
-// hljs.registerLanguage('python', python)
-// hljs.registerLanguage('javascript', javascript)
-// hljs.registerLanguage('java', java)
-// hljs.registerLanguage('cpp', cpp)
-// hljs.registerLanguage('bash', bash)
-// hljs.registerLanguage('sql', sql)
-// hljs.registerLanguage('html', htmlbars)
+// import hljs from 'highlight.js/lib/index';
+hljs.registerLanguage('json', require('highlight.js/lib/languages/json'))
+hljs.registerLanguage('python', require('highlight.js/lib/languages/python'))
+hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'))
+hljs.registerLanguage('java', require('highlight.js/lib/languages/java'))
+hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'))
+hljs.registerLanguage('bash', require('highlight.js/lib/languages/bash'))
+hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'))
+hljs.registerLanguage('html', require('highlight.js/lib/languages/htmlbars'))
+hljs.registerLanguage('vue', require('highlight.js/lib/languages/xml'))
 
 //预览组件
 VMdPreview.use(githubTheme, {
   Hljs: hljs,
 });
-VMdPreviewHtml.use(createCopyCodePreview());
-
-//编辑组件
-VMdEditor.Codemirror = Codemirror;
-VMdEditor.use(githubTheme, {
-  Hljs: hljs,
-});
-VMdEditor.use(createEmojiPlugin());
-
-Vue.use(VMdEditor);
 Vue.use(VMdPreview); //markdown预览
 Vue.use(VMdPreviewHtml);  //html预览
 
@@ -121,6 +72,7 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 import JsonViewer from 'vue-json-viewer';
+import hljs from 'highlight.js/lib/core'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
