@@ -87,14 +87,22 @@
 <!--        </el-button>-->
 <!--      </el-col>-->
       <el-col :span="1.5">
+<!--        <el-button type="success"-->
+<!--                   plain-->
+<!--                   icon="el-icon-edit"-->
+<!--                   size="mini"-->
+<!--                   :disabled="single"-->
+<!--                   @click="handleUpdate"-->
+<!--                   v-hasPermi="['file_attachment:file_attachment:edit']"-->
+<!--        >修改-->
+<!--        </el-button>-->
         <el-button type="success"
                    plain
                    icon="el-icon-edit"
                    size="mini"
-                   :disabled="single"
-                   @click="handleUpdate"
+                   @click="batchChangeGroup"
                    v-hasPermi="['file_attachment:file_attachment:edit']"
-        >修改
+        >批量修改分组
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -122,8 +130,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
+    <el-table :row-style="{height:'32px'}"
               :header-row-style="{height:'32px'}"
               :cell-style="{padding:'1px'}"
               border
@@ -150,9 +157,9 @@
       <!--      </el-table-column>-->
       <!--      <el-table-column align="center" width="auto" label="用户ID" prop="userId"/>-->
       <el-table-column align="center" width="100" label="分组id" prop="groupId"/>
-      <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
+      <el-table-column align="center" width="200" label="名称,描述" prop="title"/>
       <!--      <el-table-column align="center" width="auto" label="文件路径" prop="filePath"/>-->
-      <el-table-column align="center" width="auto" label="文件名" prop="fileName">
+      <el-table-column align="left" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
           <el-row>
             <el-col :span="4">
@@ -311,6 +318,8 @@
     <!-- 上传图片到组-->
     <file_upload ref="file_upload" @file_upload="file_upload"/>
 
+    <!--批量修改文件所属组-->
+    <batch_change_group ref="batch_change_group" @batch_change_group="batch_change_group"/>
   </div>
 </template>
 
@@ -327,12 +336,14 @@ import { changeDictToString, switchBool2Number } from '@/utils/myUtils/changeSom
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
 import file_upload from '@/views/platform/files/file_attachment/dialog/file_upload'
-
+import batch_change_group
+  from '@/views/platform/files/file_attachment/dialog/batch_change_group.vue'
 export default {
   //dicts: ['is_delete'],
   name: 'File_attachment',
   components: {
-    file_upload: file_upload
+    file_upload: file_upload,
+    batch_change_group: batch_change_group
   },
   data() {
     return {
@@ -405,7 +416,7 @@ export default {
   methods: {
     /** 查询附件列表 */
     getList() {
-      this.loading = true
+      //this.loading = true
       listFile_attachment(this.queryParams).then(response => {
         let privateObj = response.text
         // let publicObj = aesDecrypt(privateObj);
@@ -415,11 +426,12 @@ export default {
         this.file_attachmentList = jsonData
         //this.file_attachmentList = response.rows;
         this.total = response.total
-        this.loading = false
+        //this.loading = false
       }).catch((err) => {
-        this.loading = false
+        //this.loading = false
         //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
+        TipMessage.Info("查询无数据!")
       })
     },
     // 取消按钮
@@ -560,7 +572,7 @@ export default {
           return null
         }
         if (isD == 1) {
-          TipMessage.Warning('删除成功')
+          TipMessage.Info('删除成功')
         } else {
           TipMessage.isOK('取消删除成功')
         }
@@ -583,6 +595,13 @@ export default {
     file_upload(){
       //子组件回调
       // TipMessage.isOK("子组件回调")
+      this.getList()
+    },
+    //批量修改分组
+    batchChangeGroup(){
+      this.$refs["batch_change_group"].showDialog(this.ids)
+    },
+    batch_change_group(){
       this.getList()
     },
     //==========================底部结束==================================

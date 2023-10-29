@@ -1,4 +1,10 @@
 
+**4播放器安装**
+参考文章: `https://blog.csdn.net/qq_42191033/article/details/108424697`      
+
+项目地址: https://github.com/SevenOutman/vue-aplayer
+aPlayer文档: `https://github.com/SevenOutman/vue-aplayer/blob/develop/docs/README.zh-CN.md`     
+
 
 **vue-markdown-editor**
 

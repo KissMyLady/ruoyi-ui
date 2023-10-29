@@ -110,14 +110,14 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="添加文章" align="center" width="260">
+      <el-table-column label="添加文章" align="center" width="200">
         <template slot-scope="scope">
           <el-button icon="el-icon-plus"
                      type="success" plain
                      size="small"
                      @click="addArticle_by_markdown(scope.row.id)"
                      v-hasPermi="['blog_project:blog_project:add']"
-          >Markdown
+          >Md
           </el-button>
           <el-button icon="el-icon-plus"
                      type="primary" plain
@@ -131,20 +131,23 @@
       <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
 <!--      <el-table-column align="center" width="auto" label="文集类型" prop="blogType"/>-->
-      <el-table-column align="center" width="auto" label="封面图" prop="coverImg">
+      <el-table-column align="center" width="120" label="封面图" prop="coverImg">
         <template slot-scope="scope">
-          <el-image style="width: 80%"
-                    fit="contain"
-                    lazy
-                    :src="scope.row.coverImg"
-                    :preview-src-list="[scope.row.coverImg]">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
+          <image-preview :src="getImageSrc(scope.row.coverImg)" width="100"/>
         </template>
+<!--        <template slot-scope="scope">-->
+<!--          <el-image style="width: 80%"-->
+<!--                    fit="contain"-->
+<!--                    lazy-->
+<!--                    :src="scope.row.coverImg"-->
+<!--                    :preview-src-list="[scope.row.coverImg]">-->
+<!--            <div slot="error" class="image-slot">-->
+<!--              <i class="el-icon-picture-outline"></i>-->
+<!--            </div>-->
+<!--          </el-image>-->
+<!--        </template>-->
       </el-table-column>
-      <el-table-column align="center" width="auto" label="文集名称" prop="name">
+      <el-table-column align="left" width="auto" label="文集名称" prop="name">
         <template slot-scope="scope">
           <el-popover placement="top-start"
                       title="介绍"
@@ -603,6 +606,14 @@ export default {
     authority_change_dialog(){
       //修改文集权限, 子组件回调
       this.getList();
+    },
+    getImageSrc(item){
+      if (item.indexOf('/media/') === -1) {
+        //不包含媒体 /media/ 路径. 为老旧的django上传
+        return process.env.VUE_APP_media_url + '/' + item
+      } else {
+        return item
+      }
     },
     //==========================底部结束==================================
   }

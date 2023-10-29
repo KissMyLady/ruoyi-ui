@@ -1,6 +1,6 @@
 <template>
   <!--任务描述对话框-->
-  <el-dialog :title="name"
+  <el-dialog :title="title"
              :width="dialogWidth"
              :visible.sync="dialogFormVisible"
              @close="close"
@@ -23,7 +23,6 @@
 </template>
 
 <script>
-//import Prism from 'prismjs'
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.js"//行号插件
 import "prismjs/themes/prism-coy.min.css"//高亮主题
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.css"//行号插件的样式
@@ -37,7 +36,7 @@ export default {
       dialogFormVisible: false,
       dialogWidth: '60%',
       form: {},
-      name: '',
+      title: '',
       tinymce_text: ''
     }
   },
@@ -74,11 +73,9 @@ export default {
       TipMessage.isOK('未开通api')
     },
     showDialog(jsonData) {
-      //console.log('传递过来的row打印: ', jsonData)
+      // console.log('传递过来的row打印: ', jsonData)
       this.form = jsonData
-      //this.is_markdown = false
-      //this.is_tinymce = true
-      this.name = jsonData.name
+      this.title = jsonData.title
       this.tinymce_text = jsonData.content
       this.dialogFormVisible = true
       setTimeout(()=>{
@@ -94,6 +91,3 @@ export default {
 
 }
 </script>
-<style scoped>
-
-</style>

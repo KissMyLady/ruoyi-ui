@@ -69,7 +69,9 @@ import { aesDecrypt2Json } from '@/utils/encrypt/encryption'
 
 export default {
   //组件
-  components: {},
+  components: {
+
+  },
   data() {
     return {
       dialogFormVisible: false,

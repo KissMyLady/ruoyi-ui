@@ -18,7 +18,7 @@ import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
 import { formatTime, LimitStringShow, formatTime_am } from '@/utils';
-
+import Prism from 'prismjs'
 //v-md-editor md预览
 import VMdPreview from '@kangc/v-md-editor/lib/preview';
 import '@kangc/v-md-editor/lib/style/preview.css';
@@ -95,6 +95,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('Prism', Prism)
 //Vue.component('Prism', Prism)
 
 Vue.use(directive)

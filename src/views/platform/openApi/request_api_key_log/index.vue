@@ -100,8 +100,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading"
-              :row-style="{height:'32px'}"
+    <el-table :row-style="{height:'32px'}"
               :header-row-style="{height:'32px'}"
               :cell-style="{padding:'1px'}"
               border
@@ -145,8 +144,8 @@
         </template>
       </el-table-column>
 <!--      <el-table-column align="center" width="85" label="影响行数" prop="effectRows"/>-->
-      <el-table-column align="center" width="110" label="执行时间(毫秒)" prop="timeOut"/>
-      <el-table-column align="center" width="120" label="请求时间" prop="createTime">
+      <el-table-column align="center" width="90" label="耗时(毫秒)" prop="timeOut"/>
+      <el-table-column align="center" width="150" label="请求时间" prop="createTime">
         <template slot-scope="scope">
           <el-tooltip class="item"
                       effect="dark"
@@ -354,21 +353,13 @@ export default {
   methods: {
     /** 查询api请求记录列表 */
     getList() {
-      this.loading = true
       listRequest_api_key_log(this.queryParams).then(response => {
         let privateObj = response.text
-        //let publicObj = aesDecrypt(privateObj);
-        //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
-        // console.log('list数据查询结果', jsonData)
         this.request_api_key_logList = []
         this.request_api_key_logList = jsonData
-        //this.request_api_key_logList = response.rows;
         this.total = response.total
-        this.loading = false
       }).catch((err) => {
-        this.loading = false
-        //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
       })
     },

@@ -71,30 +71,39 @@
             icon="el-icon-edit"
             size="mini"
             v-hasPermi="['file_image:file_image:add']"
-            @click="uploadFileButton">上传文件
+            @click="uploadFileButton"
+        >上传文件
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="el-icon-plus"-->
-<!--            size="mini"-->
-<!--            @click="handleAdd"-->
-<!--            v-hasPermi="['file_image:file_image:add']"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            type="primary"-->
+      <!--            plain-->
+      <!--            icon="el-icon-plus"-->
+      <!--            size="mini"-->
+      <!--            @click="handleAdd"-->
+      <!--            v-hasPermi="['file_image:file_image:add']"-->
+      <!--        >新增-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['file_image:file_image:edit']"
-        >修改
+        <!--        <el-button-->
+        <!--            type="success"-->
+        <!--            plain-->
+        <!--            icon="el-icon-edit"-->
+        <!--            size="mini"-->
+        <!--            :disabled="single"-->
+        <!--            @click="handleUpdate"-->
+        <!--            v-hasPermi="['file_image:file_image:edit']"-->
+        <!--        >修改-->
+        <!--        </el-button>-->
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   @click="batchChangeGroup"
+                   v-hasPermi="['file_image:file_image:edit']"
+        >批量修改图片组
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -136,36 +145,42 @@
       <el-table-column align="center" width="100" label="分组Id" prop="groupId"/>
       <el-table-column label="预览" align="center" width="200">
         <template slot-scope="scope">
-          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"
-                    style="margin: 0;padding:0"
-                    fit="contain"
-                    lazy
-                    :src="getSPrefix(scope.row.filePath)"
-                    :preview-src-list="[getSPrefix(scope.row.filePath)]"
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
+          <image-preview :src="getSPrefix(scope.row.filePath)" width="100"/>
         </template>
+<!--        <template slot-scope="scope">-->
+<!--          <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"-->
+<!--                    style="margin: 0;padding:0"-->
+<!--                    fit="contain"-->
+<!--                    lazy-->
+<!--                    :src="getSPrefix(scope.row.filePath)"-->
+<!--                    :preview-src-list="[getSPrefix(scope.row.filePath)]"-->
+<!--          >-->
+<!--            <div slot="error" class="image-slot">-->
+<!--              <i class="el-icon-picture-outline"></i>-->
+<!--            </div>-->
+<!--          </el-image>-->
+<!--        </template>-->
       </el-table-column>
-<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-<!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
+      <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
+      <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <el-table-column align="center" width="auto" label="名称,描述" prop="title"/>
-      <el-table-column align="center" width="auto" label="文件名" prop="fileName">
+      <el-table-column align="left" width="auto" label="文件名" prop="fileName">
         <template slot-scope="scope">
           <el-link @click="jumpToImageMedia(scope.row.filePath)"
-                     type="primary">{{ scope.row.filePath }}</el-link>
+                   type="primary"
+          >{{ scope.row.filePath }}
+          </el-link>
           <el-button tpye="text"
                      size="mini"
-                     @click="copyPath(scope.row.filePath, $event)">复制路径
+                     @click="copyPath(scope.row.filePath, $event)"
+          >复制路径
           </el-button>
         </template>
       </el-table-column>
-<!--      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
+      <!--      <el-table-column align="center" width="auto" label="图片路径" prop="filePath"/>-->
       <el-table-column align="center" width="85" label="文件大小" prop="fileSize"/>
       <el-table-column align="center" width="100" label="上传方式" prop="upMethod"/>
-<!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
+      <!--      <el-table-column align="center" width="auto" label="md5校验值" prop="md5"/>-->
       <!-- <el-table-column align="center" width="100" label="图片后缀" prop="fileSuffix"/> -->
       <el-table-column align="center" width="85" label="逻辑删除" prop="isDelete">
         <template slot-scope="scope">
@@ -218,7 +233,8 @@
         <el-form-item label="创建用户id" prop="userId">
           <el-input v-model="form.userId"
                     disabled
-                    placeholder=""/>
+                    placeholder=""
+          />
         </el-form-item>
         <el-form-item label="图片分组" prop="groupId">
           <el-input v-model="form.groupId" placeholder=""/>
@@ -233,7 +249,8 @@
           <el-input v-model="form.filePath" disabled placeholder=""/>
           <el-button tpye="text"
                      size="mini"
-                     @click="copyPath(form.filePath, $event)">复制路径
+                     @click="copyPath(form.filePath, $event)"
+          >复制路径
           </el-button>
         </el-form-item>
         <el-form-item label="文件大小" prop="fileSize">
@@ -245,17 +262,20 @@
         <el-form-item label="url" prop="url">
           <el-input v-model="form.url"
                     disabled
-                    placeholder="url"/>
+                    placeholder="url"
+          />
           <el-button tpye="text"
                      size="mini"
-                     @click="copyPath(form.url, $event)">复制url
+                     @click="copyPath(form.url, $event)"
+          >复制url
           </el-button>
         </el-form-item>
         <el-form-item label="图片绝对路径" prop="md5">
           <el-input v-model="form.absPath" disabled placeholder="abs_path"/>
           <el-button tpye="text"
                      size="mini"
-                     @click="copyPath(form.absPath, $event)">复制绝对路径
+                     @click="copyPath(form.absPath, $event)"
+          >复制绝对路径
           </el-button>
         </el-form-item>
         <el-form-item label="md5校验值" prop="md5">
@@ -276,6 +296,11 @@
 
     <!-- 文件上传-->
     <image_upload ref="image_upload" @image_upload="image_upload"/>
+
+    <!-- 批量修改图片所属分组-->
+    <batch_change_image_group ref="batch_change_image_group"
+                              @batch_change_image_group="batch_change_image_group"
+    />
   </div>
 </template>
 
@@ -293,11 +318,14 @@ import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encrypt
 import { updateFile_attachment } from '@/api/platform/files/file_attachment'
 import clip from '@/components/vab/clipboardVab'
 import image_upload from '@/views/platform/files/file_image/dialog/image_upload'
+import batch_change_image_group from '@/views/platform/files/file_image/dialog/batch_change_image_group.vue'
+
 export default {
   //dicts: ['is_delete'],
   name: 'File_image',
   components: {
-    image_upload: image_upload
+    image_upload: image_upload,
+    batch_change_image_group: batch_change_image_group
   },
   data() {
     return {
@@ -323,9 +351,9 @@ export default {
       queryParams: {
         //orderByColumn: 'create_time',
         isAsc: 'desc',  //desc, acs
-        sortStr: "create_time",  //sql排序字段
+        sortStr: 'create_time',  //sql排序字段
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         userId: null,
         groupId: null,
         title: null,
@@ -362,7 +390,7 @@ export default {
     /** 查询素材图片列表 */
     getList() {
       this.loading = true
-      this.file_imageList = [];
+      this.file_imageList = []
       listFile_image(this.queryParams).then(response => {
         let privateObj = response.text
         //let publicObj = aesDecrypt(privateObj);
@@ -517,19 +545,26 @@ export default {
       window.open(url, '_blank')
     },
     //媒体文件: 前缀+路径
-    getSPrefix(filePath){
-      return process.env.VUE_APP_media_domain + filePath;
+    getSPrefix(filePath) {
+      return process.env.VUE_APP_media_domain + filePath
     },
     copyPath(url, event) {
       clip(url, event)
     },
-    uploadFileButton(){
-      this.$refs["image_upload"].showDialog();
+    uploadFileButton() {
+      this.$refs['image_upload'].showDialog()
     },
-    image_upload(){
+    image_upload() {
       //子组件回调
-      this.getList();
+      this.getList()
     },
+    //批量修改分组
+    batchChangeGroup() {
+      this.$refs['batch_change_image_group'].showDialog(this.ids)
+    },
+    batch_change_image_group() {
+      this.getList()
+    }
     //==========================底部结束==================================
   }
 }

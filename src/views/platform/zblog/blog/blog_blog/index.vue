@@ -397,8 +397,6 @@ import authority_batch_change_dialog from '@/views/platform/zblog/blog/blog_blog
 import show_tinymce_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_tinymce_preview.vue'
 import show_markdown_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_markdown_preview.vue'
 
-
-
 export default {
   dicts: ['is_delete', 'authority_code'],
   name: 'Blog_blog',

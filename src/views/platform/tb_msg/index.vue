@@ -113,8 +113,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading"
-              border
+    <el-table border
               stripe
               :data="tb_msgList"
               @selection-change="handleSelectionChange"
@@ -380,8 +379,12 @@ export default {
   methods: {
     /** 查询消息列表 */
     getList() {
-      this.loading = true
+      //this.loading = true
       listTb_msg(this.queryParams).then(response => {
+        if(response.code !== 200){
+          TipMessage.Info("未查询到数据!" + response.msg)
+          return null;
+        }
         let privateObj = response.text
         //let publicObj = aesDecrypt(privateObj);
         //let jsonData = JSON.parse(publicObj);
@@ -391,11 +394,12 @@ export default {
         this.tb_msgList = jsonData
         //this.tb_msgList = response.rows;
         this.total = response.total
-        this.loading = false
+        //this.loading = false
       }).catch((err) => {
-        this.loading = false
+        //this.loading = false
         //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
+
       })
     },
     // 取消按钮

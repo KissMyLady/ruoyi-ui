@@ -16,20 +16,30 @@
         />
       </el-form-item>
       <el-form-item label="权限代号" prop="authorityCode">
-        <el-input v-model="queryParams.authorityCode"
-                  placeholder="请输入权限代号"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.authorityCode"
+                   clearable
+                   @change="handleQuery"
+                   style="width: 120px"
+                   placeholder="请选择">
+          <el-option v-for="item in authority_options"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="逻辑删除" prop="isDelete">
-        <el-input v-model="queryParams.isDelete"
-                  placeholder="请输入逻辑删除"
-                  clearable
-                  @change="handleQuery"
-                  @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDelete"
+                   style="width: 80px"
+                   clearable
+                   @change="handleQuery"
+                   placeholder="请选择">
+          <el-option v-for="item in isDelete_options"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -92,22 +102,38 @@
       <el-table-column label="主键" align="center" prop="id" width="100"/>
 <!--      <el-table-column align="center" width="auto" label="类别代号" prop="typeCode"/>-->
 <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
-      <el-table-column align="center" width="auto" label="分类名称" prop="name"/>
       <el-table-column label="封面图" align="center" prop="coverImage" width="100">
         <template slot-scope="scope">
-          <image-preview :src="scope.row.coverImage" :width="50" :height="50"/>
+          <image-preview :src="scope.row.coverImage" width="100"/>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" width="auto" label="分类名称" prop="name">
+        <template slot-scope="scope">
+          <el-popover placement="top-start"
+                      title="介绍"
+                      width="200"
+                      trigger="hover"
+                      :content="scope.row.preContent">
+            <span style="margin:0;padding:0;font-size: 16px;font-weight: bold"
+                  slot="reference">{{ scope.row.name }}</span>
+          </el-popover>
         </template>
       </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="编辑器模式.1md,2富文本" prop="editorMode"/>-->
 <!--      <el-table-column align="center" width="auto" label="文档内容_含html格式" prop="content"/>-->
 <!--      <el-table-column align="center" width="auto" label="文档内容_预览_纯文本" prop="preContent"/>-->
-      <el-table-column align="center" width="auto" label="权限代号" prop="authorityCode"/>
+      <el-table-column align="center" width="100" label="权限代号" prop="authorityCode">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.authority_code" :value="scope.row.authorityCode"/>
+        </template>
+      </el-table-column>
 <!--      <el-table-column align="center" width="auto" label="权限具体限定内容" prop="authorityValue"/>-->
 <!--      <el-table-column align="center" width="auto" label="排序" prop="sort"/>-->
 <!--      <el-table-column align="center" width="auto" label="子类的排序字段" prop="sortField"/>-->
 <!--      <el-table-column align="center" width="auto" label="当前分类是否允许评论" prop="isAllowComment"/>-->
 <!--      <el-table-column align="center" width="auto" label="置顶" prop="isTop"/>-->
 <!--      <el-table-column align="center" width="auto" label="项目浏览次数" prop="visitor"/>-->
+      <el-table-column align="center" width="100" label="内容数量" prop="countSum"/>
       <el-table-column align="center" width="auto" label="逻辑删除" prop="isDelete"/>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -149,7 +175,8 @@
           <el-input v-model="form.name" style="width: 300px" placeholder="请输入分类名称"/>
         </el-form-item>
         <el-form-item label="封面图" prop="coverImage">
-          <image-upload v-model="form.coverImage"/>
+          <el-input v-model="form.coverImage"
+                    style="width: 300px" placeholder="请输入封面图地址"/>
         </el-form-item>
         <el-form-item label="编辑器模式.1md,2富文本" prop="editorMode">
           <el-input v-model="form.editorMode" style="width: 300px" placeholder="请输入编辑器模式.1md,2富文本"/>
@@ -207,7 +234,7 @@ import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encrypt
 import clip from '@/components/vab/clipboardVab'
 
 export default {
-  dicts: ['is_delete'],
+  dicts: ['is_delete', 'authority_code'],
   name: 'Ideal_project',
   data() {
     return {
@@ -238,82 +265,23 @@ export default {
         pageSize: 10,
         name: null,
         authorityCode: null,
-        isDelete: null
+        isDelete: 0
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {},
-      //表格行
-      columns: [
-        { key: 'id', align: 'center', width: 'auth', label: `主键`, prop: 'id', visible: true },
-        { key: 'type_code', align: 'center', width: 'auth', label: `类别代号`, prop: 'type_code', visible: true },
-        { key: 'user_id', align: 'center', width: 'auth', label: `创建用户id`, prop: 'user_id', visible: true },
-        { key: 'name', align: 'center', width: 'auth', label: `分类名称`, prop: 'name', visible: true },
-        { key: 'cover_image', align: 'center', width: 'auth', label: `封面图`, prop: 'cover_image', visible: true },
-        {
-          key: 'editor_mode',
-          align: 'center',
-          width: 'auth',
-          label: `编辑器模式.1md,2富文本`,
-          prop: 'editor_mode',
-          visible: true
-        },
-        {
-          key: 'content',
-          align: 'center',
-          width: 'auth',
-          label: `文档内容_含html格式`,
-          prop: 'content',
-          visible: true
-        },
-        {
-          key: 'pre_content',
-          align: 'center',
-          width: 'auth',
-          label: `文档内容_预览_纯文本`,
-          prop: 'pre_content',
-          visible: true
-        },
-        {
-          key: 'authority_code',
-          align: 'center',
-          width: 'auth',
-          label: `权限代号`,
-          prop: 'authority_code',
-          visible: true
-        },
-        {
-          key: 'authority_value',
-          align: 'center',
-          width: 'auth',
-          label: `权限具体限定内容`,
-          prop: 'authority_value',
-          visible: true
-        },
-        { key: 'sort', align: 'center', width: 'auth', label: `排序`, prop: 'sort', visible: true },
-        {
-          key: 'sort_field',
-          align: 'center',
-          width: 'auth',
-          label: `子类的排序字段`,
-          prop: 'sort_field',
-          visible: true
-        },
-        {
-          key: 'is_allow_comment',
-          align: 'center',
-          width: 'auth',
-          label: `当前分类是否允许评论`,
-          prop: 'is_allow_comment',
-          visible: true
-        },
-        { key: 'is_top', align: 'center', width: 'auth', label: `置顶`, prop: 'is_top', visible: true },
-        { key: 'visitor', align: 'center', width: 'auth', label: `项目浏览次数`, prop: 'visitor', visible: true },
-        { key: 'is_delete', align: 'center', width: 'auth', label: `逻辑删除`, prop: 'is_delete', visible: true },
-        { key: 'create_time', align: 'center', width: 'auth', label: `创建时间`, prop: 'create_time', visible: true },
-        { key: 'update_time', align: 'center', width: 'auth', label: `更新时间`, prop: 'update_time', visible: true }
-      ]
+      isDelete_options: [
+        { value: '1', label: '是'},
+        { value: '0', label: '否'},
+      ],
+      authority_options: [
+        { value: '0', label: '0 公开'},
+        { value: '1', label: '1 私密'},
+        { value: '2', label: '2 指定用户可见'},
+        { value: '3', label: '3 访问码可见'},
+        { value: '9', label: '9 超管可见'},
+      ],
     }
   },
   created() {
@@ -324,22 +292,18 @@ export default {
     getList() {
       //this.total = 0;
       //this.ideal_projectList = [];
-      this.loading = true
       listIdeal_project(this.queryParams).then(response => {
         let privateObj = response.text
-        //let publicObj = aesDecrypt(privateObj);
-        //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
         this.ideal_projectList = []
         console.log('list数据查询结果', jsonData)
         this.ideal_projectList = jsonData
         //this.ideal_projectList = response.rows;
         this.total = response.total
-        this.loading = false
       }).catch((err) => {
-        this.loading = false
         //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
+        TipMessage.Info("未查询到数据")
       })
     },
     // 取消按钮
