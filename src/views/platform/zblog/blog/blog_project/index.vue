@@ -599,7 +599,6 @@ export default {
       return process.env.VUE_APP_target_url + filePath;
     },
     changAuthorityButton(rowData){
-
       console.log("修改文章权限blog_id: ", rowData);
       this.$refs["authority_change_dialog"].showDialog(rowData);
     },

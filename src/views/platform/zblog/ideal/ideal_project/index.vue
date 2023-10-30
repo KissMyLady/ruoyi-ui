@@ -296,7 +296,7 @@ export default {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
         this.ideal_projectList = []
-        console.log('list数据查询结果', jsonData)
+        //console.log('list数据查询结果', jsonData)
         this.ideal_projectList = jsonData
         //this.ideal_projectList = response.rows;
         this.total = response.total
@@ -364,7 +364,7 @@ export default {
       getIdeal_project(id).then(response => {
         let privateObj = response.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log('修改按钮操作.查询结果打印: ', jsonData)
+        // console.log('修改按钮操作.查询结果打印: ', jsonData)
         this.form = jsonData
         //this.form = response.data;
         this.open = true

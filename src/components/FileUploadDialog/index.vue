@@ -62,17 +62,18 @@
             <!-- <el-table-column type="selection" width="55" align="center"/>-->
             <el-table-column label="预览" align="center" width="100">
               <template slot-scope="scope">
-                <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"
-                          style="margin: 0;padding:0"
-                          fit="contain"
-                          lazy
-                          :src="getSPrefix(scope.row.filePath)"
-                          :preview-src-list="[getSPrefix(scope.row.filePath)]"
-                >
-                  <div slot="error" class="image-slot">
-                    <i class="el-icon-picture-outline"></i>
-                  </div>
-                </el-image>
+<!--                <el-image v-if="scope.row.fileSuffix === 'jpg' || scope.row.fileSuffix === 'png'"-->
+<!--                          style="margin: 0;padding:0"-->
+<!--                          fit="contain"-->
+<!--                          lazy-->
+<!--                          :src="getSPrefix(scope.row.filePath)"-->
+<!--                          :preview-src-list="[getSPrefix(scope.row.filePath)]"-->
+<!--                >-->
+<!--                  <div slot="error" class="image-slot">-->
+<!--                    <i class="el-icon-picture-outline"></i>-->
+<!--                  </div>-->
+<!--                </el-image>-->
+                <image-preview :src="getSPrefix(scope.row.filePath)" width="100"/>
               </template>
             </el-table-column>
             <!-- <el-table-column label="主键" align="center" prop="id" width="100"/>-->
