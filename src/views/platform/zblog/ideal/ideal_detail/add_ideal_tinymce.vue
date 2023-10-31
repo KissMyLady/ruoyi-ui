@@ -10,7 +10,7 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item label="文章标题" prop="name">
+            <el-form-item label="文章标题" prop="title">
               <el-input v-model="ideal_detail.title"
                         style="width: 360px;font-size: 16px"
                         placeholder="请输入ideal的标题"
@@ -169,9 +169,17 @@ export default {
 
     },
     addArticleBtn() {
+      if (this.ideal_detail.title === undefined || this.ideal_detail.title === null || this.ideal_detail.title === '') {
+        TipMessage.Info('标题不能为空')
+        return null
+      }
       //获取富文本编辑器内容数据
       let tinymceData = this.$refs['getTinymceData'].getData()
       let textData = this.$refs['getTinymceData'].getTextData()
+      if (textData === undefined || textData === null || textData === '') {
+        TipMessage.Info('文本内容不能为空')
+        return null
+      }
       // console.log("发送文章数据打印: ", this.ideal_detail);
       this.ideal_detail.content = tinymceData
       this.ideal_detail.preContent = textData

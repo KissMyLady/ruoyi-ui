@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
-      dialogWidth: '60%',
+      dialogWidth: '56%',
       form: {},
       name: "",
       markdown_text: "",

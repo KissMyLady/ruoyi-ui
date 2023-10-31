@@ -204,6 +204,10 @@ export default {
     },
     //保存功能
     saveContent(text, html) {
+      if (text === undefined || text === null || text === '') {
+        TipMessage.Info('输入内容不能为空')
+        return null
+      }
       let dbId = this.$route.query.dbId
       let project_id = this.$route.query.project_id
       //是否有id主键, 判断保存
@@ -267,6 +271,10 @@ export default {
     },
     //文章添加
     addArticleBtn() {
+      if (text === undefined || text === null || text === '') {
+        TipMessage.Info('输入内容不能为空')
+        return null
+      }
       this.blog_detail.preContent = this.text
       // console.log("发送文章数据打印: ", this.blog_detail);
       let dict2String = changeDictToString(this.blog_detail)

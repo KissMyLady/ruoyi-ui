@@ -10,6 +10,7 @@
       <el-form-item label="所属项目" prop="projectId">
         <el-select v-model="queryParams.projectId"
                    clearable
+                   filterable
                    @change="handleQuery"
                    style="width: 180px"
                    placeholder="请选择"
@@ -141,7 +142,11 @@
     >
       <el-table-column type="selection" width="55" align="center"/>
       <!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
-      <el-table-column align="center" width="100" label="所属项目" prop="projectId"/>
+      <el-table-column align="left" width="220" label="所属项目" prop="projectId">
+        <template slot-scope="scope">
+          <span style="margin:0;padding:0;">{{ scope.row.projectId }} {{ scope.row.projectName }}</span>
+        </template>
+      </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="创建用户" prop="userId"/>-->
       <el-table-column align="left" width="auto" label="标题" prop="title">
         <template slot-scope="scope">
@@ -349,7 +354,7 @@ export default {
       rules: {},
       //项目列表
       ideal_projectList: [],
-      dialogWidth: '60%',
+      dialogWidth: '56%',
       //编辑器筛选
       editorMode_options: [
         { value: '1', label: '1 Md' },

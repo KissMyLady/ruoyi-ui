@@ -24,13 +24,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="输入所属图书" prop="bookId">
+            <el-form-item label="" prop="bookId">
               <el-input v-model="chapter_detail.bookId"
                         style="width: 180px"
                         placeholder="请输入所属图书编号"
                         clearable
               />
               <el-button type="success"
+                         style="margin-left: 10px"
                          plain
                          @click="addArticleBtn"
                          class="el-icon-check"
@@ -167,9 +168,17 @@ export default {
 
     },
     addArticleBtn() {
+      if (this.chapter_detail.title === undefined || this.chapter_detail.title === null || this.chapter_detail.title === '') {
+        TipMessage.Info('标题不能为空')
+        return null
+      }
       //获取富文本编辑器内容数据
       let tinymceData = this.$refs['getTinymceData'].getData()
       let textData = this.$refs['getTinymceData'].getTextData()
+      if (textData === undefined || textData === null || textData === '') {
+        TipMessage.Info('内容不能为空')
+        return null
+      }
       // console.log("发送文章数据打印: ", this.chapter_detail);
       this.chapter_detail.content = tinymceData
       this.chapter_detail.preContent = textData

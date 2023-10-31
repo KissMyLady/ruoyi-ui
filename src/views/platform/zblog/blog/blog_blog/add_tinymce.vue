@@ -5,7 +5,8 @@
                ref="queryForm"
                size="small"
                :inline="true"
-               label-width="88px">
+               label-width="88px"
+      >
 
         <el-row>
           <el-col :span="12">
@@ -13,17 +14,22 @@
               <el-input v-model="blog_detail.name"
                         style="width: 360px"
                         placeholder="请输入文章标题"
-                        clearable/>
+                        clearable
+              />
               <el-button type="primary" plain
                          @click="uploadFiles"
-                         class="el-icon-upload2">上传</el-button>
+                         class="el-icon-upload2"
+              >上传
+              </el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-button type="success"
                        plain
                        @click="addArticleBtn"
-                       class="el-icon-check">保存内容</el-button>
+                       class="el-icon-check"
+            >保存内容
+            </el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -45,6 +51,7 @@ import uploadDialog from '@/components/FileUploadDialog'
 import { addBlog_blog, getBlog_blog, updateBlog_blog } from '@/api/platform/zblog/blog/blog_blog'
 import { aesDecrypt2Json, aesEncrypt } from '@/utils/encrypt/encryption'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
+
 export default {
   components: {
     tinymceLocal: tinymceLocal,
@@ -101,19 +108,19 @@ export default {
       this.blog_detail.projectId = project_id
     }
     if (dbId != undefined || dbId != null) {
-      this.blog_detail.id = dbId;
-      getBlog_blog(dbId).then((res)=>{
-        if (res.code !== 200){
-          TipMessage.Warning(res.msg);
-          return null;
+      this.blog_detail.id = dbId
+      getBlog_blog(dbId).then((res) => {
+        if (res.code !== 200) {
+          TipMessage.Warning(res.msg)
+          return null
         }
         let privateObj = res.text
         let jsonData = aesDecrypt2Json(privateObj)
-        console.log("jsonData: ", jsonData);
-        this.blog_detail.name = jsonData.name;
+        console.log('jsonData: ', jsonData)
+        this.blog_detail.name = jsonData.name
         //设置富文本数据
-        this.$refs["getTinymceData"].setData(jsonData.content)
-      }).catch((err)=>{
+        this.$refs['getTinymceData'].setData(jsonData.content)
+      }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
     }
@@ -146,13 +153,21 @@ export default {
     modifyCategoryButton(row) {
 
     },
-    addArticleBtn(){
+    addArticleBtn() {
+      if (this.blog_detail.name === undefined || this.blog_detail.name === null || this.blog_detail.name === '') {
+        TipMessage.Info('输入标题不能为空')
+        return null
+      }
       //获取富文本编辑器内容数据
       let tinymceData = this.$refs['getTinymceData'].getData()
       let textData = this.$refs['getTinymceData'].getTextData()
+      if (textData === undefined || textData === null || textData === '') {
+        TipMessage.Info('输入内容不能为空')
+        return null
+      }
       // console.log("发送文章数据打印: ", this.blog_detail);
-      this.blog_detail.content = tinymceData;
-      this.blog_detail.preContent = textData;
+      this.blog_detail.content = tinymceData
+      this.blog_detail.preContent = textData
       let dict2String = changeDictToString(this.blog_detail)
       let sendData = {
         'a': aesEncrypt('1024'),
@@ -161,33 +176,33 @@ export default {
       }
       let dbId = this.$route.query.dbId
       //判断是添加还是保持
-      if (dbId !== undefined && dbId !== null && dbId != ""){
+      if (dbId !== undefined && dbId !== null && dbId != '') {
         //更新文章
-        updateBlog_blog(sendData).then((res)=>{
-          if (res.code !== 200){
-            TipMessage.Warning(res.msg);
-            return null;
+        updateBlog_blog(sendData).then((res) => {
+          if (res.code !== 200) {
+            TipMessage.Warning(res.msg)
+            return null
           }
-          TipMessage.isOK("更新文章:"+res.msg);
-        }).catch((err)=>{
+          TipMessage.isOK('更新文章:' + res.msg)
+        }).catch((err) => {
           //TipMessage.Error("错误"+ err);
         })
-      }else {
+      } else {
         //添加文章
-        addBlog_blog(sendData).then((res)=>{
-          if (res.code !== 200){
-            TipMessage.Warning(res.msg);
-            return null;
+        addBlog_blog(sendData).then((res) => {
+          if (res.code !== 200) {
+            TipMessage.Warning(res.msg)
+            return null
           }
-          TipMessage.isOK("添加文章:"+res.msg);
-        }).catch((err)=>{
+          TipMessage.isOK('添加文章:' + res.msg)
+        }).catch((err) => {
           //TipMessage.Error("错误"+ err);
         })
       }
     },
-    uploadFiles(){
-      this.$refs['uploadDialog'].showDialog();
-    },
+    uploadFiles() {
+      this.$refs['uploadDialog'].showDialog()
+    }
     //==========================底部结束==================================
 
   }

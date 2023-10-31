@@ -63,11 +63,12 @@ import { aesDecrypt2Json, aesEncrypt } from '@/utils/encrypt/encryption'
 import uploadDialog from '@/components/FileUploadDialog/index.vue'
 import { getToken } from '@/utils/auth'
 import axios from 'axios'
-import md_v3 from "@/components/markdown/md_v3.vue"
+import md_v3 from '@/components/markdown/md_v3.vue'
+
 export default {
   components: {
     uploadDialog,
-    md_v3:md_v3,
+    md_v3: md_v3
   },
 
   data() {
@@ -131,7 +132,7 @@ export default {
         // console.log('jsonData: ', jsonData)
         this.blog_detail.name = jsonData.name
         //this.text = jsonData.preContent
-        this.$refs['md_v3'].setMdData(jsonData.preContent);
+        this.$refs['md_v3'].setMdData(jsonData.preContent)
       }).catch((err) => {
         //TipMessage.Error("错误"+ err);
       })
@@ -167,6 +168,10 @@ export default {
     },
     //保存功能
     saveContent(text, html) {
+      if (text === undefined || text === null || text === '') {
+        TipMessage.Info('输入内容不能为空')
+        return null
+      }
       let dbId = this.$route.query.dbId
       let project_id = this.$route.query.project_id
       //是否有id主键, 判断保存
@@ -230,9 +235,16 @@ export default {
     },
     //文章添加
     addArticleBtn() {
-      let markdownData = this.$refs["md_v3"].getMarkdown();
-      let text_html = this.$refs["md_v3"].getHTML();
-
+      if (this.blog_detail.name === undefined || this.blog_detail.name === null || this.blog_detail.name === '') {
+        TipMessage.Info('标题不能为空')
+        return null
+      }
+      let markdownData = this.$refs['md_v3'].getMarkdown()
+      let text_html = this.$refs['md_v3'].getHTML()
+      if (markdownData === undefined || markdownData === null || markdownData === '') {
+        TipMessage.Info('文本内容不能为空')
+        return null
+      }
       this.blog_detail.content = text_html
       this.blog_detail.preContent = markdownData
       // console.log("发送文章数据打印: ", this.blog_detail);
@@ -296,9 +308,9 @@ export default {
         'http-group-id': ''
       }
     },
-    md_v3(){
+    md_v3() {
       //子组件回调
-    },
+    }
     //==========================底部结束==================================
 
   }

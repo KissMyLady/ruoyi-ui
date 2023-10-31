@@ -7,24 +7,30 @@
              v-show="showSearch"
              label-width="88px"
     >
-      <el-form-item label="关联类别" prop="bookId">
-        <!--        <el-input-->
-        <!--            v-model="queryParams.bookId"-->
-        <!--            placeholder="请输入关联类别"-->
-        <!--            clearable-->
-        <!--            @change="handleQuery"-->
-        <!--            @keyup.enter.native="handleQuery"-->
-        <!--        />-->
+      <el-form-item label="书籍选择" prop="bookId">
+        <el-select v-model="queryParams.bookId"
+                   clearable
+                   @change="handleQuery"
+                   style="width: 120px"
+                   placeholder="请选择">
+          <el-option v-for="item in book_bookList"
+                     :key="item.id"
+                     :label="item.id + ' '+item.bookName + ' 数量:'+ item.countSum"
+                     :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="" prop="bookId">
         <el-input v-model="queryParams.descNote"
-                  placeholder="请输入书籍名称"
+                  placeholder="输入查询书籍"
                   clearable
                   @change="handleQuery"
                   @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="标题" prop="title">
+      <el-form-item label="" prop="title">
         <el-input v-model="queryParams.title"
-                  placeholder="请输入标题"
+                  placeholder="请输入标题筛选"
                   clearable
                   @change="handleQuery"
                   @keyup.enter.native="handleQuery"
@@ -35,11 +41,13 @@
                    clearable
                    @change="handleQuery"
                    style="width: 120px"
-                   placeholder="请选择">
+                   placeholder="请选择"
+        >
           <el-option v-for="item in authority_options"
                      :key="item.value"
                      :label="item.label"
-                     :value="item.value">
+                     :value="item.value"
+          >
           </el-option>
         </el-select>
       </el-form-item>
@@ -114,6 +122,9 @@
     </el-row>
 
     <el-table border
+              :row-style="{height:'32px'}"
+              :header-row-style="{height:'32px'}"
+              :cell-style="{padding:'1px'}"
               stripe
               :data="book_chapterList"
               @selection-change="handleSelectionChange"
@@ -123,11 +134,11 @@
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <el-table-column align="right" width="200" label="关联类别" prop="bookId">
         <template slot-scope="scope">
-          <span>{{ scope.row.bookName }}</span>
+          <span>{{ scope.row.bookId }} {{ scope.row.bookName }}</span>
         </template>
       </el-table-column>
       <!--      <el-table-column align="center" width="auto" label="父级文档" prop="parentId"/>-->
-      <el-table-column align="left" width="300" label="标题" prop="title">
+      <el-table-column align="left" width="360" label="标题" prop="title">
         <template slot-scope="scope">
           <el-button type="primary"
                      style="float: left;margin-left: 0;"
@@ -157,7 +168,8 @@
           <el-tooltip class="item"
                       effect="dark"
                       :content="scope.row.createTime"
-                      placement="top">
+                      placement="top"
+          >
             <span>{{ formatTime(scope.row.createTime) }}</span>
           </el-tooltip>
         </template>
@@ -244,7 +256,8 @@
           <el-input type="textarea"
                     :autosize="{ minRows: 5, maxRows: 20}"
                     placeholder="请输入内容"
-                    v-model="form.preContent">
+                    v-model="form.preContent"
+          >
           </el-input>
         </el-form-item>
         <el-form-item label="编辑状态,打开下级" prop="editOpenChildren">
@@ -295,6 +308,9 @@ import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
 import show_tinymce_preview from '@/views/platform/zblog/blog/blog_blog/dialog/show_tinymce_preview.vue'
+import {
+  listBook_book
+} from '@/api/platform/zblog/book/book_book'
 
 export default {
   dicts: ['is_delete', 'authority_code'],
@@ -338,37 +354,53 @@ export default {
       // 表单校验
       rules: {},
       authority_options: [
-        { value: '0', label: '0 公开'},
-        { value: '1', label: '1 私密'},
-        { value: '2', label: '2 指定用户可见'},
-        { value: '3', label: '3 访问码可见'},
-        { value: '9', label: '9 超管可见'},
+        { value: '0', label: '0 公开' },
+        { value: '1', label: '1 私密' },
+        { value: '2', label: '2 指定用户可见' },
+        { value: '3', label: '3 访问码可见' },
+        { value: '9', label: '9 超管可见' }
       ],
+      //书籍列表
+      book_bookList: [],
+      //==========================底部结束==================================
     }
   },
   created() {
     this.getList()
+    this.get_book_list()
   },
   methods: {
     /** 查询章节列表 */
     getList() {
-      //this.total = 0;
-      //this.book_chapterList = [];
-      //this.loading = true
+      let bookId = this.$route.query.bookId
+      if (bookId !== undefined && bookId !== null && bookId !== '') {
+        this.queryParams.bookId = bookId
+      }
       listBook_chapter(this.queryParams).then(response => {
         let privateObj = response.text
-        //let publicObj = aesDecrypt(privateObj);
-        //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
         this.book_chapterList = []
-        // console.log('list数据查询结果', jsonData)
         this.book_chapterList = jsonData
-        //this.book_chapterList = response.rows;
         this.total = response.total
-        //this.loading = false
       }).catch((err) => {
-        //this.loading = false
-        //Message({ message: ""+err, type: 'error' })
+        console.log('请求错误: ', err)
+        TipMessage.Info('未查询到数据!')
+      })
+    },
+    get_book_list() {
+      let queryParams = {
+        isAsc: 'desc',
+        sortStr: 'create_time',
+        pageNum: 0,
+        pageSize: 999,
+        isDelete: 0
+      }
+      this.book_bookList = []
+      listBook_book(queryParams).then(response => {
+        let privateObj = response.text
+        let jsonData = aesDecrypt2Json(privateObj)
+        this.book_bookList = jsonData
+      }).catch((err) => {
         console.log('请求错误: ', err)
         TipMessage.Info('未查询到数据!')
       })
@@ -575,6 +607,10 @@ export default {
       }
     }
     //==========================底部结束==================================
+  },
+  mounted() {
+    this.getList()
   }
 }
+
 </script>

@@ -84,7 +84,9 @@
                    size="mini"
                    @click="uploadFiles"
                    plain
-                   class="el-icon-plus">上传图片</el-button>
+                   class="el-icon-plus"
+        >上传图片
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -98,7 +100,7 @@
               @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id" width="100"/>
+<!--      <el-table-column label="主键" align="center" prop="id" width="100"/>-->
       <!--      <el-table-column align="center" width="auto" label="创建用户id" prop="userId"/>-->
       <el-table-column align="left" width="auto" label="书籍类型" prop="bookType"/>
       <el-table-column align="left" width="auto" label="书籍名称" prop="bookName">
@@ -108,12 +110,17 @@
                       title="书籍介绍"
                       width="350"
                       trigger="hover"
-                      :content="scope.row.intro">
-            <span slot="reference" style="font-size: 16px;font-weight: bold;margin:0;padding:0">{{ scope.row.bookName }}</span>
+                      :content="scope.row.intro"
+          >
+            <span slot="reference"
+                  @click="jumpToBookChapter(scope.row)"
+                  style="cursor:pointer;font-size: 16px;font-weight: bold;margin:0;padding:0">{{
+                scope.row.bookName
+              }}</span>
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="auto" label="封面" prop="bookCover">
+      <el-table-column align="center" width="100" label="封面" prop="bookCover">
         <template slot-scope="scope">
           <image-preview :src="getImageSrc(scope.row.bookCover)" width="100"/>
         </template>
@@ -152,13 +159,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="文章数" width="85" align="center" prop="countSum">
+      <el-table-column label="文章数" width="85" sortable align="center" prop="countSum">
         <template slot-scope="scope">
           <el-popover placement="top-start"
                       title="最近文章"
                       width="200"
                       trigger="hover"
-                      :content="scope.row.countSum">
+                      :content="scope.row.bookLastChapter"
+          >
             <span slot="reference">{{ scope.row.countSum }}</span>
           </el-popover>
         </template>
@@ -179,23 +187,33 @@
       <!--      <el-table-column align="center" width="auto" label="当前分类是否允许评论" prop="isAllowComment"/>-->
       <!--      <el-table-column align="center" width="auto" label="置顶" prop="isTop"/>-->
       <!--      <el-table-column align="center" width="auto" label="浏览次数" prop="visitor"/>-->
-      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">
+      <el-table-column label="创建时间" width="140" align="left" prop="createTime">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.isDelete == 1"
-                  @click="switchDeleteState(scope.row.id, 0, 'isDelete')"
-                  style="cursor:pointer;"
-                  type="danger"
-          >是
-          </el-tag>
-          <el-tag v-else-if="scope.row.isDelete == 0"
-                  @click="switchDeleteState(scope.row.id, 1, 'isDelete')"
-                  type="info"
-                  style="cursor:pointer;"
-          >否
-          </el-tag>
+          <el-tooltip class="item"
+                      effect="dark"
+                      :content="scope.row.createTime"
+                      placement="top">
+            <span>{{ formatTime(scope.row.createTime) }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+<!--      <el-table-column label="逻辑删除" width="85" align="center" prop="isDelete">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-tag v-if="scope.row.isDelete == 1"-->
+<!--                  @click="switchDeleteState(scope.row.id, 0, 'isDelete')"-->
+<!--                  style="cursor:pointer;"-->
+<!--                  type="danger"-->
+<!--          >是-->
+<!--          </el-tag>-->
+<!--          <el-tag v-else-if="scope.row.isDelete == 0"-->
+<!--                  @click="switchDeleteState(scope.row.id, 1, 'isDelete')"-->
+<!--                  type="info"-->
+<!--                  style="cursor:pointer;"-->
+<!--          >否-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="mini"
@@ -337,17 +355,21 @@ import {
   addBook_book,
   updateBook_book
 } from '@/api/platform/zblog/book/book_book'
+import {
+  listBook_chapter
+} from '@/api/platform/zblog/book/book_chapter'
 import TipMessage from '@/utils/myUtils/TipMessage'
 import { changeDictToString } from '@/utils/myUtils/changeSomething'
 import { aesEncrypt, aesDecrypt, aesDecrypt2Json } from '@/utils/encrypt/encryption'
 import clip from '@/components/vab/clipboardVab'
 import dict from '@/utils/dict'
 import uploadDialog from '@/components/FileUploadDialog'
+
 export default {
   dicts: ['is_delete', 'authority_code'],
   name: 'Book_book',
   components: {
-    uploadDialog: uploadDialog,
+    uploadDialog: uploadDialog
   },
   data() {
     return {
@@ -393,23 +415,13 @@ export default {
     dict,
     /** 查询书籍列表 */
     getList() {
-      //this.total = 0;
-      //this.book_bookList = [];
-      //this.loading = true
       listBook_book(this.queryParams).then(response => {
         let privateObj = response.text
-        //let publicObj = aesDecrypt(privateObj);
-        //let jsonData = JSON.parse(publicObj);
         let jsonData = aesDecrypt2Json(privateObj)
         this.book_bookList = []
-        // console.log('list数据查询结果', jsonData)
         this.book_bookList = jsonData
-        //this.book_bookList = response.rows;
         this.total = response.total
-        //this.loading = false
       }).catch((err) => {
-        //this.loading = false
-        //Message({ message: ""+err, type: 'error' })
         console.log('请求错误: ', err)
         TipMessage.Info('未查询到数据!')
       })
@@ -586,7 +598,18 @@ export default {
     },
     uploadFiles() {
       this.$refs['uploadDialog'].showDialog()
-    }
+    },
+    //跳转到章节页面
+    jumpToBookChapter(bookRow){
+      let book_id = bookRow.id;
+      let countSum = bookRow.countSum;
+      if(countSum === undefined || countSum === null || countSum === 0){
+        TipMessage.Info("文章数量为0")
+        return null;
+      }
+      let jumpUrl = '/book/book_chapter?bookId=' + book_id
+      this.$router.push(jumpUrl)
+    },
     //==========================底部结束==================================
   }
 }
